@@ -1,0 +1,54 @@
+    {
+        "manifestVersion": 1,
+        "id": "vsts-extensions-releasePlanning",
+        "version": "0.0.16",
+        "name": "Release Planning - 16",
+        "description": "Here, It will show the list of feature that your project has.",
+        "publisher": "ytaloborjamori",
+        "targets": [
+            {
+                "id": "Microsoft.VisualStudio.Services"
+                }
+            ],
+
+        "icons": {
+            "default": "images/logo.png"
+         },
+        
+        "demands": [
+            "contribution/ms.vss-dashboards-web.widget-sdk-version-2"
+        ],
+
+        "contributions": [
+            {
+                "id": "ytaloborjamori.ReleasePlanning16",
+                "type": "ms.vss-web.hub",
+                "description": "Adds a 'Release Planning' hub to the Work hub group. This will get all the features and do the algorithm to present a release plan.",
+                "targets": [
+                    "ms.vss-work-web.work-hub-group"
+                    ],
+                "properties": {
+                    "name": "Release Planning",
+                    "order": 1,
+                    "uri": "release-planning.html"
+                }
+            }
+        ],
+
+        "files": [
+            {
+                "path": "release-planning.html", "addressable": true
+            },
+            {
+                "path": "sdk/scripts", "addressable": true
+            },
+            {
+                "path": "images", "addressable": true
+            }
+        ],
+        
+        "scopes": [
+            "vso.work",
+            "vso.work_write"
+        ]
+    }
