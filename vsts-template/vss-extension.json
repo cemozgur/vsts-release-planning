@@ -1,0 +1,63 @@
+{
+
+
+  "manifestVersion": 1,
+  "id": "astridrevone",
+  "version": "0.0.1814883",
+  "name": "Astrid: Milk's VSTS Decision Support Prototype",
+  "description": "Astrid is a generated Greek famale name start with capital A. It's a good name as anything else.",
+  "publisher": "milkhimself",
+         "targets": [
+             {
+                 "id": "Microsoft.VisualStudio.Services"
+                 }
+             ],
+         "icons": {
+             "default": "images/logo.png"
+          },
+         "contributions": [
+             {
+                 "id": "Astrid.Form",
+                 "type": "ms.vss-work-web.work-item-form-group",
+                 "description": "Add from into workitem creations",
+                 "targets": [
+                     "ms.vss-work-web.work-item-form"
+                     ],
+                 "properties": {
+                     "name": "Astrid",
+                     "uri": "Astrid_Field.html"
+                 }
+             },
+             {
+                 "id": "Astrid.Hub",
+                 "type": "ms.vss-web.hub",
+                 "description": "Add from into workitem creations",
+                 "targets": [
+                     "ms.vss-web.project-admin-hub-group"
+                     ],
+                 "properties": {
+                     "name": "Astrid",
+                     "uri": "Astrid_Hub.html"
+                 }
+             }
+         ],
+         "scopes": [
+             "vso.work","vso.profile"
+         ],
+         "files": [
+             {
+                 "path": "Astrid_Hub.html", "addressable": true
+             },
+             {
+                 "path": "Astrid_Field.html", "addressable": true
+             },
+             {
+                 "path": "node_modules/vss-web-extension-sdk/lib", "addressable": true
+             },
+             {
+                 "path": "images/logo.png", "addressable": true
+             }
+         ]
+
+
+}
