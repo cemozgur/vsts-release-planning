@@ -37,7 +37,7 @@
                         var $list = $('<ul>');
 
                         for (i in featureItems) {
-                            $list.append($('<li>').text("Feature " + featureItems[i].fields["System.Id"] + ": " + featureItems[i].fields["System.Title"]));
+                            $list.append($('<li>').text("Feature " + featureItems[i].id + ": " + featureItems[i].fields["System.Title"]));
                         }
 
                         // Append the list to the feature-info-container

@@ -1,8 +1,8 @@
     {
         "manifestVersion": 1,
         "id": "vsts-extensions-releasePlanning",
-        "version": "0.0.17",
-        "name": "Release Planning - 17",
+        "version": "0.0.18",
+        "name": "Release Planning - 18",
         "description": "Here, It will show the list of feature that your project has.",
         "publisher": "ytaloborjamori",
         "targets": [
@@ -21,7 +21,7 @@
 
         "contributions": [
             {
-                "id": "ytaloborjamori.ReleasePlanning17",
+                "id": "ytaloborjamori.ReleasePlanning18",
                 "type": "ms.vss-web.hub",
                 "description": "Adds a 'Release Planning' hub to the Work hub group. This will get all the features and do the algorithm to present a release plan.",
                 "targets": [

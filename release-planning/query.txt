@@ -1,3 +1,0 @@
-https://www.visualstudio.com/en-us/docs/integrate/api/wit/wiql
-
-Select [System.Id], [System.Title], [System.State] From WorkItems Where [System.WorkItemType] = 'Feature' AND [State] <> 'Closed' AND [State] <> 'Removed'
