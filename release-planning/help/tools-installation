@@ -1,0 +1,7 @@
+1. Download the Node.js v.6.9.4
+Then open the console and run this:
+npm install npm@latest -g
+
+2. Installation of Bower
+Then open the console and run this:
+npm install -g bower
