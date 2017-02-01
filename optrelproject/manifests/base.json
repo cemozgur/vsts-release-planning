@@ -1,0 +1,43 @@
+{
+    "manifestVersion": 1,
+    "id": "vsts-extensions-optrel",
+    "version": "1.0.13",
+    "publisher": "ytaloborjamori",
+    "name": "OptRel Release Planning",
+    "public": false,
+    "scopes": [
+        "vso.work",
+        "vso.work_write",
+        "vso.profile"
+    ],
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "vsts.ucl.hub.optrel.release.planning",
+            "type": "ms.vss-web.hub",
+            "targets": [
+                "ms.vss-work-web.work-hub-group"
+            ],
+            "properties": {
+                "name": "Release Planning",
+                "order": 1000,
+                "uri": "index.html"
+            }
+        },
+        {
+            "id": "vsts.ucl.FeatureTemplate.Extension",
+            "type": "ms.vss-work-web.work-item-form-group",
+            "targets": [
+                "ms.vss-work-web.work-item-form"
+            ],
+            "properties": {
+                "name": "Feature Template Extension",
+                "uri": "feature-template-extension.html"
+            }
+        }
+    ]
+}

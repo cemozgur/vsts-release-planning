@@ -9,7 +9,9 @@ TODO: Guide users through getting your code up and running on their own system. 
 
 Package your extension
 Navigate to root folder for the repository and run the following command.
-  tfx extension create --manifest-globs vss-extension.json
+  tfx extension create --manifest-globs package.json
+
+
 After you have your packaged extension in a .vsix file, you're ready to publish your extension to the marketplace.
 
 
@@ -19,6 +21,9 @@ After you have your packaged extension in a .vsix file, you're ready to publish 
 
 #Build and Test
 TODO: Describe and show how to build your code and run the tests.
+
+
+webpack --display-error-details
 
 #Contribute
 TODO: Explain how other users and developers can contribute to make your code better.

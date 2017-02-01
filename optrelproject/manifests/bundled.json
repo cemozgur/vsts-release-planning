@@ -1,0 +1,24 @@
+{
+    "files": [
+        {
+            "path": "../dist/css",
+            "addressable": true
+        },
+        {
+            "path": "../dist/scripts",
+            "addressable": true
+        },
+        {
+            "path": "../dist/index.html",
+            "addressable": true
+        },
+        {
+            "path": "../dist/feature-template-extension.html",
+            "addressable": true
+        },
+        {
+            "path": "../dist/images",
+            "addressable": true
+        }      
+    ]
+}
