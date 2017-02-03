@@ -1,34 +1,24 @@
 #VSTS - Release Planning plug-in
 
 #Introduction
-This project will give an optimal Release Plan for all the feature that a VSTS Project contains.
+This project will extend VSTS platform in order to generate a Release Plan.
 
 #Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
+1.	Pre-requisites
+Please download Node.js v.6.9.4 and install it on your local machine.
 
-Package your extension
-Navigate to root folder for the repository and run the following command.
-  tfx extension create --manifest-globs package.json
+Once installed, open console/terminal and run this command:
+npm install npm@latest -g
 
+2.	Setting-up the local environment
+Open console/terminal on the folder you have git clone the repository and run this command: 
+npm install
 
-After you have your packaged extension in a .vsix file, you're ready to publish your extension to the marketplace.
+3.	Build the package to publich on the VSTS platfom.
+Open console/terminal on the folder you have git clone the repository and run this command: 
+npm run vsts
 
-
-2.	Software dependencies
-3.	Latest releases
-4.	API references
-
-#Build and Test
-TODO: Describe and show how to build your code and run the tests.
-
-
-webpack --display-error-details
-
-#Contribute
-TODO: Explain how other users and developers can contribute to make your code better.
-
-If you want to learn more about creating good readme files then refer the following [guidelines](https://www.visualstudio.com/en-us/docs/git/create-a-readme). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+#Learning
+1. Webpack
+2. ReactJS
+3. TypeScript

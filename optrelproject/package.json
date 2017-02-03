@@ -1,18 +1,20 @@
 {
-  "name": "samples-ui-fabric-react",
+  "name": "optrel-project",
   "version": "1.0.0",
-  "description": "Sample Team Services web extension using Office UI Fabric React",
+  "description": "Release Planning extension for VSTS platform, using REACTjs",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "plug": ""
+    "devserver": "./node_modules/.bin/webpack-dev-server --content-base dist",
+    "vsts": "./node_modules/.bin/gulp",
+    "vstsdev": "./node_modules/.bin/gulp --local"
   },
   "keywords": [
     "vsts",
     "extension",
-    "office-ui-fabric-react"
+    "release-planning"
   ],
-  "author": "serkan-inci",
+  "author": "OptReal Team",
   "license": "MIT",
   "devDependencies": {
     "@types/react": "^0.14.48",
@@ -26,10 +28,11 @@
     "tfx-cli": "^0.3.45",
     "typescript": "^2.0.10",
     "webpack": "^1.13.3",
-    "yargs": "^6.5.0"
+    "yargs": "^6.5.0",
+    "webpack-dev-server": "^1.16.3"
   },
   "dependencies": {
     "office-ui-fabric-react": "^0.74.0",
-    "vss-web-extension-sdk": "^2.109.0"
+    "vss-web-extension-sdk": "^2.109.1"
   }
 }

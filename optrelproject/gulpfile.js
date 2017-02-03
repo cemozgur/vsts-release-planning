@@ -75,10 +75,10 @@ gulp.task('template', () => {
 });
 
 gulp.task('build', () => {
-    var tsResult = gulp.src(['scripts/**/*.tsx', 'scripts/**/*.ts'])
+    var tsResult = gulp.src(['src/**/*.tsx', 'src/**/*.ts'])
         .pipe(tsProject());
 
-    return tsResult.js.pipe(gulp.dest('scripts'));
+    return tsResult.js.pipe(gulp.dest('src'));
 });
 
 
@@ -87,7 +87,7 @@ gulp.task('copy', ['build'], () => {
         gulp.src('node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js')
             .pipe(gulp.dest(contentFolder + '/scripts'));
 
-        return gulp.src(['node_modules/office-ui-fabric-react/dist/*css/*.min.css', '*css/*.css'])
+        return gulp.src(['node_modules/office-ui-fabric-react/dist/*css/*.min.css'])
             .pipe(gulp.dest(contentFolder));
     } else {
         return true;
@@ -96,7 +96,7 @@ gulp.task('copy', ['build'], () => {
 
 gulp.task('webpack', ['copy'], () => {
     if (isBundled) {
-        return gulp.src('./scripts/FeatureComponent.js')
+        return gulp.src('./src/index.js')
             .pipe(webpack(require('./webpack.config.js')))
             .pipe(gulp.dest(contentFolder + "/scripts"));
 
@@ -106,8 +106,9 @@ gulp.task('webpack', ['copy'], () => {
 });
 
 gulp.task('tfxpack', ['webpack'], ()=> {
+    const vsts_dist = distFolder+"/vsts_extension";
     const rootArg = `--root ${contentFolder}`;
-    const outputPathArg = `--output-path ${distFolder}`;
+    const outputPathArg = `--output-path ${vsts_dist}`;
     const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`; 
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';

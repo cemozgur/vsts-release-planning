@@ -15,7 +15,9 @@ module.exports = {
     ],
     resolve: {
         alias: { "OfficeFabric": "../node_modules/office-ui-fabric-react/lib-amd" }
-    },
+    }
+    
+    /*,
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
             compress: {
@@ -25,5 +27,5 @@ module.exports = {
                 comments: false,
             },
         }),
-    ]    
+    ] */   
 };

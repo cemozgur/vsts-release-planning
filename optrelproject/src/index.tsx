@@ -10,9 +10,9 @@ import {
   Instance as WorkItemSearch,
   IWorkItemSearchResult,
   IWiqlQueryResult
-} from "./Feature";
+} from "./logic/Feature";
 
-import {Header} from "./Header";
+import {Header} from "./components/Header";
 
 
 interface IWorkItemSearchProps {

@@ -39,6 +39,8 @@ class WorkItemSearch implements IWorkItemSearch {
         let wiqlResult = this.getQueryAllFeature();
         let projectId = VSS.getWebContext().project.id;
 
+        console.log(this.httpClient);
+
         if (wiqlResult.wiql) {
             return this.httpClient.queryByWiql({ query: wiqlResult.wiql }, projectId).then(
 
