@@ -18,6 +18,12 @@ npm install
 Open console/terminal on the folder you have git clone the repository and run this command: 
 npm run vsts
 
+tfx extension publish --publisher ytaloborjamori --vsix ytaloborjamori.vsts-extensions-optrel-1.0.36.vsix --share-with ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq
+
+tfx extension install --publisher ytaloborjamori --extension-id vsts-extensions-optrel --accounts ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq
+
+
+
 #Learning
 1. Webpack
 2. ReactJS

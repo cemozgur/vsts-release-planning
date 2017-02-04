@@ -6,6 +6,11 @@ const rename = require('gulp-rename');
 const ts = require("gulp-typescript");
 const yargs = require("yargs");
 
+const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
+const vstsUser = "ytachi0026";
+const vstsPublisher = "ytaloborjamori";
+const optRelId="vsts-extensions-optrel";
+
 var exec = require('child_process').exec;
 
 const tsProject = ts.createProject('tsconfig.json', {
@@ -113,16 +118,46 @@ gulp.task('tfxpack', ['webpack'], ()=> {
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
 
-    // run tfx
+
     exec(`${path.join(__dirname, "node_modules", ".bin", "tfx.cmd")} extension create ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);
             }
+            console.log(stdout);
+            console.log(stderr);
+        });
+});
 
+gulp.task('tfxpublish', ['webpack'], ()=> {
+    const vsts_dist = distFolder+"/vsts_extension";
+    const rootArg = `--root ${contentFolder}`;
+    const outputPathArg = `--output-path ${vsts_dist}`;
+    const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`; 
+    const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
+    const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
+
+
+    exec(`${path.join(__dirname, "node_modules", ".bin", "tfx.cmd")} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version --share-with ${vstsUser} --token ${vstsPersonalToken}`,
+        (err, stdout, stderr) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(stdout);
+            console.log(stderr);
+        });
+});
+
+gulp.task('tfxinstall', ()=> {
+    exec(`${path.join(__dirname, "node_modules", ".bin", "tfx.cmd")} extension install --publisher ${vstsPublisher}  --extension-id ${optRelId} --accounts ${vstsUser} --token ${vstsPersonalToken}`,
+        (err, stdout, stderr) => {
+            if (err) {
+                console.log(err);
+            }
             console.log(stdout);
             console.log(stderr);
         });
 });
 
 gulp.task('default', ['template', 'tfxpack']);
+gulp.task('publishoptrel', ['template', 'tfxpublish']);

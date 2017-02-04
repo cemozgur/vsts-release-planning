@@ -6,7 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "devserver": "./node_modules/.bin/webpack-dev-server --content-base dist",
-    "vsts": "./node_modules/.bin/gulp",
+
+    "packoptrel": "./node_modules/.bin/gulp",
+    "publishoptrel": "./node_modules/.bin/gulp publishoptrel",
+    "installoptrel": "./node_modules/.bin/gulp tfxinstall",
+
     "vstsdev": "./node_modules/.bin/gulp --local"
   },
   "keywords": [
@@ -17,9 +21,9 @@
   "author": "OptReal Team",
   "license": "MIT",
   "devDependencies": {
+    "@types/q": "0.0.32",
     "@types/react": "^0.14.48",
     "@types/react-dom": "^0.14.18",
-    "@types/q": "0.0.32",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
     "gulp-template": "^4.0.0",
@@ -28,8 +32,8 @@
     "tfx-cli": "^0.3.45",
     "typescript": "^2.0.10",
     "webpack": "^1.13.3",
-    "yargs": "^6.5.0",
-    "webpack-dev-server": "^1.16.3"
+    "webpack-dev-server": "^1.16.3",
+    "yargs": "^6.5.0"
   },
   "dependencies": {
     "office-ui-fabric-react": "^0.74.0",
