@@ -1,11 +1,15 @@
 {
     "compilerOptions": {
-        "module": "amd",
+        "module": "commonjs",
         "moduleResolution": "node",
         "target": "es5",
+        "lib": ["es6", "dom"],
+        "types": ["reflect-metadata"],
         "noImplicitAny": false,
         "jsx": "react",
         "sourceMap": false,
-        "baseUrl": "."
+        "baseUrl": ".",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
     }
 }

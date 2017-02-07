@@ -5,6 +5,11 @@ import { getClient, WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/Rest
 import { WorkItem, WorkItemFieldReference } from 'TFS/WorkItemTracking/Contracts';
 import { ignoreCaseComparer } from 'VSS/Utils/String';
 
+import container from "./config/inversify.config";
+import SERVICE_IDENTIFIER from "./constants/identifiers";
+import Warrior from "./interfaces/Warrior"
+
+
 interface IWiqlResult {
     wiql?: string;
     error?: string;
@@ -25,6 +30,7 @@ export interface IWiqlQueryResult {
 
 
 class WorkItemSearch implements IWorkItemSearch {
+
     private _httpClient: WorkItemTrackingHttpClient;
 
     public get httpClient(): WorkItemTrackingHttpClient {
@@ -39,6 +45,10 @@ class WorkItemSearch implements IWorkItemSearch {
         let wiqlResult = this.getQueryAllFeature();
         let projectId = VSS.getWebContext().project.id;
 
+        let ninja = container.get<Warrior>(SERVICE_IDENTIFIER.Warrior);
+        console.log("TESTING INVERSIFY");
+        console.log(ninja.fight());
+        console.log("vss-web-extension-sdk");
         console.log(this.httpClient);
 
         if (wiqlResult.wiql) {

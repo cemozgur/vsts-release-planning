@@ -5,7 +5,7 @@ import {WorkItemSearchComponent} from './components/FeatureComponent';
 import {IWorkItemSearchResult,Instance as WorkItemSearch} from './logic/Feature'; 
 
 export function init(containerId: string): void {
-  let description = "These features will be used to generate a release plan.";
+  let description = "These features will be used to generate a release plan. InversifyJS";
 
   WorkItemSearch.getAllFeatureByProjectResult().then(
     (features: IWorkItemSearchResult) => {
