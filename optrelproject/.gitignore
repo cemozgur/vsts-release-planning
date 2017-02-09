@@ -1,4 +1,7 @@
-dist/
+dist/css
+dist/scripts
+dist/index.html
+
 node_modules/
 scripts/**/*.js
 scripts/**/*.js.map

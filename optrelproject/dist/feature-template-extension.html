@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Work item form group sample</title>
+    <script src="scripts/VSS.SDK.min.js"></script>
+</head>
+
+<body style="overflow:auto;">
+    <script>
+        var rating_value = ["1","2","3","4","5"];
+        var version = "Libertines";
+        var workItemID;
+        var RPDSDocsExist = false;
+        var RPDSDocsName = "RPDS";
+
+        VSS.init({
+            explicitNotifyLoaded: true,
+            usePlatformScripts: true
+        });
+
+        //Plain list combo
+        VSS.require(["VSS/Controls", "VSS/Controls/Combos"], function(Controls, Combos) {
+          var sContainer = $("#settingValue-combo-container");
+          var dContainer = $("#documentValue-combo-container");
+
+          var settingValue = {
+            value:"Select Setting Value. This value will be used over the whole project.",
+            source:rating_value
+          };
+
+          var documentValue = {
+            value:"Select Document Value. This value will be used within this workitem",
+            source:rating_value
+          };
+
+          var dummyValue = {
+            value:"<<Dummy Value, Created future UI usage>>",
+            source:rating_value
+          };
+
+         $("<label />").text("Setting Value:").appendTo(sContainer);
+         settingValueCombo = Controls.create(Combos.Combo, sContainer, settingValue);
+         dummySettingValueCombo = Controls.create(Combos.Combo, sContainer, dummyValue);
+
+          $("<label />").text("Document Value:").appendTo(dContainer);
+         documentValueCombo = Controls.create(Combos.Combo, dContainer, documentValue);
+         dummyDocsValueCombo = Controls.create(Combos.Combo, dContainer, dummyValue);
+
+       });
+
+        VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
+
+            // Get the WorkItemFormService.  This service allows you to get/set fields/links on the 'active' work item (the work item
+            // that currently is displayed in the UI).
+            function getWorkItemFormService()
+            {
+                return _WorkItemServices.WorkItemFormService.getService();
+            }
+
+            // Register a listener for the work item group contribution.
+            VSS.register(VSS.getContribution().id, function () {
+                return {
+                    // Called when the active work item is modified
+                    onFieldChanged: function(args) {
+                        $(".events").append($("<div/>").text("onFieldChanged - " + JSON.stringify(args)));
+                    },
+
+                    // Called when a new work item is being loaded in the UI
+                    onLoaded: function (args) {
+
+                        getWorkItemFormService().then(function(service) {
+                            // Get the current values for a few of the common fields
+                            service.getFieldValue("System.Id").then(
+                                function (value) {
+                                    workItemID = value;
+                                    $(".events").append($("<div/>").text("onLoaded - " + JSON.stringify(value)));
+                                });
+                        });
+
+                        // Get data service
+                        VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                            // Get document by id
+                            console.log(workItemID);
+                            dataService.getDocument("RPDS", workItemID).then(function(doc) {
+                                // Assuming document has a property named foo
+                                console.log("RPDS: Algorithm Name = " + doc.AlgorithmName);
+                                RPDSDocsExist = true;
+                            });
+
+                            console.log("RPDS: Doc exists = "+RPDSDocsExist);
+
+                        });
+
+
+                    },
+
+                    // Called when the active work item is being unloaded in the UI
+                    onUnloaded: function (args) {
+                        $(".events").empty();
+                        $(".events").append($("<div/>").text("onUnloaded - " + JSON.stringify(args)));
+                    },
+
+                    // Called after the work item has been saved
+                    onSaved: function (args) {
+                        $(".events").append($("<div/>").text("onSaved - " + JSON.stringify(args)));
+                    },
+
+                    // Called when the work item is reset to its unmodified state (undo)
+                    onReset: function (args) {
+                        $(".events").append($("<div/>").text("onReset - " + JSON.stringify(args)));
+                    },
+
+                    // Called when the work item has been refreshed from the server
+                    onRefreshed: function (args) {
+                        $(".events").append($("<div/>").text("onRefreshed - " + JSON.stringify(args)));
+                    }
+                }
+            });
+
+            VSS.notifyLoadSucceeded();
+
+            // register a handler for the 'Click me!' button.
+            $("#clickme").click(function() {
+
+                 getWorkItemFormService().then(function(service) {
+
+                     //service.setFieldValue("System.Title", "Title set from your group extension!");
+                     alert("Testing Codename: "+version);
+
+                });
+
+
+            });
+
+            // Get work item form service
+
+
+            $("#setSettingValue").click(function() {
+              //alert("Testing Codename: "+version);
+              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                  // Set value in user scope
+                  dataService.setValue("settingValue", settingValueCombo.getText()).then(function(value) {
+                       alert("RPDS: set settingValue to " + value);
+                  });
+               });
+            });
+
+            $("#getSettingValue").click(function() {
+              //alert("Testing Codename: "+version);
+              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                    // Get value in user scope
+                    dataService.getValue("settingValue").then(function(value) {
+                        alert("RPDS: saved settingValue as " + value);
+                    });
+              });
+            });
+
+            $("#setDocumentValue").click(function() {
+              // Get data service
+              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+
+                  if(RPDSDocsExist == true){
+                    console.log("RPDS: Document exists. Update the existing one.");
+                        // Get document first
+                        dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
+                            // Update the document
+                            doc.Value = documentValueCombo.getText();
+                            dataService.updateDocument(RPDSDocsName, doc).then(function(d) {
+                                // Check the new version
+                                console.log("Doc version: " + d.__etag);
+                            });
+                        });
+
+                  }else{
+                    console.log("RPDS: Document is not exist. Create a new one.");
+                    // Prepare document first
+                    var newDoc = {
+                      id: workItemID,
+                      AlgorithmName: "TBA",
+                      Value: documentValueCombo.getText()
+                    };
+
+                    dataService.createDocument(RPDSDocsName, newDoc).then(function(doc) {
+                        // Even if no ID was passed to createDocument, one will be generated
+                        console.log("RPDS: Created Doc ID =" + doc.id);
+                    });
+
+                  }
+
+
+              });
+
+            });
+
+            $("#getDocumentValue").click(function() {
+              // Get work item form service
+              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                  // Get document by id
+                  dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
+                      // Assuming document has a property named foo
+                      console.log("RPDS: Obtained Value = " + doc.Value);
+                  });
+              });
+            });
+
+            $("#deleteDocumentValue").click(function() {
+              // Get work item form service
+              // Get data service
+               VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                   dataService.deleteDocument(RPDSDocsName, workItemID).then(function() {
+                       console.log("RPDS: Doc deleted");
+                   });
+               });
+            });
+
+        });
+
+
+
+    </script>
+
+    <div id="settingValue-combo-container"/>
+    <div id="documentValue-combo-container"/>
+
+    <button type="button" id="getSettingValue">Get Example Setting Value</button><br/>
+    <button type="button" id="setSettingValue">Set Example Setting Value</button><br/>
+    <button type="button" id="clickme">Debuging Info</button><br/>
+
+    <button type="button" id="getDocumentValue">Get Example Documents Value</button><br/>
+    <button type="button" id="setDocumentValue">Set Example Documents Value</button><br/>
+    <button type="button" id="deleteDocumentValue">Delete Example Documents Value</button><br/>
+
+</body>
+
+</html>
