@@ -7,7 +7,7 @@ import { ignoreCaseComparer } from 'VSS/Utils/String';
 
 import container from "./config/inversify.config";
 import SERVICE_IDENTIFIER from "./constants/identifiers";
-import Warrior from "./interfaces/Warrior"
+import IReleasePlanningAlgorithm from "./interfaces/IReleasePlanningAlgorithm"
 
 
 interface IWiqlResult {
@@ -45,9 +45,9 @@ class WorkItemSearch implements IWorkItemSearch {
         let wiqlResult = this.getQueryAllFeature();
         let projectId = VSS.getWebContext().project.id;
 
-        let ninja = container.get<Warrior>(SERVICE_IDENTIFIER.Warrior);
+        let bingo = container.get<IReleasePlanningAlgorithm>(SERVICE_IDENTIFIER.IReleasePlanningAlgorithm);
         console.log("TESTING INVERSIFY");
-        console.log(ninja.fight());
+        console.log(bingo.getReleasePlanType());
         console.log("vss-web-extension-sdk");
         console.log(this.httpClient);
 

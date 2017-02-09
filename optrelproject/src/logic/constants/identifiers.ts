@@ -1,7 +1,5 @@
 let TYPES = {
-    Warrior: Symbol("Warrior"),
-    Weapon: Symbol("Weapon"),
-    ThrowableWeapon: Symbol("ThrowableWeapon")
+    IReleasePlanningAlgorithm: Symbol("IReleasePlanningAlgorithm")
 };
 
 export default TYPES;

@@ -1,8 +1,6 @@
 "use strict";
 var TYPES = {
-    Warrior: Symbol("Warrior"),
-    Weapon: Symbol("Weapon"),
-    ThrowableWeapon: Symbol("ThrowableWeapon")
+    IReleasePlanningAlgorithm: Symbol("IReleasePlanningAlgorithm")
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TYPES;

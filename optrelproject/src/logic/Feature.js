@@ -21,9 +21,9 @@ var WorkItemSearch = (function () {
         var _this = this;
         var wiqlResult = this.getQueryAllFeature();
         var projectId = VSS.getWebContext().project.id;
-        var ninja = inversify_config_1.default.get(identifiers_1.default.Warrior);
+        var bingo = inversify_config_1.default.get(identifiers_1.default.IReleasePlanningAlgorithm);
         console.log("TESTING INVERSIFY");
-        console.log(ninja.fight());
+        console.log(bingo.getReleasePlanType());
         console.log("vss-web-extension-sdk");
         console.log(this.httpClient);
         if (wiqlResult.wiql) {
