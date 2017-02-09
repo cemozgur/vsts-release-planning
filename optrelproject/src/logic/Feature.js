@@ -4,6 +4,7 @@ var Q = require("q");
 var RestClient_1 = require("TFS/WorkItemTracking/RestClient");
 var inversify_config_1 = require("./config/inversify.config");
 var identifiers_1 = require("./constants/identifiers");
+var algorithmType_1 = require("./constants/algorithmType");
 var WorkItemSearch = (function () {
     function WorkItemSearch() {
     }
@@ -21,9 +22,11 @@ var WorkItemSearch = (function () {
         var _this = this;
         var wiqlResult = this.getQueryAllFeature();
         var projectId = VSS.getWebContext().project.id;
-        var bingo = inversify_config_1.default.get(identifiers_1.default.IReleasePlanningAlgorithm);
+        var ifm = inversify_config_1.default.getNamed(identifiers_1.default.IReleasePlanningAlgorithm, algorithmType_1.default.IFM);
+        var ga = inversify_config_1.default.getNamed(identifiers_1.default.IReleasePlanningAlgorithm, algorithmType_1.default.GA);
         console.log("TESTING INVERSIFY");
-        console.log(bingo.getReleasePlanType());
+        console.log(ifm.getReleasePlanType());
+        console.log(ga.getReleasePlanType());
         console.log("vss-web-extension-sdk");
         console.log(this.httpClient);
         if (wiqlResult.wiql) {

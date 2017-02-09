@@ -9,14 +9,7 @@ var IFMReleasePlanningAlgorithm_1 = require("../entities/IFMReleasePlanningAlgor
  * In the rest of your application your classes should be free of references to other classes.
  */
 var container = new inversify_1.Container();
-var algorithmType = algorithmType_1.default.GA;
-switch (algorithmType) {
-    case algorithmType_1.default.GA:
-        container.bind(identifiers_1.default.IReleasePlanningAlgorithm).to(GAReleasePlanningAlgorithm_1.default);
-        break;
-    case algorithmType_1.default.IFM:
-        container.bind(identifiers_1.default.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm_1.default);
-        break;
-}
+container.bind(identifiers_1.default.IReleasePlanningAlgorithm).to(GAReleasePlanningAlgorithm_1.default).whenTargetNamed(algorithmType_1.default.GA);
+container.bind(identifiers_1.default.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm_1.default).whenTargetNamed(algorithmType_1.default.IFM);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = container;

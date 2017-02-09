@@ -12,15 +12,9 @@ import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
  */
 var container = new Container();
 
-var algorithmType = ALGORITHM_TYPE.GA;
+container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(GAReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.GA);
 
-switch (algorithmType) {
-    case ALGORITHM_TYPE.GA:
-        container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(GAReleasePlanningAlgorithm);
-        break;
-    case ALGORITHM_TYPE.IFM:
-        container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm);
-        break;
-}
+container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.IFM);
+
 
 export default container;
