@@ -5,9 +5,8 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require("react");
-var DetailsList_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList/DetailsList");
 var Services_1 = require("TFS/WorkItemTracking/Services");
-var Feature_1 = require("../logic/Feature");
+var DetailsList_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList/DetailsList");
 var Header_1 = require("./Header");
 var WorkItemSearchComponent = (function (_super) {
     __extends(WorkItemSearchComponent, _super);
@@ -39,15 +38,6 @@ var WorkItemSearchComponent = (function (_super) {
                     svc.openWorkItem(item["System.Id"]);
                 });
             } });
-    };
-    WorkItemSearchComponent.prototype._performSearch = function () {
-        var _this = this;
-        this._setSearchResult({});
-        Feature_1.Instance.getAllFeatureByProjectResult().then(function (result) {
-            console.log("Get all Feature from VSTS");
-            console.log(result);
-            _this._setSearchResult(result);
-        });
     };
     WorkItemSearchComponent.prototype._setSearchResult = function (result) {
         this.state.result = result;

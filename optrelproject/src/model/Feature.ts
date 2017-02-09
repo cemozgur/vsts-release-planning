@@ -1,4 +1,4 @@
-abstract class FeatureInfo{
+abstract class Feature{
     protected featureId: string;
     protected businessValue: number;
     protected effort: number;
@@ -13,4 +13,4 @@ abstract class FeatureInfo{
 }
 
 
-export {FeatureInfo}
+export {Feature}

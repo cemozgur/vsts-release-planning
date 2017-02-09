@@ -1,14 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { DetailsList } from '../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList/DetailsList';
 import { WorkItemFormNavigationService } from "TFS/WorkItemTracking/Services";
+import { DetailsList } from '../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList/DetailsList';
 
-import {
-    Instance as WorkItemSearch,
-    IWorkItemSearchResult,
-    IWiqlQueryResult
-} from "../logic/Feature";
+import { IWorkItemSearchResult } from "../model/IWorkItemSearchResult";
+import { IWiqlQueryResult } from "../model/IWiqlQueryResult";
+
 
 import { Header } from "./Header";
 
@@ -67,17 +65,6 @@ export class WorkItemSearchComponent extends React.Component<IWorkItemSearchProp
         />
     }
 
-    private _performSearch(): void {
-
-        this._setSearchResult({});
-
-        WorkItemSearch.getAllFeatureByProjectResult().then(
-            (result: IWorkItemSearchResult) => {
-                console.log("Get all Feature from VSTS");
-                console.log(result);
-                this._setSearchResult(result);
-            });
-    }
 
     private _setSearchResult(result: IWorkItemSearchResult): void {
         this.state.result = result;
