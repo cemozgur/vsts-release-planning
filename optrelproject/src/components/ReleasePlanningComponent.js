@@ -8,28 +8,27 @@ var React = require("react");
 var Services_1 = require("TFS/WorkItemTracking/Services");
 var DetailsList_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList/DetailsList");
 var Header_1 = require("./Header");
-var WorkItemSearchComponent = (function (_super) {
-    __extends(WorkItemSearchComponent, _super);
-    function WorkItemSearchComponent(props) {
+var ReleasePlanningComponent = (function (_super) {
+    __extends(ReleasePlanningComponent, _super);
+    function ReleasePlanningComponent(props) {
         var _this = _super.call(this, props) || this;
         _this._widths = [100, 800, 200];
         _this.state = _this._getDefaultState();
         return _this;
     }
-    WorkItemSearchComponent.prototype.render = function () {
-        var resultSection = null;
-        var result = this.props.features;
-        resultSection = this._getWorkItemsList(result.queryResult);
-        return React.createElement("div", { className: "work-item-search" },
+    ReleasePlanningComponent.prototype.render = function () {
+        var featureSection = null;
+        featureSection = this._getWorkItemsList(this.props.features.queryResult);
+        return React.createElement("div", null,
             React.createElement(Header_1.Header, { description: this.props.description }),
-            resultSection);
+            featureSection);
     };
-    WorkItemSearchComponent.prototype._getDefaultState = function () {
+    ReleasePlanningComponent.prototype._getDefaultState = function () {
         return {
             result: {}
         };
     };
-    WorkItemSearchComponent.prototype._getWorkItemsList = function (queryResult) {
+    ReleasePlanningComponent.prototype._getWorkItemsList = function (queryResult) {
         var _this = this;
         var columns = queryResult.columns.map(function (c, i) { return { key: c.referenceName, name: c.name, fieldName: c.referenceName, minWidth: _this._widths[i] }; });
         var items = queryResult.workItems.map(function (wi) { return wi.fields; });
@@ -39,10 +38,10 @@ var WorkItemSearchComponent = (function (_super) {
                 });
             } });
     };
-    WorkItemSearchComponent.prototype._setSearchResult = function (result) {
+    ReleasePlanningComponent.prototype._setSearchResult = function (result) {
         this.state.result = result;
         this.setState(this.state);
     };
-    return WorkItemSearchComponent;
+    return ReleasePlanningComponent;
 }(React.Component));
-exports.WorkItemSearchComponent = WorkItemSearchComponent;
+exports.ReleasePlanningComponent = ReleasePlanningComponent;

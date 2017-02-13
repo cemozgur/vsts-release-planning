@@ -11,39 +11,41 @@ import { IWiqlQueryResult } from "../model/IWiqlQueryResult";
 import { Header } from "./Header";
 
 
-interface IWorkItemSearchProps {
+interface IReleasePlanningProps {
     description: string;
     features: IWorkItemSearchResult;
 }
 
-interface IWorkItemSearchState {
+interface IReleasePlanningState {
     result?: IWorkItemSearchResult;
 }
 
-export class WorkItemSearchComponent extends React.Component<IWorkItemSearchProps, IWorkItemSearchState> {
+
+export class ReleasePlanningComponent extends React.Component<IReleasePlanningProps, IReleasePlanningState> {
     private _widths = [100, 800, 200];
 
-    constructor(props?: IWorkItemSearchProps) {
+    constructor(props?: IReleasePlanningProps) {
         super(props);
         this.state = this._getDefaultState();
     }
 
 
     public render(): JSX.Element {
+        let featureSection: JSX.Element = null;
+        featureSection = this._getWorkItemsList(this.props.features.queryResult);
 
-        let resultSection: JSX.Element = null;
-        let result = this.props.features;
-
-        resultSection = this._getWorkItemsList(result.queryResult);
-
-
-        return <div className="work-item-search">
+        return <div>
             <Header description={this.props.description} />
-            {resultSection}
+            {featureSection}
+            
         </div>;
     }
 
-    private _getDefaultState(): IWorkItemSearchState {
+
+
+
+
+    private _getDefaultState(): IReleasePlanningState {
         return {
             result: {}
         };

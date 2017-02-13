@@ -13,7 +13,7 @@ var GAReleasePlanningAlgorithm = (function () {
     GAReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
         return "GA Algortihm";
     };
-    GAReleasePlanningAlgorithm.prototype.setReleasePlan = function (releasePlan) {
+    GAReleasePlanningAlgorithm.prototype.testDataGeneration = function (config) {
     };
     GAReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
         return null;
