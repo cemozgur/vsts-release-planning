@@ -14,6 +14,10 @@ var IFMReleasePlanningAlgorithm = (function () {
             teamCapability: 0, totalRequiredEffort: 0,
             numberOfSprint: 0, sprintDuration: 0 };
     }
+    IFMReleasePlanningAlgorithm.prototype.getFeatureData = function () {
+        //here we are going to call the VSTS sdk web extension
+        this.ReleasePlan.featureList = [];
+    };
     IFMReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
         return "IFM Algortihm";
     };
@@ -41,7 +45,7 @@ var IFMReleasePlanningAlgorithm = (function () {
     IFMReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
         var ResultReleasePlan = { discountValue: 0, cumulatedDiscountValue: 0,
             featureList: [], teamCapability: 0, totalRequiredEffort: 0,
-            numberOfSprint: 0, sprintDuration: 0 };
+            numberOfSprint: 0, sprintDuration: 0 }; //this is only if we dont require the value again.
         this.getTotalRequiredEffort();
         this.calculateCumulatedDiscountValue();
         this.calculateNumberOfRequiredSprint();
