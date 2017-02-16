@@ -13,7 +13,7 @@ var Header = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Header.prototype.render = function () {
-        return React.createElement("h2", null, this.props.description);
+        return React.createElement("p", null, this.props.description);
     };
     return Header;
 }(React.Component));

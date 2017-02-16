@@ -26,5 +26,9 @@ tfx extension install --publisher ytaloborjamori --extension-id vsts-extensions-
 
 #Learning
 1. Webpack
+https://www.youtube.com/watch?v=9kJVYpOqcVU
+
 2. ReactJS
+https://www.youtube.com/watch?v=MhkGQAoc7bc
+
 3. TypeScript

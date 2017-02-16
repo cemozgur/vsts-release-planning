@@ -16,7 +16,7 @@ var GAReleasePlanningAlgorithm = (function () {
     GAReleasePlanningAlgorithm.prototype.testDataGeneration = function (config) {
     };
     GAReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
-        return { status: "Implementing" };
+        return { result: "Implementing" };
     };
     return GAReleasePlanningAlgorithm;
 }());

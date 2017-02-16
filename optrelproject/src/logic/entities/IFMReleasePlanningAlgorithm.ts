@@ -35,7 +35,9 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm{
           timeCriticality : Math.random()*5 + 1,
           cost : Math.random()*50 + 1,
           selected : false,
-          dependency : "0"
+          dependency : "0",
+          feature:"Feature Name #",
+          order: "1"
         }
         this.ReleasePlan.featureList.push({feature});
       }

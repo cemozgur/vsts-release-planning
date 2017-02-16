@@ -14,7 +14,7 @@ class GAReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     testDataGeneration(config: any) {
     }
     getOptimalReleasePlan() {
-        return {status: "Implementing"};
+        return {result: "Implementing"};
     }
 }
 

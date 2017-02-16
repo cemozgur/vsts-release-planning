@@ -7,6 +7,6 @@ export interface HeaderProps { description: string; }
 // State is never set so we use the 'undefined' type.
 export class Header extends React.Component<HeaderProps, undefined> {
     render() {
-        return <h2>{this.props.description}</h2>;
+        return <p>{this.props.description}</p>;
     }
 }

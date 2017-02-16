@@ -7,7 +7,7 @@ var ReleasePlanningComponent_1 = require("./components/ReleasePlanningComponent"
 function init(containerId) {
     var featureService = inversify_config_1.default.get(identifiers_1.default.IFeatureService);
     var vstsProjectId = VSS.getWebContext().project.id;
-    var description = "These features will be used to generate a release plan. InversifyJS";
+    var description = "These features will be used to generate a release plan.";
     featureService.getAllFeatureByProjectResult(vstsProjectId).then(function (features) {
         console.log("VSTS Features");
         console.log(features);

@@ -19,6 +19,7 @@
   "author": "OptReal Team",
   "license": "MIT",
   "devDependencies": {
+    "@types/jquery": "^2.0.40",
     "@types/q": "0.0.32",
     "@types/react": "^0.14.48",
     "@types/react-dom": "^0.14.18",
