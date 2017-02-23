@@ -3,14 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Work item form group sample</title>
-    <script src="scripts/VSS.SDK.min.js"></script>
+    <title>Release Planning Optimal Template</title>
 </head>
 
 <body style="overflow:auto;">
+    <script src="node_modules/vss-web-extension-sdk/lib/VSS.SDK.js"></script>
     <script>
-        var rating_value = ["1","2","3","4","5"];
-        var version = "Libertines";
         var workItemID;
         var RPDSDocsExist = false;
         var RPDSDocsName = "RPDS";
@@ -19,36 +17,6 @@
             explicitNotifyLoaded: true,
             usePlatformScripts: true
         });
-
-        //Plain list combo
-        VSS.require(["VSS/Controls", "VSS/Controls/Combos"], function(Controls, Combos) {
-          var sContainer = $("#settingValue-combo-container");
-          var dContainer = $("#documentValue-combo-container");
-
-          var settingValue = {
-            value:"Select Setting Value. This value will be used over the whole project.",
-            source:rating_value
-          };
-
-          var documentValue = {
-            value:"Select Document Value. This value will be used within this workitem",
-            source:rating_value
-          };
-
-          var dummyValue = {
-            value:"<<Dummy Value, Created future UI usage>>",
-            source:rating_value
-          };
-
-         $("<label />").text("Setting Value:").appendTo(sContainer);
-         settingValueCombo = Controls.create(Combos.Combo, sContainer, settingValue);
-         dummySettingValueCombo = Controls.create(Combos.Combo, sContainer, dummyValue);
-
-          $("<label />").text("Document Value:").appendTo(dContainer);
-         documentValueCombo = Controls.create(Combos.Combo, dContainer, documentValue);
-         dummyDocsValueCombo = Controls.create(Combos.Combo, dContainer, dummyValue);
-
-       });
 
         VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
 
@@ -75,23 +43,37 @@
                             service.getFieldValue("System.Id").then(
                                 function (value) {
                                     workItemID = value;
+                                    console.log("Value:"+workItemID);
                                     $(".events").append($("<div/>").text("onLoaded - " + JSON.stringify(value)));
                                 });
-                        });
 
-                        // Get data service
-                        VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
-                            // Get document by id
-                            console.log(workItemID);
-                            dataService.getDocument("RPDS", workItemID).then(function(doc) {
-                                // Assuming document has a property named foo
-                                console.log("RPDS: Algorithm Name = " + doc.AlgorithmName);
-                                RPDSDocsExist = true;
-                            });
+                                // Get data service
+                                VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                                    // Get document by id
+                                    console.log(workItemID);
+                                    var id = 0;
+                                    dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
+                                      id = doc.id;
+                                    }).then(function(doc){
+                                      console.log("ID is defined?: "+(id!=undefined))
+                                      if(id!=undefined){
+                                        RPDSDocsExist = true;
+                                        document.getElementById('businessValue').value = doc.BusinessValue;
+                                        document.getElementById('cost').value = doc.Cost;
+                                        document.getElementById('effort').value = doc.Effort;
+                                        document.getElementById('minRisk').value = doc.Risk.Min;
+                                        document.getElementById('expectedRisk').value = doc.Risk.Expected;
+                                        document.getElementById('maxRisk').value = doc.Risk.Max;
+                                        document.getElementById('discountRate').value = doc.DiscountRate;
+                                        document.getElementById('featureDependency').value = doc.Dependency;
+                                      }
+                                      console.log("RPDS: Doc exists = "+RPDSDocsExist);
+                                    });
+                                });
 
-                            console.log("RPDS: Doc exists = "+RPDSDocsExist);
+                        })
 
-                        });
+
 
 
                     },
@@ -105,6 +87,14 @@
                     // Called after the work item has been saved
                     onSaved: function (args) {
                         $(".events").append($("<div/>").text("onSaved - " + JSON.stringify(args)));
+                        getWorkItemFormService().then(function(service) {
+                            //service.setFieldValue("System.Title", "Title set from your group extension!");
+                          console.log("Business Value: "+document.getElementById('businessValue').value);
+                          console.log("Cost: "+document.getElementById('cost').value);
+                          console.log("Effort: "+document.getElementById('effort').value);
+                          console.log("Risk: "+document.getElementById('minRisk').value+","+document.getElementById('expectedRisk').value+","+document.getElementById('maxRisk').value);
+                          console.log("Discount Rate: "+document.getElementById('discountRate').value);
+                        });
                     },
 
                     // Called when the work item is reset to its unmodified state (undo)
@@ -121,15 +111,14 @@
 
             VSS.notifyLoadSucceeded();
 
-            // register a handler for the 'Click me!' button.
+          // register a handler for the 'Click me!' button.
             $("#clickme").click(function() {
 
-                 getWorkItemFormService().then(function(service) {
 
-                     //service.setFieldValue("System.Title", "Title set from your group extension!");
-                     alert("Testing Codename: "+version);
 
-                });
+
+
+
 
 
             });
@@ -137,27 +126,8 @@
             // Get work item form service
 
 
-            $("#setSettingValue").click(function() {
-              //alert("Testing Codename: "+version);
-              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
-                  // Set value in user scope
-                  dataService.setValue("settingValue", settingValueCombo.getText()).then(function(value) {
-                       alert("RPDS: set settingValue to " + value);
-                  });
-               });
-            });
 
-            $("#getSettingValue").click(function() {
-              //alert("Testing Codename: "+version);
-              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
-                    // Get value in user scope
-                    dataService.getValue("settingValue").then(function(value) {
-                        alert("RPDS: saved settingValue as " + value);
-                    });
-              });
-            });
-
-            $("#setDocumentValue").click(function() {
+            $("#saveSetting").click(function() {
               // Get data service
               VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
 
@@ -166,7 +136,14 @@
                         // Get document first
                         dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
                             // Update the document
-                            doc.Value = documentValueCombo.getText();
+                            doc.BusinessValue = document.getElementById('businessValue').value;
+                            doc.Cost = document.getElementById('cost').value;
+                            doc.Effort = document.getElementById('effort').value;
+                            doc.Risk.Min = document.getElementById('minRisk').value;
+                            doc.Risk.Expected = document.getElementById('expectedRisk').value;
+                            doc.Risk.Max = document.getElementById('maxRisk').value;
+                            doc.DiscountRate = document.getElementById('discountRate').value;
+                            doc.Dependency = document.getElementById('featureDependency').value;
                             dataService.updateDocument(RPDSDocsName, doc).then(function(d) {
                                 // Check the new version
                                 console.log("Doc version: " + d.__etag);
@@ -178,8 +155,16 @@
                     // Prepare document first
                     var newDoc = {
                       id: workItemID,
-                      AlgorithmName: "TBA",
-                      Value: documentValueCombo.getText()
+                      BusinessValue: document.getElementById('businessValue').value,
+                      Cost: document.getElementById('cost').value,
+                      Effort: document.getElementById('effort').value,
+                      Risk: {
+                        Min : document.getElementById('minRisk').value,
+                        Expected : document.getElementById('expectedRisk').value,
+                        Max : document.getElementById('maxRisk').value
+                      },
+                      DiscountRate: document.getElementById('discountRate').value,
+                      Dependency: document.getElementById('featureDependency').value
                     };
 
                     dataService.createDocument(RPDSDocsName, newDoc).then(function(doc) {
@@ -187,31 +172,28 @@
                         console.log("RPDS: Created Doc ID =" + doc.id);
                     });
 
+                     RPDSDocsExist = true;
+
                   }
 
+                  alert("Save Successfully");
 
               });
 
             });
 
-            $("#getDocumentValue").click(function() {
-              // Get work item form service
-              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
-                  // Get document by id
-                  dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
-                      // Assuming document has a property named foo
-                      console.log("RPDS: Obtained Value = " + doc.Value);
-                  });
-              });
-            });
-
-            $("#deleteDocumentValue").click(function() {
+            $("#clearSetting").click(function() {
               // Get work item form service
               // Get data service
                VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
                    dataService.deleteDocument(RPDSDocsName, workItemID).then(function() {
                        console.log("RPDS: Doc deleted");
                    });
+
+                   RPDSDocsExist = false;
+
+                   alert("Setting has been cleared");
+
                });
             });
 
@@ -224,13 +206,99 @@
     <div id="settingValue-combo-container"/>
     <div id="documentValue-combo-container"/>
 
-    <button type="button" id="getSettingValue">Get Example Setting Value</button><br/>
-    <button type="button" id="setSettingValue">Set Example Setting Value</button><br/>
-    <button type="button" id="clickme">Debuging Info</button><br/>
+    <div class="control">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Business Value: (Min,Expected,Max)</label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+            <input type="text" id="businessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+          </div>
+      </div>
+    </div>
 
-    <button type="button" id="getDocumentValue">Get Example Documents Value</button><br/>
-    <button type="button" id="setDocumentValue">Set Example Documents Value</button><br/>
-    <button type="button" id="deleteDocumentValue">Delete Example Documents Value</button><br/>
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Implementation Cost: (Min,Expected,Max)</label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+        <input type="text" id="cost" autocomplete="off" maxlength="255" aria-invalid="true">
+        </div>
+      </div>
+    </div>
+
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Effort (Hrs/Week): (Min,Expected,Max)</label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+        <input type="text" id="effort" autocomplete="off" maxlength="255" aria-invalid="true">
+      </div>
+      </div>
+    </div>
+
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Risk: (Min,Expected,Max)</label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+
+        <div class="wrap">
+        <select id="minRisk">
+        <option value="1">Very Low</option>
+        <option value="2">Low</option>
+        <option value="3">Medium</option>
+        <option value="4">High</option>
+        <option value="5">Very High</option>
+        </select>
+        <select id="expectedRisk">
+        <option value="1">Very Low</option>
+        <option value="2">Low</option>
+        <option value="3">Medium</option>
+        <option value="4">High</option>
+        <option value="5">Very High</option>
+        </select>
+        <select id="maxRisk">
+        <option value="1">Very Low</option>
+        <option value="2">Low</option>
+        <option value="3">Medium</option>
+        <option value="4">High</option>
+        <option value="5">Very High</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Discount Rate: (Min,Expected,Max)</label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+          <input type="text" id="discountRate" autocomplete="off" maxlength="255" aria-invalid="true">
+      </div>
+      </div>
+    </div>
+
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Dependency (Sequence of Feature Numbers): </label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+          <input type="text" id="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
+      </div>
+      </div>
+    </div>
+
+    <button type="button" id="saveSetting">Save Setting</button><br/>
+    <button type="button" id="clearSetting">Clear Setting</button><br/>
 
 </body>
 
