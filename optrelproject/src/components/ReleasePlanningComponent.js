@@ -72,11 +72,7 @@ var ReleasePlanningComponent = (function (_super) {
     };
     ReleasePlanningComponent.prototype._onGenerateReleasePlanClick = function (ev) {
         this._setState(true, {});
-        setTimeout(console.log("hola"), 5000);
-        console.log("Executing the algorithm");
-        console.log("State:" + this.state.algorithm);
         var algorithmService = inversify_config_1.default.getNamed(identifiers_1.default.IReleasePlanningAlgorithm, this.state.algorithm);
-        console.log("Algorithm Service type: " + algorithmService.getReleasePlanType());
         var config = {
             featureNumber: 5,
             discountValue: 50,

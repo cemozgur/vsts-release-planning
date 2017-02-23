@@ -1,5 +1,7 @@
 #VSTS - Release Planning plug-in
 
+Testing branch
+
 #Introduction
 This project will extend VSTS platform in order to generate a Release Plan.
 
