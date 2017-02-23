@@ -1,22 +1,22 @@
 const path = require("path");
-
 const gulp = require('gulp');
 const template = require('gulp-template');
 const webpack = require('gulp-webpack');
 const rename = require('gulp-rename');
-const ts = require("gulp-typescript");//https://www.npmjs.com/package/gulp-typescript
+//https://www.npmjs.com/package/gulp-typescript
+const ts = require("gulp-typescript");
 const yargs = require("yargs");
 
-const browserSync = require('browser-sync');
-const jasmineBrowser = require('gulp-jasmine-browser');
- 
+var exec = require('child_process').exec;
 
+/**
+ * VSTS values for configuration
+ */
 const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
 const vstsUser = "ytachi0026";
 const vstsPublisher = "ytaloborjamori";
 const optRelId="vsts-extensions-optrel";
 
-var exec = require('child_process').exec;
 
 const tsProject = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
@@ -91,12 +91,6 @@ gulp.task('build', () => {
     return tsResult.js.pipe(gulp.dest('src'));
 });
 
-
-gulp.task('watch', ['build'], function () {
-    return gulp.watch('src/**/*.ts', ['build']);
-});
-
-
 gulp.task('copy', ['build'], () => {
     if (isBundled) {
         gulp.src('node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js')
@@ -119,35 +113,6 @@ gulp.task('webpack', ['copy'], () => {
         return true;
     }
 });
-
-
-
-
-gulp.task('webpacktest', ['copy'], () => {
-    if (isBundled) {
-        return gulp.src('./src/test/spec/greeter.spec.js')
-            .pipe(webpack(require('./webpack.test.config.js')))
-            .pipe(gulp.dest(contentFolder + "/scripts"));
-
-    } else {
-        return true;
-    }
-});
-
-
-
-
-
-
-gulp.task('jasmine', ['webpacktest'], () => {
-  return gulp.src([contentFolder + "/scripts/spec.js"])
-    .pipe(jasmineBrowser.specRunner())
-    .pipe(jasmineBrowser.server());
-});
-
-
-
-
 
 gulp.task('tfxpack', ['webpack'], ()=> {
     const vsts_dist = distFolder+"/vsts_extension";

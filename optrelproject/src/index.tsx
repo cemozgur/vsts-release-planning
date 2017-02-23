@@ -14,7 +14,7 @@ export function init(containerId: string): void {
   let featureService = container.get<IFeatureService>(SERVICE_IDENTIFIER.IFeatureService);
 
   let vstsProjectId = VSS.getWebContext().project.id;
-  let description = "These features will be used to generate a release plan.";
+  let description = "These features will be used to generate a release plan. Testing AREA.";
 
 
   featureService.getAllFeatureByProjectResult(vstsProjectId).then(
