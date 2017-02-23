@@ -54,11 +54,15 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         }
 
         //Mutation Part
-        var fatherString = ["1,5,6,9,8,4,6,3"];
-        var motherString = ["4,5,6,8,7,8,9,3"];
+        var fatherString = "1,2,3,5,4";
+        var motherString = "2,5,4,1,3";
         var children = this.makeCrossover(fatherString,motherString);
         console.log(children[0]);
-        console.log(this.makeMutation(children[0]));
+        console.log(children[1]);
+        var mutatedChild = this.makeMutation(children[0]);
+        var mutatedChildII = this.makeMutation(children[1]);
+        console.log(mutatedChild);
+        console.log(mutatedChildII);
 
       }
     }
@@ -301,156 +305,80 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return wrapper;
   }
 
-    makeCrossover(father : any, mother : any){
-      this.bitBlockSize = Math.max(this.getBitBlockSize(father),this.getBitBlockSize(mother));
-      var decodedFather = this.decode(father);
-      var decodedMother = this.decode(mother);
+  makeCrossover(father : string, mother : string){
 
-      var result = [];
-      var crossSectionPosition = 0;
+    var result = [];
 
-      if((this.crossoverConfig.testing.enable == true)&&(this.crossoverConfig.testing.randomCrossSection == true)){
-        crossSectionPosition = Math.ceil(Math.random()*(this.bitBlockSize*this.featureGenerationSize));
-        if(crossSectionPosition < this.bitBlockSize){
-          crossSectionPosition = crossSectionPosition + this.bitBlockSize;
+    var fatherSet = father.split(",");
+    var motherSet = mother.split(",");
+    var crossOverLocation = Math.ceil(this.crossoverConfig.testing.crossSectionPosition * fatherSet.length);
+    while((crossOverLocation == 0)||(crossOverLocation == 5)){
+      crossOverLocation = Math.ceil(Math.random() * fatherSet.length);
+    }
+
+    //console.log(crossOverLocation);
+
+    var firstFatherHalf = fatherSet.slice(0,crossOverLocation);
+    var firstChild = fatherSet.slice(0,crossOverLocation);
+    var firstMotherHalf = motherSet.slice(0,crossOverLocation);
+    var secondChild = motherSet.slice(0,crossOverLocation);
+
+    while(firstChild.length < motherSet.length){
+      var pointer = Math.ceil(Math.random()*motherSet.length)-1;
+      //console.log("pointer"+pointer+":"+motherSet[pointer]);
+      if(this.contains(firstChild,motherSet[pointer])==false){
+        firstChild.push(motherSet[pointer]);
+      }
+    }
+
+    while(secondChild.length < fatherSet.length){
+      var pointer = Math.ceil(Math.random()*fatherSet.length)-1;
+      //console.log("pointer"+pointer+":"+fatherSet[pointer]);
+      if(this.contains(secondChild,fatherSet[pointer])==false){
+        secondChild.push(fatherSet[pointer]);
+      }
+    }
+
+    result.push(firstChild.toString());
+    result.push(secondChild.toString());
+
+    return result;
+
+  }
+
+  contains(target : string[] , key : string){
+    var result = false;
+    for(var i = 0 ; i < target.length ; i++){
+      if(target[i]===key){
+        //console.log(target[i]+""+key);
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  makeMutation(solution : string){
+    var solutionSet = solution.split(",");
+    var probability = this.mutationConfig.probability;
+    for(var i = 0 ; i < solutionSet.length ; i++){
+      var random = Math.random();
+      if(random < probability){
+
+        var target = solutionSet[i];
+
+        var swapIndex = Math.ceil(Math.random()*(solutionSet.length-1));
+        while(swapIndex == i){
+          swapIndex = Math.ceil(Math.random()*(solutionSet.length-1));
         }
+        var swapTarget = solutionSet[swapIndex];
+        console.log("Mutated: "+target+":"+i+"<>"+swapTarget+":"+swapIndex);
+        solutionSet[i] = swapTarget;
+        solutionSet[swapIndex] = target;
 
-      }else{
-        crossSectionPosition = Math.ceil(this.crossoverConfig.testing.crossSectionPosition*this.bitBlockSize);
       }
-
-      if(crossSectionPosition % this.bitBlockSize != 0){
-        crossSectionPosition = Math.abs((crossSectionPosition % this.bitBlockSize) - crossSectionPosition);
-      }
-
-      var firstChild = "";
-      var secondChild = "";
-      var temp = decodedFather;
-      firstChild = temp.substring(0,crossSectionPosition);
-      secondChild = temp.substring(crossSectionPosition,temp.length);
-      /*console.log("First Half");
-      console.log(temp);
-      console.log(firstChild);
-      console.log(secondChild);*/
-
-      var temp = decodedMother;
-      firstChild = firstChild + temp.substring(crossSectionPosition,temp.length);
-      secondChild = temp.substring(0,crossSectionPosition) + secondChild;
-      /*console.log("Other Half");
-      console.log(temp);
-      console.log(firstChild);
-      console.log(secondChild);*/
-      result.push(firstChild);
-      result.push(secondChild);
-
-      //console.log(result)
-      return result;
     }
-
-    getBitBlockSize(solution : any){
-      return parseInt(this.getMaxNumber(solution));
-    }
-
-    //Util Method
-    decToBin(number : number){
-      var result = parseInt(number.toString(),10).toString(2);
-      //console.log("Dec to Bin: "+result+" ("+number+")");
-      return result;
-    }
-
-    //Util Method
-    binToDec(number : number){
-      var result = parseInt(number.toString(),2).toString(10);
-      //console.log("Dec to Bin: "+result+" ("+number+")");
-      return result;
-    }
-
-    getMaxNumber(solution : any){
-      var temp = solution.toString().split(",");
-      for(var i = 0 ; i < temp.length; i++){
-        if(temp < parseInt(temp[i])){
-          temp = temp[i];
-        }
-      }
-      return temp;
-    }
-
-    //Util Method
-    preprend(target : string, repeatingString : string, time : number){
-      var result = "";
-      var temp = new Array(time+1).join(repeatingString);
-      result =  temp + target;
-      return result;
-    }
-
-    decode(solution : any){
-      var seperatedSolution = solution.toString().split(",");
-      var result = "";
-      for(var i = 0 ; i < seperatedSolution.length; i++){
-        var temp = this.decToBin(seperatedSolution[i]);
-        if(temp.toString().length < this.bitBlockSize){
-          result = result + this.preprend(temp.toString(), "0" ,this.bitBlockSize - temp.toString().length);
-        }else{
-          result = result + temp;
-        }
-      }
-      //console.log(":"+result);
-      return result;
-    }
-
-    private makeMutation(solution : any){
-      var result = [];
-      var mutated = false;
-
-        var temp = solution;
-        for(var j = 0 ; j < temp.length ; j++){
-          var random = Math.random();
-          if(random <= this.mutationConfig.probability){
-              mutated = true;
-              temp = this.flipBit(temp,j);
-          }
-        }
-        result.push(temp);
-
-      if(mutated == true){
-      //console.log(result);
-      //console.log("Mutated ");
-      }
-      return result;
-    }
-
-    //Util Method
-    flipBit(target : string, index : number) {
-      var result;
-      if(target.charAt(index)=="1"){
-        result = target.substr(0, index) + "0" + target.substr(index+1,target.length);
-      }else{
-        result = target.substr(0, index) + "1" + target.substr(index+1,target.length);
-      }
-      return result;
-    }
-
-    encodeSolution(solution : any){
-      //console.log(this.bitBlockSize);
-      var result = [];
-      for(var i = 0 ; i < solution.length ; i++){
-        var temp = [];
-        var lowerIndex = 0;
-        for(var j = 0 ; j <= solution[i].length ; j++){
-          if(j % this.bitBlockSize == 0){
-            if(j != 0){
-              /*console.log(lowerIndex+"-"+j);
-              console.log(solution[i].slice(lowerIndex, j));*/
-              temp.push(this.binToDec(solution[i].slice(lowerIndex, j)));
-              lowerIndex = j;
-            }
-          }
-        }
-        result.push(temp.toString());
-      }
-      //console.log(result);
-      return result;
-    }
+    return solutionSet.toString();
+  }
 
 }
 
