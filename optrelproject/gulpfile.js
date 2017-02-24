@@ -3,15 +3,20 @@ const gulp = require('gulp');
 const template = require('gulp-template');
 const webpack = require('gulp-webpack');
 const rename = require('gulp-rename');
+//https://www.npmjs.com/package/gulp-typescript
 const ts = require("gulp-typescript");
 const yargs = require("yargs");
 
+var exec = require('child_process').exec;
+
+/**
+ * VSTS values for configuration
+ */
 const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
 const vstsUser = "ytachi0026";
 const vstsPublisher = "ytaloborjamori";
 const optRelId="vsts-extensions-optrel";
 
-var exec = require('child_process').exec;
 
 const tsProject = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
@@ -20,7 +25,7 @@ const tsProject = ts.createProject('tsconfig.json', {
 var argv = yargs.string("publisher").argv;
 
 const publisherIdOverride = argv.publisher || "";
-const isBundled = argv.local ? false : true;
+const isBundled = argv.local ? false : true;    
 const distFolder = 'dist';
 const contentFolder = isBundled ? distFolder : '.';
 
@@ -85,7 +90,6 @@ gulp.task('build', () => {
 
     return tsResult.js.pipe(gulp.dest('src'));
 });
-
 
 gulp.task('copy', ['build'], () => {
     if (isBundled) {

@@ -4,12 +4,11 @@
   "description": "Release Planning extension for VSTS platform, using REACTjs",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "devserver": "./node_modules/.bin/webpack-dev-server --content-base dist",
     "packoptrel": "./node_modules/.bin/gulp",
-    "publishoptrel": "./node_modules/.bin/gulp publishoptrel",
     "installoptrel": "./node_modules/.bin/gulp tfxinstall",
-    "vstsdev": "./node_modules/.bin/gulp --local"
+    "publishoptrel": "./node_modules/.bin/gulp publishoptrel",
+
+    "test": "./node_modules/.bin/karma start"
   },
   "keywords": [
     "vsts",
@@ -19,20 +18,31 @@
   "author": "OptReal Team",
   "license": "MIT",
   "devDependencies": {
+    "@types/jasmine": "^2.5.43",
     "@types/jquery": "^2.0.40",
     "@types/q": "0.0.32",
     "@types/react": "^0.14.48",
     "@types/react-dom": "^0.14.18",
     "gulp": "^3.9.1",
+    "gulp-jasmine-browser": "^1.7.1",
     "gulp-rename": "^1.2.2",
+    "gulp-shell": "^0.5.2",
     "gulp-template": "^4.0.0",
     "gulp-typescript": "^3.1.3",
     "gulp-webpack": "^1.5.0",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-webpack": "^2.0.2",
+    "phantomjs-prebuilt": "^2.1.14",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
     "source-map-support": "^0.4.11",
     "tfx-cli": "^0.3.45",
+    "ts-loader": "^2.0.1",
     "typescript": "^2.0.10",
     "webpack": "^1.13.3",
-    "webpack-dev-server": "^1.16.3",
     "yargs": "^6.5.0"
   },
   "dependencies": {

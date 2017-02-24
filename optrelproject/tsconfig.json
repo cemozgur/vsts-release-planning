@@ -4,10 +4,10 @@
         "moduleResolution": "node",
         "target": "es5",
         "lib": ["es6", "dom"],
-        "types": ["reflect-metadata"],
+        "types": ["reflect-metadata","jasmine","vss-web-extension-sdk"],
         "noImplicitAny": false,
         "jsx": "react",
-        "sourceMap": false,
+        "sourceMap": true,
         "baseUrl": ".",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true

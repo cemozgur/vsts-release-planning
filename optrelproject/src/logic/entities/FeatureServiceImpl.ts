@@ -1,11 +1,8 @@
-/// <reference types="vss-web-extension-sdk" />
-
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import * as Q from 'q';
 import { getClient, WorkItemTrackingHttpClient } from 'TFS/WorkItemTracking/RestClient';
 import { WorkItem, WorkItemFieldReference } from 'TFS/WorkItemTracking/Contracts';
-import { ignoreCaseComparer } from 'VSS/Utils/String';
 
 import { IFeatureService} from "../interfaces/IFeatureService";
 

@@ -1,5 +1,7 @@
 #VSTS - Release Planning plug-in
 
+Testing branch
+
 #Introduction
 This project will extend VSTS platform in order to generate a Release Plan.
 
@@ -23,6 +25,14 @@ tfx extension publish --publisher ytaloborjamori --vsix ytaloborjamori.vsts-exte
 tfx extension install --publisher ytaloborjamori --extension-id vsts-extensions-optrel --accounts ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq
 
 
+#Testing
+1. First, git clone the repository, and change to the branch optreltesting
+2. On the root folder (optrel), run: npm install
+3. The folder that contains the demo test are on folder: /test 
+4. To run the test on our beloved Microsoft project, on the terminal, run: npm run test
+
+Highlights: 
+Karma wont open any browser (Chrome, Mozilla), as it will work with a headless browser called Phantom.
 
 #Learning
 1. Webpack
