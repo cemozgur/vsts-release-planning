@@ -1,0 +1,10 @@
+.ifm-section {
+    margin-bottom: 20px;
+    display:inline-block;
+}
+
+.ifm-section .release-input {
+    margin-right: 18px;
+    width: 30%;
+    display: inline-block;
+} 

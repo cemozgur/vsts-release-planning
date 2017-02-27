@@ -1,18 +1,12 @@
-import { ReleasePlan } from "../../model/ReleasePlan";
-import { IReleasePlanResult } from "../../model/IReleasePlanResult";
-import { IFeatureReleasePlan } from "../../model/IFeatureReleasePlan";
+import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 
 interface IReleasePlanningAlgorithm {
 
     getReleasePlanType(): string;//indicates the algorithm to use
 
-    getOptimalReleasePlan();//ouput
-
+    getFeatureData(featuresVSTS: WorkItem[], featuresDeailtDocument : any[]): boolean;
     testDataGeneration(config: any);
-
-    getPromiseTest(): IPromise<IReleasePlanResult>;//to be deleted
-
-    getFeatureData(featuresVSTS: any[], featuresDeailtDocument : any[]);
+    getOptimalReleasePlan(config: any): any;
 
 }
 

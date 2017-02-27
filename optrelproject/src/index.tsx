@@ -18,8 +18,6 @@ export function init(containerId: string): void {
 
   featureService.getAllFeatureByProjectResult(vstsProjectId).then(
     (features: IWorkItemSearchResult) => {
-      console.log("VSTS Features");
-      console.log(features);
       ReactDOM.render(<ReleasePlanningComponent description={description} features={features} />, document.getElementById(containerId));
     });
 

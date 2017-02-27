@@ -35,13 +35,14 @@ var FeatureServiceImpl = (function () {
         console.log(this.httpClient);
         console.log(vstsProjectId);
         if (wiqlResult.wiql) {
-            return this.httpClient.queryByWiql({ query: wiqlResult.wiql }, vstsProjectId).then(function (queryResult) {
+            return this.httpClient.queryByWiql({ query: wiqlResult.wiql }, VSS.getWebContext().project.id).then(function (queryResult) {
                 // We got the work item ids, now get the field values
                 if (queryResult.workItems.length > 0) {
                     return _this.httpClient.getWorkItems(queryResult.workItems.map(function (wi) { return wi.id; }), queryResult.columns.map(function (wiRef) { return wiRef.referenceName; })).then(function (workItems) {
                         return {
                             queryResult: {
-                                columns: queryResult.columns, workItems: workItems
+                                columns: queryResult.columns,
+                                workItems: workItems
                             }
                         };
                     }, function (err) { return { error: err.message }; });

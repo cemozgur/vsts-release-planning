@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var inversify_1 = require("inversify");
 require("reflect-metadata");
-var Q = require("q");
 var IFMReleasePlanningAlgorithm = (function () {
     function IFMReleasePlanningAlgorithm() {
         this.ReleasePlan = {
@@ -17,35 +16,57 @@ var IFMReleasePlanningAlgorithm = (function () {
             numberOfSprint: 0, sprintDuration: 0
         };
     }
+    IFMReleasePlanningAlgorithm.prototype.getRandomValue = function (info) {
+        var order = Math.floor(Math.random() * 3) + 1;
+        if (order == 1) {
+            return info.Min;
+        }
+        else if (order == 2) {
+            return info.Expected;
+        }
+        else {
+            return info.Max;
+        }
+    };
+    IFMReleasePlanningAlgorithm.prototype.isValidReleaseInput = function (infoObject) {
+        if (!infoObject) {
+            return false;
+        }
+        return infoObject.hasOwnProperty("Min") && infoObject.hasOwnProperty("Expected") && infoObject.hasOwnProperty("Max");
+    };
     IFMReleasePlanningAlgorithm.prototype.getFeatureData = function (featuresVSTS, featuresDeailtDocument) {
+        var _this = this;
         var featuresReleasePlan = [];
+        var success = true;
         featuresVSTS.map(function (el) {
             var feature = {
                 id: el.id,
                 feature: el.fields["System.Title"],
                 state: el.fields["System.State"],
                 order: "1",
-                timeCriticality: Math.random() * 5 + 1,
                 selected: false
             };
             var detailInfo = featuresDeailtDocument.filter(function (el) {
                 return (el.id == feature.id);
             });
             if (detailInfo.length > 0) {
-                feature.bussinesValue = detailInfo[0].BusinessValue;
-                feature.effort = detailInfo[0].Effort;
-                feature.cost = detailInfo[0].Cost;
-                feature.dependency = detailInfo[0].Dependency;
-                feature.risk = detailInfo[0].Risk;
+                _this.isValidReleaseInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = _this.getRandomValue(detailInfo[0].BusinessValue) : success = false;
+                _this.isValidReleaseInput(detailInfo[0].Effort) ? feature.effort = _this.getRandomValue(detailInfo[0].Effort) : success = false;
+                _this.isValidReleaseInput(detailInfo[0].Cost) ? feature.cost = _this.getRandomValue(detailInfo[0].Cost) : success = false;
+                _this.isValidReleaseInput(detailInfo[0].Risk) ? feature.risk = _this.getRandomValue(detailInfo[0].Risk) : success = false;
+                _this.isValidReleaseInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = _this.getRandomValue(detailInfo[0].timeCriticality) : success = false;
+                detailInfo[0].Dependency ? feature.dependency = detailInfo[0].Dependency : feature.dependency = "0";
+            }
+            else {
+                success = false;
             }
             featuresReleasePlan.push(feature);
         });
-        console.log("result 1");
+        console.log("VSTS features with detail");
         console.log(featuresReleasePlan);
-        return featuresReleasePlan;
-    };
-    IFMReleasePlanningAlgorithm.prototype.getPromiseTest = function () {
-        return Q({ result: "I am sexy and easy." });
+        //this.ReleasePlan.featureList = featuresReleasePlan;
+        //return success;
+        return true;
     };
     IFMReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
         return "IFM Algortihm";
@@ -56,6 +77,7 @@ var IFMReleasePlanningAlgorithm = (function () {
         this.ReleasePlan.totalRequiredEffort = config.totalRequiredEffort;
         this.ReleasePlan.numberOfSprint = config.numberOfSprint;
         this.ReleasePlan.sprintDuration = config.sprintDuration;
+        //cover
         for (var i = 0; i <= config.featureNumber - 1; i++) {
             var feature = {
                 id: i + 1,
@@ -73,7 +95,7 @@ var IFMReleasePlanningAlgorithm = (function () {
         this.ReleasePlan.featureList[1].feature.dependency = "1";
         this.ReleasePlan.featureList[4].feature.dependency = "2,3";
     };
-    IFMReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
+    IFMReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function (config) {
         var ResultReleasePlan = {
             discountValue: 0, cumulatedDiscountValue: 0,
             featureList: [], teamCapability: 0, totalRequiredEffort: 0,
@@ -129,7 +151,7 @@ var IFMReleasePlanningAlgorithm = (function () {
         ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
         ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
         ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
-        return { result: ResultReleasePlan };
+        return ResultReleasePlan;
     };
     IFMReleasePlanningAlgorithm.prototype.getTotalRequiredEffort = function () {
         var i;

@@ -49,6 +49,6 @@
     "inversify": "^3.0.0",
     "office-ui-fabric-react": "^1.7.0",
     "reflect-metadata": "^0.1.9",
-    "vss-web-extension-sdk": "^2.109.1"
+    "vss-web-extension-sdk": "^2.109.0"
   }
 }

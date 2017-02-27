@@ -44,7 +44,7 @@ class FeatureServiceImpl implements IFeatureService {
         };
     }
 
-    getAllFeatureByProjectResult(vstsProjectId: string): IPromise<IWorkItemSearchResult> {
+    public getAllFeatureByProjectResult(vstsProjectId: string): IPromise<IWorkItemSearchResult> {
         let wiqlResult = this.getQueryAllFeature();
 
         console.log("vss-web-extension-sdk");
@@ -52,25 +52,25 @@ class FeatureServiceImpl implements IFeatureService {
         console.log(vstsProjectId);
 
         if (wiqlResult.wiql) {
-            return this.httpClient.queryByWiql({ query: wiqlResult.wiql }, vstsProjectId).then(
-                (queryResult) => {
+            return this.httpClient.queryByWiql({ query: wiqlResult.wiql }, VSS.getWebContext().project.id).then(
+                queryResult => {
                     // We got the work item ids, now get the field values
                     if (queryResult.workItems.length > 0) {
                         return this.httpClient.getWorkItems(queryResult.workItems.map(wi => wi.id), queryResult.columns.map(wiRef => wiRef.referenceName)).then(
                             workItems => {
                                 return <IWorkItemSearchResult>{
                                     queryResult: {
-                                        columns: queryResult.columns, workItems: workItems
-
+                                        columns: queryResult.columns,
+                                        workItems: workItems
                                     }
                                 };
                             },
-                            err => { return <IWorkItemSearchResult>{ error: err.message };});
+                            err => { return <IWorkItemSearchResult>{ error: err.message }; });
                     } else {
                         return <IWorkItemSearchResult>{ queryResult: { columns: queryResult.columns, workItems: [] } };
                     }
                 },
-                (err) => { return <IWorkItemSearchResult>{ error: err.message }; }
+                err => { return <IWorkItemSearchResult>{ error: err.message }; }
 
             );
         }

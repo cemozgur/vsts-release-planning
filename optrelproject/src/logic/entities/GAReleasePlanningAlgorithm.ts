@@ -1,10 +1,6 @@
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
-import { ReleasePlan } from "../../model/ReleasePlan";
-import { IReleasePlanResult } from "../../model/IReleasePlanResult";
-import { IFeatureReleasePlan } from "../../model/IFeatureReleasePlan";
-
 
 
 import * as Q from 'q';
@@ -20,19 +16,17 @@ class GAReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
     testDataGeneration(config: any) {
     }
-    getOptimalReleasePlan(): IPromise<IReleasePlanResult> {
-        return Q(<IReleasePlanResult>{ result: "Implementing" });
+
+    getOptimalReleasePlan(config: any) {
+        return { result: "Implementing" };
 
     }
 
-    getPromiseTest(): IPromise<IReleasePlanResult> {
-        return Q(<IReleasePlanResult>{ result: "I am sexy and easy." });
 
+    getFeatureData(featuresVSTS: any[], featuresDeailtDocument: any[]) : boolean{
+        return true;
     }
 
-    getFeatureData(featuresVSTS: any[]): IPromise<IFeatureReleasePlan> {
-        return Q(<IFeatureReleasePlan>{ error: "I am sexy and easy." });
-    }
 }
 
 export default GAReleasePlanningAlgorithm;

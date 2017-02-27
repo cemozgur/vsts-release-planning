@@ -12,6 +12,6 @@ var FeatureServiceImpl_1 = require("../entities/FeatureServiceImpl");
 var container = new inversify_1.Container();
 container.bind(identifiers_1.default.IReleasePlanningAlgorithm).to(GAReleasePlanningAlgorithm_1.default).whenTargetNamed(algorithmType_1.default.GA);
 container.bind(identifiers_1.default.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm_1.default).whenTargetNamed(algorithmType_1.default.IFM);
-container.bind(identifiers_1.default.IFeatureService).to(FeatureServiceImpl_1.default).inSingletonScope();
+container.bind(identifiers_1.default.IFeatureService).to(FeatureServiceImpl_1.default);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = container;

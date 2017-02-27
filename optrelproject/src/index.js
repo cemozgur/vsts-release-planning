@@ -9,8 +9,6 @@ function init(containerId) {
     var vstsProjectId = VSS.getWebContext().project.id;
     var description = "These features will be used to generate a release plan. Testing AREA.";
     featureService.getAllFeatureByProjectResult(vstsProjectId).then(function (features) {
-        console.log("VSTS Features");
-        console.log(features);
         ReactDOM.render(React.createElement(ReleasePlanningComponent_1.ReleasePlanningComponent, { description: description, features: features }), document.getElementById(containerId));
     });
 }

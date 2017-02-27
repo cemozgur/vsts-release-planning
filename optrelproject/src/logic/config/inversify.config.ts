@@ -23,7 +23,7 @@ container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(GA
 
 container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.IFM);
 
-container.bind<IFeatureService>(TYPES.IFeatureService).to(FeatureServiceImpl).inSingletonScope();
+container.bind<IFeatureService>(TYPES.IFeatureService).to(FeatureServiceImpl);
 
 
 

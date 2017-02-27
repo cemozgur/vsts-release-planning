@@ -45,6 +45,8 @@ if (isBundled) {
         });
 
         VSS.require(["scripts/Bundle"], function (Bundle) {
+            console.log("Project ID VSTS");
+            console.log(VSS.getWebContext().project.id);
             Bundle.init("work-item-search-view");
         });    
     `;
