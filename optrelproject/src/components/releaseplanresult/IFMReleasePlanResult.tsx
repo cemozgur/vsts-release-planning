@@ -1,13 +1,13 @@
 import * as React from 'react';
 
-import { DetailsList, CheckboxVisibility } from '../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
-import { Label } from '../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
+import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
+import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
 
-export interface HeaderProps { result: any; }
+export interface IFMReleasePlanResultProps { result: any; }
 
 
-export class IFMReleasePlan extends React.Component<HeaderProps, undefined> {
+export class IFMReleasePlanResult extends React.Component<IFMReleasePlanResultProps, undefined> {
 
     public render() {
         let featureOrder: JSX.Element = null;

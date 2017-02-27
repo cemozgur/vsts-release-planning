@@ -7,7 +7,7 @@
 </head>
 
 <body style="overflow:auto;">
-    <script src="node_modules/vss-web-extension-sdk/lib/VSS.SDK.js"></script>
+    <script src="scripts/VSS.SDK.min.js"></script>
     <script>
         var workItemID;
         var RPDSDocsExist = false;
@@ -36,6 +36,14 @@
                     },
 
                     // Called when a new work item is being loaded in the UI
+                    /***
+                     *  TODO: ytalo focus on this onLoaded
+                     * 
+                     * 
+                     * 
+                     * 
+                     * 
+                     * */
                     onLoaded: function (args) {
 
                         getWorkItemFormService().then(function(service) {
@@ -49,7 +57,7 @@
 
                                 // Get data service
                                 VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
-                                    // Get document by id
+                                    // Get document by Work Item id
                                     console.log(workItemID);
                                     var id = 0;
                                     dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
@@ -64,7 +72,7 @@
                                         document.getElementById('minRisk').value = doc.Risk.Min;
                                         document.getElementById('expectedRisk').value = doc.Risk.Expected;
                                         document.getElementById('maxRisk').value = doc.Risk.Max;
-                                        document.getElementById('discountRate').value = doc.DiscountRate;
+                                        //document.getElementById('discountRate').value = doc.DiscountRate;
                                         document.getElementById('featureDependency').value = doc.Dependency;
                                       }
                                       console.log("RPDS: Doc exists = "+RPDSDocsExist);
@@ -93,7 +101,7 @@
                           console.log("Cost: "+document.getElementById('cost').value);
                           console.log("Effort: "+document.getElementById('effort').value);
                           console.log("Risk: "+document.getElementById('minRisk').value+","+document.getElementById('expectedRisk').value+","+document.getElementById('maxRisk').value);
-                          console.log("Discount Rate: "+document.getElementById('discountRate').value);
+                          //console.log("Discount Rate: "+document.getElementById('discountRate').value);
                         });
                     },
 
@@ -142,7 +150,7 @@
                             doc.Risk.Min = document.getElementById('minRisk').value;
                             doc.Risk.Expected = document.getElementById('expectedRisk').value;
                             doc.Risk.Max = document.getElementById('maxRisk').value;
-                            doc.DiscountRate = document.getElementById('discountRate').value;
+                            //doc.DiscountRate = document.getElementById('discountRate').value;
                             doc.Dependency = document.getElementById('featureDependency').value;
                             dataService.updateDocument(RPDSDocsName, doc).then(function(d) {
                                 // Check the new version
@@ -163,7 +171,7 @@
                         Expected : document.getElementById('expectedRisk').value,
                         Max : document.getElementById('maxRisk').value
                       },
-                      DiscountRate: document.getElementById('discountRate').value,
+                      //DiscountRate: document.getElementById('discountRate').value,
                       Dependency: document.getElementById('featureDependency').value
                     };
 
@@ -272,7 +280,7 @@
         </select>
       </div>
     </div>
-
+<!--
     <div class="control" style="padding-top: 3px">
       <div class="workitemlabel label-control">
         <label class="workitemcontrol-label">Discount Rate: (Min,Expected,Max)</label>
@@ -284,7 +292,7 @@
       </div>
       </div>
     </div>
-
+-->
     <div class="control" style="padding-top: 3px">
       <div class="workitemlabel label-control">
         <label class="workitemcontrol-label">Dependency (Sequence of Feature Numbers): </label>

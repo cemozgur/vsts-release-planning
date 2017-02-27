@@ -7,16 +7,45 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var inversify_1 = require("inversify");
 require("reflect-metadata");
+var Q = require("q");
 var IFMReleasePlanningAlgorithm = (function () {
     function IFMReleasePlanningAlgorithm() {
-        this.ReleasePlan = { discountValue: 0,
+        this.ReleasePlan = {
+            discountValue: 0,
             cumulatedDiscountValue: 0, featureList: [],
             teamCapability: 0, totalRequiredEffort: 0,
-            numberOfSprint: 0, sprintDuration: 0 };
+            numberOfSprint: 0, sprintDuration: 0
+        };
     }
-    IFMReleasePlanningAlgorithm.prototype.getFeatureData = function () {
-        //here we are going to call the VSTS sdk web extension
-        this.ReleasePlan.featureList = [];
+    IFMReleasePlanningAlgorithm.prototype.getFeatureData = function (featuresVSTS, featuresDeailtDocument) {
+        var featuresReleasePlan = [];
+        featuresVSTS.map(function (el) {
+            var feature = {
+                id: el.id,
+                feature: el.fields["System.Title"],
+                state: el.fields["System.State"],
+                order: "1",
+                timeCriticality: Math.random() * 5 + 1,
+                selected: false
+            };
+            var detailInfo = featuresDeailtDocument.filter(function (el) {
+                return (el.id == feature.id);
+            });
+            if (detailInfo.length > 0) {
+                feature.bussinesValue = detailInfo[0].BusinessValue;
+                feature.effort = detailInfo[0].Effort;
+                feature.cost = detailInfo[0].Cost;
+                feature.dependency = detailInfo[0].Dependency;
+                feature.risk = detailInfo[0].Risk;
+            }
+            featuresReleasePlan.push(feature);
+        });
+        console.log("result 1");
+        console.log(featuresReleasePlan);
+        return featuresReleasePlan;
+    };
+    IFMReleasePlanningAlgorithm.prototype.getPromiseTest = function () {
+        return Q({ result: "I am sexy and easy." });
     };
     IFMReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
         return "IFM Algortihm";
@@ -45,9 +74,11 @@ var IFMReleasePlanningAlgorithm = (function () {
         this.ReleasePlan.featureList[4].feature.dependency = "2,3";
     };
     IFMReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
-        var ResultReleasePlan = { discountValue: 0, cumulatedDiscountValue: 0,
+        var ResultReleasePlan = {
+            discountValue: 0, cumulatedDiscountValue: 0,
             featureList: [], teamCapability: 0, totalRequiredEffort: 0,
-            numberOfSprint: 0, sprintDuration: 0 }; //this is only if we dont require the value again.
+            numberOfSprint: 0, sprintDuration: 0
+        }; //this is only if we dont require the value again.
         this.getTotalRequiredEffort();
         this.calculateCumulatedDiscountValue();
         this.calculateNumberOfRequiredSprint();
@@ -98,7 +129,7 @@ var IFMReleasePlanningAlgorithm = (function () {
         ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
         ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
         ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
-        return ResultReleasePlan;
+        return { result: ResultReleasePlan };
     };
     IFMReleasePlanningAlgorithm.prototype.getTotalRequiredEffort = function () {
         var i;

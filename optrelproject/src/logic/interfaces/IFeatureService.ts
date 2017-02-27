@@ -1,5 +1,5 @@
-import {IWiqlResult} from "../../model/IWiqlResult";
-import {IWorkItemSearchResult} from "../../model/IWorkItemSearchResult";
+import { IWiqlResult } from "../../model/IWiqlResult";
+import { IWorkItemSearchResult } from "../../model/IWorkItemSearchResult";
 
 export interface IFeatureService {
     getAllFeatureByProjectResult(vstsProjectId: string): IPromise<IWorkItemSearchResult>;

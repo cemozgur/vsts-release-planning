@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var inversify_1 = require("inversify");
 require("reflect-metadata");
+var Q = require("q");
 var GAReleasePlanningAlgorithm = (function () {
     function GAReleasePlanningAlgorithm() {
     }
@@ -16,7 +17,13 @@ var GAReleasePlanningAlgorithm = (function () {
     GAReleasePlanningAlgorithm.prototype.testDataGeneration = function (config) {
     };
     GAReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
-        return { result: "Implementing" };
+        return Q({ result: "Implementing" });
+    };
+    GAReleasePlanningAlgorithm.prototype.getPromiseTest = function () {
+        return Q({ result: "I am sexy and easy." });
+    };
+    GAReleasePlanningAlgorithm.prototype.getFeatureData = function (featuresVSTS) {
+        return Q({ error: "I am sexy and easy." });
     };
     return GAReleasePlanningAlgorithm;
 }());

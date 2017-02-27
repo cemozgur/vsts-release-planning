@@ -5,14 +5,14 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var React = require("react");
-var DetailsList_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList");
-var Label_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label");
-var IFMReleasePlan = (function (_super) {
-    __extends(IFMReleasePlan, _super);
-    function IFMReleasePlan() {
+var DetailsList_1 = require("../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList");
+var Label_1 = require("../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label");
+var IFMReleasePlanResult = (function (_super) {
+    __extends(IFMReleasePlanResult, _super);
+    function IFMReleasePlanResult() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    IFMReleasePlan.prototype.render = function () {
+    IFMReleasePlanResult.prototype.render = function () {
         var featureOrder = null;
         var releasePlan = this.props.result;
         featureOrder = this._getReleasePlanFeatures(releasePlan);
@@ -39,7 +39,7 @@ var IFMReleasePlan = (function (_super) {
                     releasePlan.totalRequiredEffort)),
             featureOrder);
     };
-    IFMReleasePlan.prototype._getReleasePlanFeatures = function (releasePlan) {
+    IFMReleasePlanResult.prototype._getReleasePlanFeatures = function (releasePlan) {
         var _minWidths = [50, 50, 400, 100, 100, 100, 100, 100];
         var _maxWidths = [50, 50, 500, 100, 100, 100, 100, 100];
         var columnsReleasePlan = [
@@ -89,6 +89,6 @@ var IFMReleasePlan = (function (_super) {
         var items = releasePlan.featureList.map(function (wi) { return wi; });
         return React.createElement(DetailsList_1.DetailsList, { columns: columns, items: items, checkboxVisibility: DetailsList_1.CheckboxVisibility.hidden, setKey: 'set' });
     };
-    return IFMReleasePlan;
+    return IFMReleasePlanResult;
 }(React.Component));
-exports.IFMReleasePlan = IFMReleasePlan;
+exports.IFMReleasePlanResult = IFMReleasePlanResult;

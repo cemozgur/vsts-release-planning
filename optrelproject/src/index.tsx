@@ -16,7 +16,6 @@ export function init(containerId: string): void {
   let vstsProjectId = VSS.getWebContext().project.id;
   let description = "These features will be used to generate a release plan. Testing AREA.";
 
-
   featureService.getAllFeatureByProjectResult(vstsProjectId).then(
     (features: IWorkItemSearchResult) => {
       console.log("VSTS Features");
