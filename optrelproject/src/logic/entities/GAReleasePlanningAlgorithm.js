@@ -21,6 +21,9 @@ var GAReleasePlanningAlgorithm = (function () {
     GAReleasePlanningAlgorithm.prototype.getFeatureData = function (featuresVSTS, featuresDeailtDocument) {
         return true;
     };
+    GAReleasePlanningAlgorithm.prototype.validateConfigAlgorithm = function (config) {
+        return true;
+    };
     return GAReleasePlanningAlgorithm;
 }());
 GAReleasePlanningAlgorithm = __decorate([

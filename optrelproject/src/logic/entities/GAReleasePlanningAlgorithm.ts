@@ -27,6 +27,11 @@ class GAReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         return true;
     }
 
+        validateConfigAlgorithm(config: any): boolean{
+            return true;
+        }
+
+
 }
 
 export default GAReleasePlanningAlgorithm;

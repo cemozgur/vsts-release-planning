@@ -12,7 +12,6 @@ var Button_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/compon
 var Button_Props_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button.Props");
 var ChoiceGroup_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/ChoiceGroup");
 var Label_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label");
-var TextField_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/TextField/TextField");
 var Header_1 = require("./common/Header");
 var ReleasePlanResult_1 = require("./releaseplanresult/ReleasePlanResult");
 var FeatureList_1 = require("./features/FeatureList");
@@ -21,6 +20,10 @@ var ReleasePlanningComponent = (function (_super) {
     function ReleasePlanningComponent(props) {
         var _this = _super.call(this, props) || this;
         _this.RPDSDocsName = "RPDS";
+        _this.discountValue = "discountValue";
+        _this.teamCapability = "teamCapability";
+        _this.numberOfSprint = "numberOfSprint";
+        _this.sprintDuration = "sprintDuration";
         _this.state = _this._getDefaultState();
         return _this;
     }
@@ -99,33 +102,6 @@ var ReleasePlanningComponent = (function (_super) {
         releasePlanGenerationState.error = null;
         this.setState({ releasePlanGeneration: releasePlanGenerationState });
     };
-    ReleasePlanningComponent.prototype._onGenerateReleasePlanClick = function (ev) {
-        var _this = this;
-        this._setState(true, null);
-        VSS.getService(VSS.ServiceIds.ExtensionData).then(function (dataService) {
-            dataService.getDocuments(_this.RPDSDocsName).then(function (featuresDeailtDocument) {
-                var algorithmService = inversify_config_1.default.getNamed(identifiers_1.default.IReleasePlanningAlgorithm, _this.state.releasePlanGeneration.algorithmType);
-                var featuresVSTS = _this.props.features.queryResult.workItems;
-                var algorithmConfig = _this.state.releasePlanGeneration.config;
-                if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
-                    var config = {
-                        featureNumber: 5,
-                        discountValue: 50,
-                        teamCapability: 100,
-                        totalRequiredEffort: 100,
-                        numberOfSprint: 55,
-                        sprintDuration: 2
-                    };
-                    algorithmService.testDataGeneration(config);
-                    var releasePlanResult = algorithmService.getOptimalReleasePlan(algorithmConfig);
-                    _this._setState(false, releasePlanResult);
-                }
-                else {
-                    _this._setStateError("The features information is not completed");
-                }
-            });
-        });
-    };
     ReleasePlanningComponent.prototype._getAlgorithmAlternatives = function () {
         return React.createElement("div", null,
             React.createElement(ChoiceGroup_1.ChoiceGroup, { options: [
@@ -141,16 +117,64 @@ var ReleasePlanningComponent = (function (_super) {
                 ], label: 'Select the release planning optimisation for your project.', onChange: this._onChange.bind(this), required: true, disabled: !this._canGenerateReleasePlan(this.state) }));
     };
     ReleasePlanningComponent.prototype._getIFMGenerationSection = function () {
-        return React.createElement("div", { className: "ifm-section" },
-            React.createElement(Label_1.Label, null, "Discount Rate"),
-            React.createElement(TextField_1.TextField, { placeholder: "(Min)", required: true, className: "release-input", onChanged: this._onDiscountValueMinChange.bind(this) }),
-            React.createElement(TextField_1.TextField, { placeholder: "(Expected)", required: true, className: "release-input", onChanged: this._onDiscountValueExpectedChange.bind(this) }),
-            React.createElement(TextField_1.TextField, { placeholder: "(Max)", required: true, className: "release-input", onChanged: this._onDiscountValueMaxChange.bind(this) }));
+        return React.createElement("div", null,
+            React.createElement("div", { className: "ifm-section" },
+                React.createElement(Label_1.Label, null, "Number of Sprint"),
+                React.createElement("input", { placeholder: "How many iterations for the project?", required: true, className: "release-input", type: "text", onChange: this._handleNumberOfSprintChange.bind(this) })),
+            React.createElement("div", { className: "ifm-section" },
+                React.createElement(Label_1.Label, null, "Sprint Duration"),
+                React.createElement("input", { placeholder: "How many weeks last each sprint?", required: true, className: "release-input", type: "text", onChange: this._handleSprintDurationChange.bind(this) })),
+            React.createElement("div", { className: "ifm-section" },
+                React.createElement(Label_1.Label, null, "Team Capability"),
+                React.createElement("input", { placeholder: "(Min) Available Hours", name: "Min", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) }),
+                React.createElement("input", { placeholder: "(Expected) Available Hours", name: "Expected", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) }),
+                React.createElement("input", { placeholder: "(Max) Available Hours", name: "Max", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) })),
+            React.createElement("div", { className: "ifm-section" },
+                React.createElement(Label_1.Label, null, "Discount Value"),
+                React.createElement("input", { placeholder: "(Min)", name: "Min", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) }),
+                React.createElement("input", { placeholder: "(Expected)", name: "Expected", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) }),
+                React.createElement("input", { placeholder: "(Max)", name: "Max", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) })));
+    };
+    ReleasePlanningComponent.prototype._handleSprintDurationChange = function (event) {
+        var target = event.target;
+        var value = target.value;
+        var name = target.name;
+        var releasePlanGenerationState = this.state.releasePlanGeneration;
+        var configKey = this.sprintDuration;
+        this.setStateConfigKey(configKey, false);
+        releasePlanGenerationState.config[configKey] = value;
+    };
+    ReleasePlanningComponent.prototype._handleNumberOfSprintChange = function (event) {
+        var target = event.target;
+        var value = target.value;
+        var name = target.name;
+        var releasePlanGenerationState = this.state.releasePlanGeneration;
+        var configKey = this.numberOfSprint;
+        this.setStateConfigKey(configKey, false);
+        releasePlanGenerationState.config[configKey] = value;
+    };
+    ReleasePlanningComponent.prototype._handleDiscountValueChange = function (event) {
+        var target = event.target;
+        var value = target.value;
+        var name = target.name;
+        var releasePlanGenerationState = this.state.releasePlanGeneration;
+        var configKey = this.discountValue;
+        this.setStateConfigKey(configKey, true);
+        releasePlanGenerationState.config[configKey][name] = value;
+    };
+    ReleasePlanningComponent.prototype._handleTeamCapabilityChange = function (event) {
+        var target = event.target;
+        var value = target.value;
+        var name = target.name;
+        var releasePlanGenerationState = this.state.releasePlanGeneration;
+        var configKey = this.teamCapability;
+        this.setStateConfigKey(configKey, true);
+        releasePlanGenerationState.config[configKey][name] = value;
     };
     /**
      * Create config key for a input value with min, expected and max
      */
-    ReleasePlanningComponent.prototype.setStateConfigKey = function (configKey) {
+    ReleasePlanningComponent.prototype.setStateConfigKey = function (configKey, triangular) {
         var releasePlanGenerationState = this.state.releasePlanGeneration;
         var update = false;
         var mock = {
@@ -160,12 +184,12 @@ var ReleasePlanningComponent = (function (_super) {
         };
         if (!releasePlanGenerationState.config) {
             releasePlanGenerationState.config = {};
-            releasePlanGenerationState.config[configKey] = mock;
+            triangular ? releasePlanGenerationState.config[configKey] = mock : releasePlanGenerationState.config[configKey] = null;
             update = true;
         }
         else {
             if (!releasePlanGenerationState.config[configKey]) {
-                releasePlanGenerationState.config[configKey] = mock;
+                triangular ? releasePlanGenerationState.config[configKey] = mock : releasePlanGenerationState.config[configKey] = null;
                 update = true;
             }
         }
@@ -173,37 +197,35 @@ var ReleasePlanningComponent = (function (_super) {
             this.setState({ releasePlanGeneration: releasePlanGenerationState });
         }
     };
-    ReleasePlanningComponent.prototype._onDiscountValueMinChange = function (value) {
-        var configKey = "discountRate";
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        this.setStateConfigKey(configKey);
-        releasePlanGenerationState.config[configKey].Min = value;
-        this.setState({ releasePlanGeneration: releasePlanGenerationState });
-        console.log("State");
-        console.log(this.state.releasePlanGeneration);
-    };
-    ReleasePlanningComponent.prototype._onDiscountValueExpectedChange = function (value) {
-        var configKey = "discountRate";
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        this.setStateConfigKey(configKey);
-        releasePlanGenerationState.config[configKey].Expected = value;
-        this.setState({ releasePlanGeneration: releasePlanGenerationState });
-        console.log("State");
-        console.log(this.state.releasePlanGeneration);
-    };
-    ReleasePlanningComponent.prototype._onDiscountValueMaxChange = function (value) {
-        var configKey = "discountRate";
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        this.setStateConfigKey(configKey);
-        releasePlanGenerationState.config[configKey].Max = value;
-        this.setState({ releasePlanGeneration: releasePlanGenerationState });
-        console.log("State");
-        console.log(this.state.releasePlanGeneration);
-    };
     ReleasePlanningComponent.prototype._getAlgorithmGenerationButton = function () {
         return React.createElement("div", null,
             React.createElement("div", { className: "actions" },
                 React.createElement(Button_1.Button, { onClick: this._onGenerateReleasePlanClick.bind(this), buttonType: Button_Props_1.ButtonType.primary, disabled: !this._canGenerateReleasePlan(this.state), className: "action-button" }, "Generate Release Plan")));
+    };
+    ReleasePlanningComponent.prototype._onGenerateReleasePlanClick = function (ev) {
+        var _this = this;
+        console.log("Configuration State");
+        console.log(this.state.releasePlanGeneration.config);
+        var algorithmService = inversify_config_1.default.getNamed(identifiers_1.default.IReleasePlanningAlgorithm, this.state.releasePlanGeneration.algorithmType);
+        var config = this.state.releasePlanGeneration.config;
+        if (algorithmService.validateConfigAlgorithm(config)) {
+            this._setState(true, null);
+            VSS.getService(VSS.ServiceIds.ExtensionData).then(function (dataService) {
+                dataService.getDocuments(_this.RPDSDocsName).then(function (featuresDeailtDocument) {
+                    var featuresVSTS = _this.props.features.queryResult.workItems;
+                    if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
+                        var releasePlanResult = algorithmService.getOptimalReleasePlan(config);
+                        _this._setState(false, releasePlanResult);
+                    }
+                    else {
+                        _this._setStateError("The features information is not completed");
+                    }
+                });
+            });
+        }
+        else {
+            this._setStateError("Please fill all the fields on the above section.");
+        }
     };
     ReleasePlanningComponent.prototype._onChange = function (ev, option) {
         this._setStateAlgorithmType(option.key);

@@ -28,11 +28,13 @@ var IFMReleasePlanningAlgorithm = (function () {
             return info.Max;
         }
     };
-    IFMReleasePlanningAlgorithm.prototype.isValidReleaseInput = function (infoObject) {
+    IFMReleasePlanningAlgorithm.prototype.isValidReleaseTriangularInput = function (infoObject) {
         if (!infoObject) {
             return false;
         }
-        return infoObject.hasOwnProperty("Min") && infoObject.hasOwnProperty("Expected") && infoObject.hasOwnProperty("Max");
+        return infoObject.hasOwnProperty("Min") && infoObject["Min"] && (infoObject["Min"].length > 0)
+            && infoObject.hasOwnProperty("Expected") && infoObject["Expected"] && (infoObject["Expected"].length > 0)
+            && infoObject.hasOwnProperty("Max") && infoObject["Max"] && (infoObject["Max"].length > 0);
     };
     IFMReleasePlanningAlgorithm.prototype.getFeatureData = function (featuresVSTS, featuresDeailtDocument) {
         var _this = this;
@@ -50,33 +52,45 @@ var IFMReleasePlanningAlgorithm = (function () {
                 return (el.id == feature.id);
             });
             if (detailInfo.length > 0) {
-                _this.isValidReleaseInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = _this.getRandomValue(detailInfo[0].BusinessValue) : success = false;
-                _this.isValidReleaseInput(detailInfo[0].Effort) ? feature.effort = _this.getRandomValue(detailInfo[0].Effort) : success = false;
-                _this.isValidReleaseInput(detailInfo[0].Cost) ? feature.cost = _this.getRandomValue(detailInfo[0].Cost) : success = false;
-                _this.isValidReleaseInput(detailInfo[0].Risk) ? feature.risk = _this.getRandomValue(detailInfo[0].Risk) : success = false;
-                _this.isValidReleaseInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = _this.getRandomValue(detailInfo[0].timeCriticality) : success = false;
+                _this.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = Number(_this.getRandomValue(detailInfo[0].BusinessValue)) : success = false;
+                _this.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = Number(_this.getRandomValue(detailInfo[0].Effort)) : success = false;
+                _this.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = Number(_this.getRandomValue(detailInfo[0].Cost)) : success = false;
+                _this.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = _this.getRandomValue(detailInfo[0].Risk) : success = false;
+                _this.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = Number(_this.getRandomValue(detailInfo[0].timeCriticality)) : success = false;
                 detailInfo[0].Dependency ? feature.dependency = detailInfo[0].Dependency : feature.dependency = "0";
             }
             else {
                 success = false;
             }
-            featuresReleasePlan.push(feature);
+            featuresReleasePlan.push({ feature: feature });
         });
-        console.log("VSTS features with detail");
-        console.log(featuresReleasePlan);
-        //this.ReleasePlan.featureList = featuresReleasePlan;
-        //return success;
-        return true;
+        this.ReleasePlan.featureList = featuresReleasePlan;
+        return success;
     };
     IFMReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
         return "IFM Algortihm";
     };
+    IFMReleasePlanningAlgorithm.prototype.validateConfigAlgorithm = function (config) {
+        if (!config)
+            return false;
+        return this.isValidReleaseTriangularInput(config.discountValue) &&
+            this.isValidReleaseTriangularInput(config.teamCapability) &&
+            config.numberOfSprint && config.sprintDuration;
+    };
     IFMReleasePlanningAlgorithm.prototype.testDataGeneration = function (config) {
-        this.ReleasePlan.discountValue = config.discountValue;
-        this.ReleasePlan.teamCapability = config.teamCapability;
+        this.ReleasePlan.discountValue = config.discountValue; //ok
+        this.ReleasePlan.teamCapability = config.teamCapability; //ok
         this.ReleasePlan.totalRequiredEffort = config.totalRequiredEffort;
-        this.ReleasePlan.numberOfSprint = config.numberOfSprint;
-        this.ReleasePlan.sprintDuration = config.sprintDuration;
+        this.ReleasePlan.numberOfSprint = config.numberOfSprint; //ok
+        this.ReleasePlan.sprintDuration = config.sprintDuration; //okyt
+        /**
+         * featureNumber, vsts feature total.
+         * discountValue is the Discount Rate i created.
+         * teamCapability, can be three, it is going to be the capacity of the team per sprint. (in hours, integer)
+         * totalRequiredEffort, is going to be sum of all feature input effort (the picked value by the random guy)
+         * number of sprint, single value, user input (only one field)
+         * sprint duration, per week (how many week), integer
+         */
         //cover
         for (var i = 0; i <= config.featureNumber - 1; i++) {
             var feature = {
@@ -88,14 +102,25 @@ var IFMReleasePlanningAlgorithm = (function () {
                 selected: false,
                 dependency: "0",
                 feature: "Feature Name #",
-                order: "1"
+                order: "1" //ok
             };
             this.ReleasePlan.featureList.push({ feature: feature });
         }
-        this.ReleasePlan.featureList[1].feature.dependency = "1";
-        this.ReleasePlan.featureList[4].feature.dependency = "2,3";
+        this.ReleasePlan.featureList[1].feature.dependency = "1"; //ok
+        this.ReleasePlan.featureList[4].feature.dependency = "2,3"; //ok
     };
     IFMReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function (config) {
+        this.ReleasePlan.discountValue = Number(this.getRandomValue(config.discountValue));
+        this.ReleasePlan.teamCapability = Number(this.getRandomValue(config.teamCapability));
+        this.ReleasePlan.numberOfSprint = Number(config.numberOfSprint);
+        this.ReleasePlan.sprintDuration = Number(config.sprintDuration);
+        var totalEffort = 0;
+        this.ReleasePlan.featureList.map(function (el) {
+            totalEffort += el.feature.effort;
+        });
+        this.ReleasePlan.totalRequiredEffort = totalEffort;
+        console.log("RELEASE PLAN INFO");
+        console.log(this.ReleasePlan);
         var ResultReleasePlan = {
             discountValue: 0, cumulatedDiscountValue: 0,
             featureList: [], teamCapability: 0, totalRequiredEffort: 0,

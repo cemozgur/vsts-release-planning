@@ -37,6 +37,11 @@ interface IReleasePlanningState {
 
 export class ReleasePlanningComponent extends React.Component<IReleasePlanningProps, IReleasePlanningState> {
     private RPDSDocsName: string = "RPDS";
+    private discountValue: string = "discountValue";
+    private teamCapability: string = "teamCapability";
+    private numberOfSprint: string = "numberOfSprint";
+    private sprintDuration: string = "sprintDuration";
+
 
     constructor(props?: IReleasePlanningProps) {
         super(props);
@@ -137,39 +142,6 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
     }
 
 
-    private _onGenerateReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
-        this._setState(true, null);
-
-        VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
-            dataService.getDocuments(this.RPDSDocsName).then(
-                (featuresDeailtDocument) => {
-
-                    let algorithmService = container.getNamed<IReleasePlanningAlgorithm>(SERVICE_IDENTIFIER.IReleasePlanningAlgorithm, this.state.releasePlanGeneration.algorithmType);
-                    let featuresVSTS = this.props.features.queryResult.workItems;
-                    let algorithmConfig = this.state.releasePlanGeneration.config;
-
-                    if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
-                        let config = {
-                            featureNumber: 5,
-                            discountValue: 50,
-                            teamCapability: 100,
-                            totalRequiredEffort: 100,
-                            numberOfSprint: 55,
-                            sprintDuration: 2
-                        };
-                        algorithmService.testDataGeneration(config);
-
-                        let releasePlanResult = algorithmService.getOptimalReleasePlan(algorithmConfig);
-
-
-                        this._setState(false, releasePlanResult);
-                    } else {
-                        this._setStateError("The features information is not completed");
-                    }
-
-                });
-        });
-    }
 
     private _getAlgorithmAlternatives(): JSX.Element {
         return <div>
@@ -195,18 +167,87 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
     }
 
     private _getIFMGenerationSection(): JSX.Element {
-        return <div className="ifm-section">
-            <Label>Discount Rate</Label>
-            <TextField placeholder="(Min)" required={true} className="release-input" onChanged={this._onDiscountValueMinChange.bind(this)} />
-            <TextField placeholder="(Expected)" required={true} className="release-input" onChanged={this._onDiscountValueExpectedChange.bind(this)} />
-            <TextField placeholder="(Max)" required={true} className="release-input" onChanged={this._onDiscountValueMaxChange.bind(this)} />
+        return <div>
+            <div className="ifm-section">
+                <Label>Number of Sprint</Label>
+                <input placeholder="How many iterations for the project?" required={true} className="release-input" type="text" onChange={this._handleNumberOfSprintChange.bind(this)} />
+            </div>
+            <div className="ifm-section">
+                <Label>Sprint Duration</Label>
+                <input placeholder="How many weeks last each sprint?" required={true} className="release-input" type="text" onChange={this._handleSprintDurationChange.bind(this)} />
+            </div>
+            <div className="ifm-section">
+                <Label>Team Capability</Label>
+                <input placeholder="(Min) Available Hours" name="Min" required={true} className="release-input" type="text" onChange={this._handleTeamCapabilityChange.bind(this)} />
+                <input placeholder="(Expected) Available Hours" name="Expected" required={true} className="release-input" type="text" onChange={this._handleTeamCapabilityChange.bind(this)} />
+                <input placeholder="(Max) Available Hours" name="Max" required={true} className="release-input" type="text" onChange={this._handleTeamCapabilityChange.bind(this)} />
+            </div>
+            <div className="ifm-section">
+                <Label>Discount Value</Label>
+                <input placeholder="(Min)" name="Min" required={true} className="release-input" type="text" onChange={this._handleDiscountValueChange.bind(this)} />
+                <input placeholder="(Expected)" name="Expected" required={true} className="release-input" type="text" onChange={this._handleDiscountValueChange.bind(this)} />
+                <input placeholder="(Max)" name="Max" required={true} className="release-input" type="text" onChange={this._handleDiscountValueChange.bind(this)} />
+            </div>
         </div>;
     }
+
+
+
+    private _handleSprintDurationChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        let releasePlanGenerationState = this.state.releasePlanGeneration;
+        let configKey = this.sprintDuration;
+
+        this.setStateConfigKey(configKey, false);
+        releasePlanGenerationState.config[configKey] = value;
+    }
+    private _handleNumberOfSprintChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        let releasePlanGenerationState = this.state.releasePlanGeneration;
+        let configKey = this.numberOfSprint;
+
+        this.setStateConfigKey(configKey, false);
+        releasePlanGenerationState.config[configKey] = value;
+    }
+    private _handleDiscountValueChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        let releasePlanGenerationState = this.state.releasePlanGeneration;
+        let configKey = this.discountValue;
+
+        this.setStateConfigKey(configKey, true);
+        releasePlanGenerationState.config[configKey][name] = value;
+    }
+    private _handleTeamCapabilityChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+
+        let releasePlanGenerationState = this.state.releasePlanGeneration;
+        let configKey = this.teamCapability;
+
+        this.setStateConfigKey(configKey, true);
+        releasePlanGenerationState.config[configKey][name] = value;
+    }
+
+
+
+
+
+
 
     /**
      * Create config key for a input value with min, expected and max
      */
-    private setStateConfigKey(configKey): void {
+    private setStateConfigKey(configKey: string, triangular: boolean): void {
         let releasePlanGenerationState = this.state.releasePlanGeneration;
         let update = false;
         let mock = {
@@ -217,11 +258,11 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
 
         if (!releasePlanGenerationState.config) {
             releasePlanGenerationState.config = {};
-            releasePlanGenerationState.config[configKey] = mock;
+            triangular ? releasePlanGenerationState.config[configKey] = mock : releasePlanGenerationState.config[configKey] = null;
             update = true;
         } else {
             if (!releasePlanGenerationState.config[configKey]) {
-                releasePlanGenerationState.config[configKey] = mock;
+                triangular ? releasePlanGenerationState.config[configKey] = mock : releasePlanGenerationState.config[configKey] = null;
                 update = true;
             }
         }
@@ -231,46 +272,38 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         }
     }
 
-    private _onDiscountValueMinChange(value: string): void {
-        let configKey = "discountRate";
-        let releasePlanGenerationState = this.state.releasePlanGeneration;
-
-        this.setStateConfigKey(configKey);
-        releasePlanGenerationState.config[configKey].Min = value;
-
-        this.setState({ releasePlanGeneration: releasePlanGenerationState });
-        console.log("State");
-        console.log(this.state.releasePlanGeneration);
-    }
-    private _onDiscountValueExpectedChange(value: string): void {
-        let configKey = "discountRate";
-        let releasePlanGenerationState = this.state.releasePlanGeneration;
-
-        this.setStateConfigKey(configKey);
-        releasePlanGenerationState.config[configKey].Expected = value;
-
-        this.setState({ releasePlanGeneration: releasePlanGenerationState });
-        console.log("State");
-        console.log(this.state.releasePlanGeneration);
-    }
-    private _onDiscountValueMaxChange(value: string): void {
-        let configKey = "discountRate";
-        let releasePlanGenerationState = this.state.releasePlanGeneration;
-
-        this.setStateConfigKey(configKey);
-        releasePlanGenerationState.config[configKey].Max = value;
-
-        this.setState({ releasePlanGeneration: releasePlanGenerationState });
-        console.log("State");
-        console.log(this.state.releasePlanGeneration);
-    }
-
     private _getAlgorithmGenerationButton(): JSX.Element {
         return <div>
             <div className="actions">
                 <Button onClick={this._onGenerateReleasePlanClick.bind(this)} buttonType={ButtonType.primary} disabled={!this._canGenerateReleasePlan(this.state)} className="action-button">Generate Release Plan</Button>
             </div>
         </div>
+    }
+
+    private _onGenerateReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
+        console.log("Configuration State");
+        console.log(this.state.releasePlanGeneration.config);
+
+        let algorithmService = container.getNamed<IReleasePlanningAlgorithm>(SERVICE_IDENTIFIER.IReleasePlanningAlgorithm, this.state.releasePlanGeneration.algorithmType);
+        let config = this.state.releasePlanGeneration.config;
+        if (algorithmService.validateConfigAlgorithm(config)) {
+            this._setState(true, null);
+            VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
+                dataService.getDocuments(this.RPDSDocsName).then(
+                    (featuresDeailtDocument) => {
+                        let featuresVSTS = this.props.features.queryResult.workItems;
+                        if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
+                            let releasePlanResult = algorithmService.getOptimalReleasePlan(config);
+                            this._setState(false, releasePlanResult);
+                        } else {
+                            this._setStateError("The features information is not completed");
+                        }
+
+                    });
+            });
+        } else {
+            this._setStateError("Please fill all the fields on the above section.");
+        }
     }
     private _onChange(ev: React.SyntheticEvent<HTMLElement>, option: IChoiceGroupOption) {
         this._setStateAlgorithmType(option.key);
