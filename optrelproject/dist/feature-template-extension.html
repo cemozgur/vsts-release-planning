@@ -66,13 +66,21 @@
                                       console.log("ID is defined?: "+(id!=undefined))
                                       if(id!=undefined){
                                         RPDSDocsExist = true;
-                                        document.getElementById('businessValue').value = doc.BusinessValue;
-                                        document.getElementById('cost').value = doc.Cost;
-                                        document.getElementById('effort').value = doc.Effort;
+                                        document.getElementById('minBusinessValue').value = doc.BusinessValue.Min;
+                                          document.getElementById('expectedBusinessValue').value = doc.BusinessValue.Expected;
+                                            document.getElementById('maxBusinessValue').value = doc.BusinessValue.Max;
+                                        document.getElementById('minCost').value = doc.Cost.Min;
+                                          document.getElementById('expectedCost').value = doc.Cost.Expected;
+                                            document.getElementById('maxCost').value = doc.Cost.Max;
+                                        document.getElementById('minEffort').value = doc.Effort.Min;
+                                          document.getElementById('expectedEffort').value = doc.Effort.Expected;
+                                            document.getElementById('maxEffort').value = doc.Effort.Max;
                                         document.getElementById('minRisk').value = doc.Risk.Min;
-                                        document.getElementById('expectedRisk').value = doc.Risk.Expected;
-                                        document.getElementById('maxRisk').value = doc.Risk.Max;
-                                        document.getElementById('timeCriticality').value = doc.timeCriticality;
+                                          document.getElementById('expectedRisk').value = doc.Risk.Expected;
+                                            document.getElementById('maxRisk').value = doc.Risk.Max;
+                                        document.getElementById('minTimeCriticality').value = doc.timeCriticality.Min;
+                                          document.getElementById('expectedTimeCriticality').value = doc.timeCriticality.Expected;
+                                            document.getElementById('maxTimeCriticality').value = doc.timeCriticality.Max;
                                         document.getElementById('featureDependency').value = doc.Dependency;
                                       }
                                       console.log("RPDS: Doc exists = "+RPDSDocsExist);
@@ -97,11 +105,11 @@
                         $(".events").append($("<div/>").text("onSaved - " + JSON.stringify(args)));
                         getWorkItemFormService().then(function(service) {
                             //service.setFieldValue("System.Title", "Title set from your group extension!");
-                          console.log("Business Value: "+document.getElementById('businessValue').value);
-                          console.log("Cost: "+document.getElementById('cost').value);
-                          console.log("Effort: "+document.getElementById('effort').value);
+                          console.log("Business Value: "+document.getElementById('minBusinessValue').value+","+document.getElementById('expectedBusinessValue').value+","+document.getElementById('maxBusinessValue').value);
+                          console.log("Cost: "+document.getElementById('minCost').value+","+document.getElementById('expectedCost').value+","+document.getElementById('maxCost').value);
+                          console.log("Effort: "+document.getElementById('minEffort').value+","+document.getElementById('expectedEffort').value+","+document.getElementById('maxEffort').value);
                           console.log("Risk: "+document.getElementById('minRisk').value+","+document.getElementById('expectedRisk').value+","+document.getElementById('maxRisk').value);
-                          console.log("Time Criticality: "+document.getElementById('timeCriticality').value);
+                          console.log("Time Criticality: "+document.getElementById('minTimeCriticality').value+","+document.getElementById('expectedTimeCriticality').value+","+document.getElementById('maxTimeCriticality').value);
                         });
                     },
 
@@ -144,13 +152,21 @@
                         // Get document first
                         dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
                             // Update the document
-                            doc.BusinessValue = document.getElementById('businessValue').value;
-                            doc.Cost = document.getElementById('cost').value;
-                            doc.Effort = document.getElementById('effort').value;
+                            doc.BusinessValue.Min = document.getElementById('minBusinessValue').value;
+                            doc.BusinessValue.Expected = document.getElementById('expectedBusinessValue').value;
+                            doc.BusinessValue.Max = document.getElementById('maxBusinessValue').value;
+                            doc.Cost.Min = document.getElementById('minCost').value;
+                            doc.Cost.Expected = document.getElementById('expectedCost').value;
+                            doc.Cost.Max = document.getElementById('maxCost').value;
+                            doc.Effort.Min = document.getElementById('minEffort').value;
+                            doc.Effort.Expected = document.getElementById('expectedEffort').value;
+                            doc.Effort.Max = document.getElementById('maxEffort').value;
                             doc.Risk.Min = document.getElementById('minRisk').value;
                             doc.Risk.Expected = document.getElementById('expectedRisk').value;
                             doc.Risk.Max = document.getElementById('maxRisk').value;
-                            doc.timeCriticality = document.getElementById('timeCriticality').value;
+                            doc.timeCriticality.Min = document.getElementById('minTimeCriticality').value;
+                            doc.timeCriticality.Expected = document.getElementById('expectedTimeCriticality').value;
+                            doc.timeCriticality.Max = document.getElementById('maxTimeCriticality').value;
                             doc.Dependency = document.getElementById('featureDependency').value;
                             dataService.updateDocument(RPDSDocsName, doc).then(function(d) {
                                 // Check the new version
@@ -163,15 +179,31 @@
                     // Prepare document first
                     var newDoc = {
                       id: workItemID,
-                      BusinessValue: document.getElementById('businessValue').value,
-                      Cost: document.getElementById('cost').value,
-                      Effort: document.getElementById('effort').value,
+                      BusinessValue: {
+                        Min : document.getElementById('minBusinessValue').value,
+                        Expected :  document.getElementById('expectedBusinessValue').value,
+                        Max : document.getElementById('maxBusinessValue').value
+                      },
+                      Cost: {
+                        Min : document.getElementById('minCost').value,
+                        Expected :  document.getElementById('expectedCost').value,
+                        Max : document.getElementById('maxCost').value
+                      },
+                      Effort: {
+                        Min : document.getElementById('minEffort').value,
+                        Expected :  document.getElementById('expectedEffort').value,
+                        Max : document.getElementById('maxEffort').value
+                      },
                       Risk: {
                         Min : document.getElementById('minRisk').value,
                         Expected : document.getElementById('expectedRisk').value,
                         Max : document.getElementById('maxRisk').value
                       },
-                      timeCriticality: document.getElementById('timeCriticality').value,
+                      timeCriticality:{
+                        Min : document.getElementById('minTimeCriticality').value,
+                        Expected :  document.getElementById('expectedTimeCriticality').value,
+                        Max : document.getElementById('maxTimeCriticality').value
+                      },
                       Dependency: document.getElementById('featureDependency').value
                     };
 
@@ -216,43 +248,49 @@
 
     <div class="control">
       <div class="workitemlabel label-control">
-        <label class="workitemcontrol-label">Business Value: (Min,Expected,Max)</label>
+        <label class="workitemcontrol-label">Business Value (Min,Expected,Max): </label>
       </div>
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-            <input type="text" id="businessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
           </div>
       </div>
     </div>
 
     <div class="control" style="padding-top: 3px">
       <div class="workitemlabel label-control">
-        <label class="workitemcontrol-label">Implementation Cost: (Min,Expected,Max)</label>
+        <label class="workitemcontrol-label">Implementation Cost (Min,Expected,Max): </label>
       </div>
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-        <input type="text" id="cost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="minCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="maxCost" autocomplete="off" maxlength="255" aria-invalid="true">
         </div>
       </div>
     </div>
 
     <div class="control" style="padding-top: 3px">
       <div class="workitemlabel label-control">
-        <label class="workitemcontrol-label">Effort (Hrs/Week): (Min,Expected,Max)</label>
+        <label class="workitemcontrol-label">Effort (Hrs/Week) (Min,Expected,Max): </label>
       </div>
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-        <input type="text" id="effort" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="minEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true">
       </div>
       </div>
     </div>
 
     <div class="control" style="padding-top: 3px">
       <div class="workitemlabel label-control">
-        <label class="workitemcontrol-label">Risk: (Min,Expected,Max)</label>
+        <label class="workitemcontrol-label">Risk (Min,Expected,Max): </label>
       </div>
       <div class="workitemcontrol work-item-control initialized">
 
@@ -283,12 +321,14 @@
 
     <div class="control" style="padding-top: 3px">
       <div class="workitemlabel label-control">
-        <label class="workitemcontrol-label">Time Criticality: (Min,Expected,Max)</label>
+        <label class="workitemcontrol-label">Time Criticality (Min,Expected,Max): </label>
       </div>
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-          <input type="text" id="timeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
       </div>
       </div>
     </div>
