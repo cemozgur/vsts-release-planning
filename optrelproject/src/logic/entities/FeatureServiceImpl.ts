@@ -23,8 +23,6 @@ class FeatureServiceImpl implements IFeatureService {
 
     private _httpClient: WorkItemTrackingHttpClient;
 
-    private RPDSDocsName: string = "RPDS";
-
     public get httpClient(): WorkItemTrackingHttpClient {
         if (!this._httpClient) {
             this._httpClient = getClient();
@@ -39,7 +37,9 @@ class FeatureServiceImpl implements IFeatureService {
                     [System.Title],
                     [System.State]
                 FROM WorkItems
-                WHERE  [System.WorkItemType] = 'Feature'
+                WHERE  ([System.TeamProject] = @project)  
+                AND 
+                ([System.WorkItemType] = 'Feature') 
                 ORDER BY [System.ChangedDate] DESC`
         };
     }

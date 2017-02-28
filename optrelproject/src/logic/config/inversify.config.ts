@@ -12,7 +12,6 @@ import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
 import {IFeatureService} from "../interfaces/IFeatureService";
 
 
-
 /**
  * This is the only place in which there is some coupling.
  * In the rest of your application your classes should be free of references to other classes.
@@ -23,7 +22,7 @@ container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(GA
 
 container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.IFM);
 
-container.bind<IFeatureService>(TYPES.IFeatureService).to(FeatureServiceImpl);
+container.bind<IFeatureService>(TYPES.IFeatureService).to(FeatureServiceImpl).inSingletonScope();
 
 
 

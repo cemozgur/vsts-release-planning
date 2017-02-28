@@ -41,7 +41,7 @@ export class IFMReleasePlanResult extends React.Component<IFMReleasePlanResultPr
             },
             {
                 name: "Id",
-                referenceName: "id"
+                referenceName: "workItemId"
             },
             {
                 name: "Feature Name",
@@ -65,7 +65,7 @@ export class IFMReleasePlanResult extends React.Component<IFMReleasePlanResultPr
             },
             {
                 name: "Dependency",
-                referenceName: "dependency"
+                referenceName: "dependencyWorkItemId"
             }
         ];
 

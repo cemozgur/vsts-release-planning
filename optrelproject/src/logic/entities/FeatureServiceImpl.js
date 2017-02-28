@@ -11,7 +11,6 @@ var Q = require("q");
 var RestClient_1 = require("TFS/WorkItemTracking/RestClient");
 var FeatureServiceImpl = (function () {
     function FeatureServiceImpl() {
-        this.RPDSDocsName = "RPDS";
     }
     Object.defineProperty(FeatureServiceImpl.prototype, "httpClient", {
         get: function () {
@@ -25,7 +24,7 @@ var FeatureServiceImpl = (function () {
     });
     FeatureServiceImpl.prototype.getQueryAllFeature = function () {
         return {
-            wiql: "SELECT [System.Id],\n                    [System.Title],\n                    [System.State]\n                FROM WorkItems\n                WHERE  [System.WorkItemType] = 'Feature'\n                ORDER BY [System.ChangedDate] DESC"
+            wiql: "SELECT [System.Id],\n                    [System.Title],\n                    [System.State]\n                FROM WorkItems\n                WHERE  ([System.TeamProject] = @project)  \n                AND \n                ([System.WorkItemType] = 'Feature') \n                ORDER BY [System.ChangedDate] DESC"
         };
     };
     FeatureServiceImpl.prototype.getAllFeatureByProjectResult = function (vstsProjectId) {

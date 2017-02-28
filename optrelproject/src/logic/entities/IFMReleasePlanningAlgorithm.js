@@ -40,16 +40,19 @@ var IFMReleasePlanningAlgorithm = (function () {
         var _this = this;
         var featuresReleasePlan = [];
         var success = true;
-        featuresVSTS.map(function (el) {
+        featuresVSTS.map(function (el, index) {
             var feature = {
-                id: el.id,
+                id: (index + 1),
+                workItemId: el.id,
                 feature: el.fields["System.Title"],
                 state: el.fields["System.State"],
-                order: "1",
+                order: "0",
                 selected: false
             };
+            console.log("doc");
+            console.log(featuresDeailtDocument);
             var detailInfo = featuresDeailtDocument.filter(function (el) {
-                return (el.id == feature.id);
+                return (el.id == feature.workItemId);
             });
             if (detailInfo.length > 0) {
                 _this.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = Number(_this.getRandomValue(detailInfo[0].BusinessValue)) : success = false;
@@ -58,13 +61,31 @@ var IFMReleasePlanningAlgorithm = (function () {
                 _this.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = _this.getRandomValue(detailInfo[0].Risk) : success = false;
                 _this.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = Number(_this.getRandomValue(detailInfo[0].timeCriticality)) : success = false;
                 detailInfo[0].Dependency ? feature.dependency = detailInfo[0].Dependency : feature.dependency = "0";
+                detailInfo[0].Dependency ? feature.dependencyWorkItemId = detailInfo[0].Dependency : feature.dependencyWorkItemId = "0";
             }
             else {
                 success = false;
             }
             featuresReleasePlan.push({ feature: feature });
         });
-        this.ReleasePlan.featureList = featuresReleasePlan;
+        if (success) {
+            featuresReleasePlan.map(function (el) {
+                if (el.feature.dependencyWorkItemId != "0") {
+                    var dependencies = el.feature.dependencyWorkItemId.split(",");
+                    var indexDependency_1 = [];
+                    dependencies.map(function (workItemIdCheck) {
+                        var result = featuresReleasePlan.filter(function (el) {
+                            return (el.feature.workItemId == workItemIdCheck);
+                        });
+                        if (result.length > 0) {
+                            indexDependency_1.push(result[0].feature.id);
+                        }
+                    });
+                    el.feature.dependency = indexDependency_1.join(",");
+                }
+            });
+            this.ReleasePlan.featureList = featuresReleasePlan;
+        }
         return success;
     };
     IFMReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
@@ -119,8 +140,6 @@ var IFMReleasePlanningAlgorithm = (function () {
             totalEffort += el.feature.effort;
         });
         this.ReleasePlan.totalRequiredEffort = totalEffort;
-        console.log("RELEASE PLAN INFO");
-        console.log(this.ReleasePlan);
         var ResultReleasePlan = {
             discountValue: 0, cumulatedDiscountValue: 0,
             featureList: [], teamCapability: 0, totalRequiredEffort: 0,
@@ -176,6 +195,10 @@ var IFMReleasePlanningAlgorithm = (function () {
         ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
         ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
         ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
+        //updating the order
+        ResultReleasePlan.featureList.map(function (el, index) {
+            el.order = (index + 1).toString();
+        });
         return ResultReleasePlan;
     };
     IFMReleasePlanningAlgorithm.prototype.getTotalRequiredEffort = function () {

@@ -40,17 +40,21 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     let featuresReleasePlan = [];
     let success = true;
 
-    featuresVSTS.map(el => {
+    featuresVSTS.map((el, index) => {
       let feature: any = {
-        id: el.id,
+        id: (index + 1),
+        workItemId: el.id,
         feature: el.fields["System.Title"],
         state: el.fields["System.State"],
-        order: "1",
+        order: "0",
         selected: false
       }
 
+      console.log("doc");
+      console.log(featuresDeailtDocument);
+
       let detailInfo = featuresDeailtDocument.filter(el => {
-        return (el.id == feature.id);
+        return (el.id == feature.workItemId);
       });
 
       if (detailInfo.length > 0) {
@@ -61,6 +65,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         this.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = Number(this.getRandomValue(detailInfo[0].timeCriticality)) : success = false;
 
         detailInfo[0].Dependency ? feature.dependency = detailInfo[0].Dependency : feature.dependency = "0";
+        detailInfo[0].Dependency ? feature.dependencyWorkItemId = detailInfo[0].Dependency : feature.dependencyWorkItemId = "0";
 
       } else {
         success = false;
@@ -68,7 +73,29 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       featuresReleasePlan.push({ feature });
     });
 
-    this.ReleasePlan.featureList = featuresReleasePlan;
+
+    if (success) {
+      featuresReleasePlan.map(el => {
+
+        if (el.feature.dependencyWorkItemId != "0") {
+          let dependencies = el.feature.dependencyWorkItemId.split(",");
+          let indexDependency = [];
+
+          dependencies.map(workItemIdCheck => {
+            let result = featuresReleasePlan.filter(el => {
+              return (el.feature.workItemId == workItemIdCheck)
+            });
+            if (result.length > 0) {
+              indexDependency.push(result[0].feature.id);
+            }
+          });
+
+          el.feature.dependency = indexDependency.join(",");
+        }
+      });
+
+      this.ReleasePlan.featureList = featuresReleasePlan;
+    }
     return success;
 
   }
@@ -79,6 +106,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
 
   validateConfigAlgorithm(config: any): boolean {
+    
     if (!config) return false;
 
     return this.isValidReleaseTriangularInput(config.discountValue) &&
@@ -136,10 +164,6 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     });
 
     this.ReleasePlan.totalRequiredEffort = totalEffort;
-
-    console.log("RELEASE PLAN INFO")
-    console.log(this.ReleasePlan);
-
 
     let ResultReleasePlan = {
       discountValue: 0, cumulatedDiscountValue: 0,
@@ -204,6 +228,11 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
 
+    //updating the order
+    ResultReleasePlan.featureList.map((el, index) => {
+      el.order = (index + 1).toString();
+    });
+
     return ResultReleasePlan;
   }
 
@@ -248,7 +277,6 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
     return answer;
   }
-
 }
 
 export default IFMReleasePlanningAlgorithm;

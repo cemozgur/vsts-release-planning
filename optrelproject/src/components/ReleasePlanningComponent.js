@@ -10,20 +10,19 @@ var identifiers_1 = require("../logic/constants/identifiers");
 var algorithmType_1 = require("../logic/constants/algorithmType");
 var Button_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button");
 var Button_Props_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button.Props");
-var ChoiceGroup_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/ChoiceGroup");
 var Label_1 = require("../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label");
 var Header_1 = require("./common/Header");
 var ReleasePlanResult_1 = require("./releaseplanresult/ReleasePlanResult");
+var AlgorithmChoice_1 = require("./releaseplan/AlgorithmChoice");
+var ReleasePlanInput_1 = require("./releaseplan/ReleasePlanInput");
 var FeatureList_1 = require("./features/FeatureList");
+var VSTS_DOCUMENT = {
+    RPDS: "RPDS"
+};
 var ReleasePlanningComponent = (function (_super) {
     __extends(ReleasePlanningComponent, _super);
     function ReleasePlanningComponent(props) {
         var _this = _super.call(this, props) || this;
-        _this.RPDSDocsName = "RPDS";
-        _this.discountValue = "discountValue";
-        _this.teamCapability = "teamCapability";
-        _this.numberOfSprint = "numberOfSprint";
-        _this.sprintDuration = "sprintDuration";
         _this.state = _this._getDefaultState();
         return _this;
     }
@@ -43,20 +42,11 @@ var ReleasePlanningComponent = (function (_super) {
         var algorithmGenerationSection = null;
         var algorithmButtonSection = null;
         featureSection = React.createElement(FeatureList_1.FeatureList, { features: this.props.features.queryResult });
-        algorithmChoiceSection = this._getAlgorithmAlternatives();
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        /**
-         * To improve this part, to be a React component
-         */
-        switch (releasePlanGenerationState.algorithmType) {
-            case algorithmType_1.default.IFM:
-                algorithmGenerationSection = this._getIFMGenerationSection();
-                break;
-            case algorithmType_1.default.GA:
-                algorithmGenerationSection = null;
-        }
-        algorithmButtonSection = this._getAlgorithmGenerationButton();
+        algorithmChoiceSection = React.createElement(AlgorithmChoice_1.AlgorithmChoice, { updateAlgorithmState: this._onChange.bind(this), disabled: !this._canGenerateReleasePlan(this.state) });
+        algorithmGenerationSection = React.createElement(ReleasePlanInput_1.ReleasePlanInput, { algorithmType: this.state.releasePlanGeneration.algorithmType, updateStateConfig: this.updateConfigState.bind(this) });
+        algorithmButtonSection = this._getAlgorithmButtonSection();
         var releasePlanResultSection = null;
+        var releasePlanGenerationState = this.state.releasePlanGeneration;
         if (releasePlanGenerationState.result) {
             releasePlanResultSection = React.createElement(ReleasePlanResult_1.ReleasePlanResult, { result: releasePlanGenerationState.result, algorithmType: releasePlanGenerationState.algorithmType });
         }
@@ -72,6 +62,7 @@ var ReleasePlanningComponent = (function (_super) {
             "\u00A0",
             algorithmChoiceSection,
             algorithmGenerationSection,
+            "\u00A0",
             algorithmButtonSection,
             "\u00A0",
             releasePlanResultSection);
@@ -102,78 +93,16 @@ var ReleasePlanningComponent = (function (_super) {
         releasePlanGenerationState.error = null;
         this.setState({ releasePlanGeneration: releasePlanGenerationState });
     };
-    ReleasePlanningComponent.prototype._getAlgorithmAlternatives = function () {
-        return React.createElement("div", null,
-            React.createElement(ChoiceGroup_1.ChoiceGroup, { options: [
-                    {
-                        key: algorithmType_1.default.IFM,
-                        text: 'IFM Algorithm, it maximize the cost.',
-                        checked: true
-                    },
-                    {
-                        key: algorithmType_1.default.GA,
-                        text: 'Genetic Algorithm'
-                    }
-                ], label: 'Select the release planning optimisation for your project.', onChange: this._onChange.bind(this), required: true, disabled: !this._canGenerateReleasePlan(this.state) }));
+    ReleasePlanningComponent.prototype.updateConfigState = function (configKey, name, value) {
+        if (name) {
+            this.setStateConfigKey(configKey, true);
+            this.state.releasePlanGeneration.config[configKey][name] = value;
+        }
+        else {
+            this.setStateConfigKey(configKey, false);
+            this.state.releasePlanGeneration.config[configKey] = value;
+        }
     };
-    ReleasePlanningComponent.prototype._getIFMGenerationSection = function () {
-        return React.createElement("div", null,
-            React.createElement("div", { className: "ifm-section" },
-                React.createElement(Label_1.Label, null, "Number of Sprint"),
-                React.createElement("input", { placeholder: "How many iterations for the project?", required: true, className: "release-input", type: "text", onChange: this._handleNumberOfSprintChange.bind(this) })),
-            React.createElement("div", { className: "ifm-section" },
-                React.createElement(Label_1.Label, null, "Sprint Duration"),
-                React.createElement("input", { placeholder: "How many weeks last each sprint?", required: true, className: "release-input", type: "text", onChange: this._handleSprintDurationChange.bind(this) })),
-            React.createElement("div", { className: "ifm-section" },
-                React.createElement(Label_1.Label, null, "Team Capability"),
-                React.createElement("input", { placeholder: "(Min) Available Hours", name: "Min", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Expected) Available Hours", name: "Expected", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Max) Available Hours", name: "Max", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) })),
-            React.createElement("div", { className: "ifm-section" },
-                React.createElement(Label_1.Label, null, "Discount Value"),
-                React.createElement("input", { placeholder: "(Min)", name: "Min", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Expected)", name: "Expected", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Max)", name: "Max", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) })));
-    };
-    ReleasePlanningComponent.prototype._handleSprintDurationChange = function (event) {
-        var target = event.target;
-        var value = target.value;
-        var name = target.name;
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        var configKey = this.sprintDuration;
-        this.setStateConfigKey(configKey, false);
-        releasePlanGenerationState.config[configKey] = value;
-    };
-    ReleasePlanningComponent.prototype._handleNumberOfSprintChange = function (event) {
-        var target = event.target;
-        var value = target.value;
-        var name = target.name;
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        var configKey = this.numberOfSprint;
-        this.setStateConfigKey(configKey, false);
-        releasePlanGenerationState.config[configKey] = value;
-    };
-    ReleasePlanningComponent.prototype._handleDiscountValueChange = function (event) {
-        var target = event.target;
-        var value = target.value;
-        var name = target.name;
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        var configKey = this.discountValue;
-        this.setStateConfigKey(configKey, true);
-        releasePlanGenerationState.config[configKey][name] = value;
-    };
-    ReleasePlanningComponent.prototype._handleTeamCapabilityChange = function (event) {
-        var target = event.target;
-        var value = target.value;
-        var name = target.name;
-        var releasePlanGenerationState = this.state.releasePlanGeneration;
-        var configKey = this.teamCapability;
-        this.setStateConfigKey(configKey, true);
-        releasePlanGenerationState.config[configKey][name] = value;
-    };
-    /**
-     * Create config key for a input value with min, expected and max
-     */
     ReleasePlanningComponent.prototype.setStateConfigKey = function (configKey, triangular) {
         var releasePlanGenerationState = this.state.releasePlanGeneration;
         var update = false;
@@ -197,21 +126,19 @@ var ReleasePlanningComponent = (function (_super) {
             this.setState({ releasePlanGeneration: releasePlanGenerationState });
         }
     };
-    ReleasePlanningComponent.prototype._getAlgorithmGenerationButton = function () {
+    ReleasePlanningComponent.prototype._getAlgorithmButtonSection = function () {
         return React.createElement("div", null,
             React.createElement("div", { className: "actions" },
                 React.createElement(Button_1.Button, { onClick: this._onGenerateReleasePlanClick.bind(this), buttonType: Button_Props_1.ButtonType.primary, disabled: !this._canGenerateReleasePlan(this.state), className: "action-button" }, "Generate Release Plan")));
     };
     ReleasePlanningComponent.prototype._onGenerateReleasePlanClick = function (ev) {
         var _this = this;
-        console.log("Configuration State");
-        console.log(this.state.releasePlanGeneration.config);
         var algorithmService = inversify_config_1.default.getNamed(identifiers_1.default.IReleasePlanningAlgorithm, this.state.releasePlanGeneration.algorithmType);
         var config = this.state.releasePlanGeneration.config;
         if (algorithmService.validateConfigAlgorithm(config)) {
             this._setState(true, null);
             VSS.getService(VSS.ServiceIds.ExtensionData).then(function (dataService) {
-                dataService.getDocuments(_this.RPDSDocsName).then(function (featuresDeailtDocument) {
+                dataService.getDocuments(VSTS_DOCUMENT.RPDS).then(function (featuresDeailtDocument) {
                     var featuresVSTS = _this.props.features.queryResult.workItems;
                     if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
                         var releasePlanResult = algorithmService.getOptimalReleasePlan(config);

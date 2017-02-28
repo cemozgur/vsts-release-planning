@@ -49,7 +49,7 @@ var IFMReleasePlanResult = (function (_super) {
             },
             {
                 name: "Id",
-                referenceName: "id"
+                referenceName: "workItemId"
             },
             {
                 name: "Feature Name",
@@ -73,7 +73,7 @@ var IFMReleasePlanResult = (function (_super) {
             },
             {
                 name: "Dependency",
-                referenceName: "dependency"
+                referenceName: "dependencyWorkItemId"
             }
         ];
         var columns = columnsReleasePlan.map(function (c, i) {

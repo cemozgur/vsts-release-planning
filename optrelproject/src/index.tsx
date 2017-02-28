@@ -8,6 +8,8 @@ import { IFeatureService } from "./logic/interfaces/IFeatureService";
 import { IWorkItemSearchResult } from "./model/IWorkItemSearchResult";
 
 import { ReleasePlanningComponent } from './components/ReleasePlanningComponent';
+import { NoFeaturesComponent } from './components/NoFeaturesComponent';
+
 
 
 export function init(containerId: string): void {
@@ -18,7 +20,12 @@ export function init(containerId: string): void {
 
   featureService.getAllFeatureByProjectResult(vstsProjectId).then(
     (features: IWorkItemSearchResult) => {
-      ReactDOM.render(<ReleasePlanningComponent description={description} features={features} />, document.getElementById(containerId));
+      if (features.queryResult.workItems.length > 0) {
+        ReactDOM.render(<ReleasePlanningComponent description={description} features={features} />, document.getElementById(containerId));
+      } else {
+        ReactDOM.render(<NoFeaturesComponent />, document.getElementById(containerId));
+      }
+
     });
 
 
