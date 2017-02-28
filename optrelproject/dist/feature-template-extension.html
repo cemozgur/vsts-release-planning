@@ -2,12 +2,16 @@
 <html lang="en">
 
 <head>
+  <script src="scripts/jquery.min.js"></script>
+  <script src="scripts/jquery.validate.min.js"></script>
+  <script src="js/form-validation.js"></script>
+  <script src="scripts/vss-web-extension-sdk/lib/VSS.SDK.min.js"></script>
     <meta charset="UTF-8">
     <title>Release Planning Optimal Template</title>
 </head>
 
 <body style="overflow:auto;">
-    <script src="scripts/VSS.SDK.min.js"></script>
+
     <script>
         var workItemID;
         var RPDSDocsExist = false;
@@ -243,8 +247,9 @@
 
     </script>
 
-    <div id="settingValue-combo-container"/>
-    <div id="documentValue-combo-container"/>
+    <div id="errors"></div>
+
+    <form action="" name="featureInfo">
 
     <div class="control">
       <div class="workitemlabel label-control">
@@ -253,9 +258,9 @@
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-            <input type="text" id="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
-            <input type="text" id="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
-            <input type="text" id="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="minBusinessValue" name="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="expectedBusinessValue" name="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="maxBusinessValue" name="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
           </div>
       </div>
     </div>
@@ -267,9 +272,9 @@
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-        <input type="text" id="minCost" autocomplete="off" maxlength="255" aria-invalid="true">
-        <input type="text" id="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true">
-        <input type="text" id="maxCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="minCost" name="minCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="expectedCost" name="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="maxCost" name="maxCost" autocomplete="off" maxlength="255" aria-invalid="true">
         </div>
       </div>
     </div>
@@ -281,9 +286,9 @@
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-        <input type="text" id="minEffort" autocomplete="off" maxlength="255" aria-invalid="true">
-          <input type="text" id="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true">
-            <input type="text" id="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" id="minEffort" name="minEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="expectedEffort" name="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" id="maxEffort" name="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true">
       </div>
       </div>
     </div>
@@ -295,21 +300,21 @@
       <div class="workitemcontrol work-item-control initialized">
 
         <div class="wrap">
-        <select id="minRisk">
+        <select id="minRisk" name="minRisk">
         <option value="1">Very Low</option>
         <option value="2">Low</option>
         <option value="3">Medium</option>
         <option value="4">High</option>
         <option value="5">Very High</option>
         </select>
-        <select id="expectedRisk">
+        <select id="expectedRisk" name="expectedRisk">
         <option value="1">Very Low</option>
         <option value="2">Low</option>
         <option value="3">Medium</option>
         <option value="4">High</option>
         <option value="5">Very High</option>
         </select>
-        <select id="maxRisk">
+        <select id="maxRisk" name="maxRisk">
         <option value="1">Very Low</option>
         <option value="2">Low</option>
         <option value="3">Medium</option>
@@ -326,9 +331,9 @@
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-          <input type="text" id="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
-          <input type="text" id="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
-          <input type="text" id="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="minTimeCriticality" name="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="expectedTimeCriticality" name="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="maxTimeCriticality" name="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
       </div>
       </div>
     </div>
@@ -340,13 +345,15 @@
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-          <input type="text" id="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" id="featureDependency" name="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
       </div>
       </div>
     </div>
 
-    <button type="button" id="saveSetting">Save Setting</button><br/>
+    <button type="submit" id="saveSetting">Save Setting</button><br/>
     <button type="button" id="clearSetting">Clear Setting</button><br/>
+
+    </form>
 
 </body>
 
