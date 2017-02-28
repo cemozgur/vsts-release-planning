@@ -35,26 +35,20 @@ var ReleasePlanInput = (function (_super) {
         return React.createElement("div", null,
             React.createElement("div", { className: "ifm-section" },
                 React.createElement(Label_1.Label, null, "Number of Sprint"),
-                React.createElement("input", { type: "text", placeholder: "How many iterations for the project?", required: true, className: "release-input", onChange: this._handleNumberOfSprintChange.bind(this) })),
+                React.createElement("input", { type: "number", placeholder: "How many iterations for the project?", required: true, className: "release-input", onChange: this._handleNumberOfSprintChange.bind(this) })),
             React.createElement("div", { className: "ifm-section" },
                 React.createElement(Label_1.Label, null, "Sprint Duration"),
-                React.createElement("input", { type: "text", placeholder: "How many weeks last each sprint?", required: true, className: "release-input", onChange: this._handleSprintDurationChange.bind(this) })),
+                React.createElement("input", { type: "number", placeholder: "How many weeks last each sprint?", required: true, className: "release-input", onChange: this._handleSprintDurationChange.bind(this) })),
             React.createElement("div", { className: "ifm-section" },
                 React.createElement(Label_1.Label, null, "Team Capability"),
-                React.createElement("input", { placeholder: "(Min) Available Hours", name: "Min", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Expected) Available Hours", name: "Expected", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Max) Available Hours", name: "Max", required: true, className: "release-input", type: "text", onChange: this._handleTeamCapabilityChange.bind(this) })),
+                React.createElement("input", { type: "number", placeholder: "(Min) Available Hours", name: "Min", required: true, className: "release-input", onChange: this._handleTeamCapabilityChange.bind(this) }),
+                React.createElement("input", { type: "number", placeholder: "(Expected) Available Hours", name: "Expected", required: true, className: "release-input", onChange: this._handleTeamCapabilityChange.bind(this) }),
+                React.createElement("input", { type: "number", placeholder: "(Max) Available Hours", name: "Max", required: true, className: "release-input", onChange: this._handleTeamCapabilityChange.bind(this) })),
             React.createElement("div", { className: "ifm-section" },
                 React.createElement(Label_1.Label, null, "Discount Value"),
-                React.createElement("input", { placeholder: "(Min)", name: "Min", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Expected)", name: "Expected", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) }),
-                React.createElement("input", { placeholder: "(Max)", name: "Max", required: true, className: "release-input", type: "text", onChange: this._handleDiscountValueChange.bind(this) })));
-    };
-    ReleasePlanInput.prototype._handleSprintDurationChange = function (event) {
-        var target = event.target;
-        var value = target.value;
-        var name = target.name;
-        this.props.updateStateConfig(CONFIG_KEY.sprintDuration, null, value);
+                React.createElement("input", { type: "number", placeholder: "(Min)", name: "Min", required: true, className: "release-input", onChange: this._handleDiscountValueChange.bind(this) }),
+                React.createElement("input", { type: "number", placeholder: "(Expected)", name: "Expected", required: true, className: "release-input", onChange: this._handleDiscountValueChange.bind(this) }),
+                React.createElement("input", { type: "number", placeholder: "(Max)", name: "Max", required: true, className: "release-input", onChange: this._handleDiscountValueChange.bind(this) })));
     };
     ReleasePlanInput.prototype._handleNumberOfSprintChange = function (event) {
         var target = event.target;
@@ -62,17 +56,23 @@ var ReleasePlanInput = (function (_super) {
         var name = target.name;
         this.props.updateStateConfig(CONFIG_KEY.numberOfSprint, null, value);
     };
-    ReleasePlanInput.prototype._handleDiscountValueChange = function (event) {
+    ReleasePlanInput.prototype._handleSprintDurationChange = function (event) {
         var target = event.target;
         var value = target.value;
         var name = target.name;
-        this.props.updateStateConfig(CONFIG_KEY.discountValue, name, value);
+        this.props.updateStateConfig(CONFIG_KEY.sprintDuration, null, value);
     };
     ReleasePlanInput.prototype._handleTeamCapabilityChange = function (event) {
         var target = event.target;
         var value = target.value;
         var name = target.name;
         this.props.updateStateConfig(CONFIG_KEY.teamCapability, name, value);
+    };
+    ReleasePlanInput.prototype._handleDiscountValueChange = function (event) {
+        var target = event.target;
+        var value = target.value;
+        var name = target.name;
+        this.props.updateStateConfig(CONFIG_KEY.discountValue, name, value);
     };
     return ReleasePlanInput;
 }(React.Component));

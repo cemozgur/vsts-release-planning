@@ -50,9 +50,6 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         selected: false
       }
 
-      console.log("doc");
-      console.log(featuresDeailtDocument);
-
       let detailInfo = featuresDeailtDocument.filter(el => {
         return (el.id == feature.workItemId);
       });

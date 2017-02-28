@@ -49,8 +49,6 @@ var IFMReleasePlanningAlgorithm = (function () {
                 order: "0",
                 selected: false
             };
-            console.log("doc");
-            console.log(featuresDeailtDocument);
             var detailInfo = featuresDeailtDocument.filter(function (el) {
                 return (el.id == feature.workItemId);
             });
