@@ -1,10 +1,7 @@
-dist/css
-dist/scripts
-dist/index.html
-
+dist/l
 node_modules/
-scripts/**/*.js
-scripts/**/*.js.map
+src/**/*.js
+src/**/*.js.map
 *.vsix
 index.html
 

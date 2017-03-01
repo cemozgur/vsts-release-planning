@@ -95,6 +95,18 @@ gulp.task('copy', ['build'], () => {
     if (isBundled) {
         gulp.src('node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js')
             .pipe(gulp.dest(contentFolder + '/scripts'));
+        
+        gulp.src('node_modules/jquery/dist/jquery.min.js')
+            .pipe(gulp.dest(contentFolder + '/scripts'));
+
+        gulp.src('node_modules/jquery-validation/dist/jquery.validate.min.js')
+            .pipe(gulp.dest(contentFolder + '/scripts'));
+
+        gulp.src('static/feature-template-extension.html')
+            .pipe(gulp.dest(contentFolder));
+        
+        gulp.src('static/css/main.css')
+            .pipe(gulp.dest(contentFolder + '/css'));
 
         return gulp.src(['node_modules/office-ui-fabric-react/dist/*css/*.min.css'])
             .pipe(gulp.dest(contentFolder));
