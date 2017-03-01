@@ -52,6 +52,7 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
                 checkboxVisibility={CheckboxVisibility.hidden}
                 constrainMode={ConstrainMode.horizontalConstrained}
                 setKey='set'
+                className="features-list-table"
                 onItemInvoked={(item) => {
                     WorkItemFormNavigationService.getService().then(svc => {
                         svc.openWorkItem(item["System.Id"]);

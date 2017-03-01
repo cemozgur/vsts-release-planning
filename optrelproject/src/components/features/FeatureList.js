@@ -32,7 +32,7 @@ var FeatureList = (function (_super) {
         });
         var items = queryResult.workItems.map(function (wi) { return wi.fields; });
         return React.createElement("div", null,
-            React.createElement(DetailsList_1.DetailsList, { columns: columns, items: items, checkboxVisibility: DetailsList_1.CheckboxVisibility.hidden, constrainMode: DetailsList_1.ConstrainMode.horizontalConstrained, setKey: 'set', onItemInvoked: function (item) {
+            React.createElement(DetailsList_1.DetailsList, { columns: columns, items: items, checkboxVisibility: DetailsList_1.CheckboxVisibility.hidden, constrainMode: DetailsList_1.ConstrainMode.horizontalConstrained, setKey: 'set', className: "features-list-table", onItemInvoked: function (item) {
                     Services_1.WorkItemFormNavigationService.getService().then(function (svc) {
                         svc.openWorkItem(item["System.Id"]);
                     });
