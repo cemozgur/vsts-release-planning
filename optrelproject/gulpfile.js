@@ -108,6 +108,11 @@ gulp.task('copy', ['build'], () => {
         gulp.src('static/css/main.css')
             .pipe(gulp.dest(contentFolder + '/css'));
 
+        gulp.src('static/images/*.png')
+            .pipe(gulp.dest(contentFolder + '/images'));
+
+        gulp.dest(contentFolder + '/vsts_extension');
+        
         return gulp.src(['node_modules/office-ui-fabric-react/dist/*css/*.min.css'])
             .pipe(gulp.dest(contentFolder));
     } else {

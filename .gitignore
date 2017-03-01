@@ -7,3 +7,5 @@ KarmaDemo/
 integration-tests/
 ecmascript_testing/
 optrelproject/dist/
+optrelproject/debug*
+optrelproject/npm-debug*
