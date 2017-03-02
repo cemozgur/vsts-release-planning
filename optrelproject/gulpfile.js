@@ -15,7 +15,7 @@ var exec = require('child_process').exec;
 const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
 const vstsUser = "ytachi0026";
 const vstsPublisher = "ytaloborjamori";
-const optRelId="vsts-extensions-optrel";
+const optRelId = "vsts-extensions-optrel";
 
 
 const tsProject = ts.createProject('tsconfig.json', {
@@ -25,11 +25,22 @@ const tsProject = ts.createProject('tsconfig.json', {
 var argv = yargs.string("publisher").argv;
 
 const publisherIdOverride = argv.publisher || "";
-const isBundled = argv.local ? false : true;    
+const isBundled = argv.local ? false : true;
+const windowsEnv = argv.windows ? true : false;
+
 const distFolder = 'dist';
 const contentFolder = isBundled ? distFolder : '.';
 
 var templateValues = {};
+
+
+let tfxCommand;
+if (windowsEnv) {
+    tfxCommand = path.join(__dirname, "node_modules", ".bin", "tfx.cmd");
+} else {
+    tfxCommand = path.join(__dirname, "node_modules", ".bin", "tfx");
+}
+
 
 if (isBundled) {
     templateValues.head = `
@@ -77,7 +88,7 @@ else {
 gulp.task('template', () => {
     return gulp.src('index.html.template')
         .pipe(template(templateValues))
-        .pipe(rename(function(path) {
+        .pipe(rename(function (path) {
             path.basename = 'index';
             path.extname = '.html';
         }))
@@ -95,7 +106,7 @@ gulp.task('copy', ['build'], () => {
     if (isBundled) {
         gulp.src('node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js')
             .pipe(gulp.dest(contentFolder + '/scripts'));
-        
+
         gulp.src('node_modules/jquery/dist/jquery.min.js')
             .pipe(gulp.dest(contentFolder + '/scripts'));
 
@@ -104,7 +115,7 @@ gulp.task('copy', ['build'], () => {
 
         gulp.src('static/feature-template-extension.html')
             .pipe(gulp.dest(contentFolder));
-        
+
         gulp.src('static/css/main.css')
             .pipe(gulp.dest(contentFolder + '/css'));
 
@@ -112,7 +123,7 @@ gulp.task('copy', ['build'], () => {
             .pipe(gulp.dest(contentFolder + '/images'));
 
         gulp.dest(contentFolder + '/vsts_extension');
-        
+
         return gulp.src(['node_modules/office-ui-fabric-react/dist/*css/*.min.css'])
             .pipe(gulp.dest(contentFolder));
     } else {
@@ -131,16 +142,16 @@ gulp.task('webpack', ['copy'], () => {
     }
 });
 
-gulp.task('tfxpack', ['webpack'], ()=> {
-    const vsts_dist = distFolder+"/vsts_extension";
+gulp.task('tfxpack', ['webpack'], () => {
+    const vsts_dist = distFolder + "/vsts_extension";
     const rootArg = `--root ${contentFolder}`;
     const outputPathArg = `--output-path ${vsts_dist}`;
-    const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`; 
+    const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`;
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
 
 
-    exec(`${path.join(__dirname, "node_modules", ".bin", "tfx.cmd")} extension create ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version`,
+    exec(`${tfxCommand} extension create ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);
@@ -150,16 +161,16 @@ gulp.task('tfxpack', ['webpack'], ()=> {
         });
 });
 
-gulp.task('tfxpublish', ['webpack'], ()=> {
-    const vsts_dist = distFolder+"/vsts_extension";
+gulp.task('tfxpublish', ['webpack'], () => {
+    const vsts_dist = distFolder + "/vsts_extension";
     const rootArg = `--root ${contentFolder}`;
     const outputPathArg = `--output-path ${vsts_dist}`;
-    const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`; 
+    const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`;
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
 
 
-    exec(`${path.join(__dirname, "node_modules", ".bin", "tfx.cmd")} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version --share-with ${vstsUser} --token ${vstsPersonalToken}`,
+    exec(`${tfxCommand} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version --share-with ${vstsUser} --token ${vstsPersonalToken}`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);
@@ -169,8 +180,8 @@ gulp.task('tfxpublish', ['webpack'], ()=> {
         });
 });
 
-gulp.task('tfxinstall', ()=> {
-    exec(`${path.join(__dirname, "node_modules", ".bin", "tfx.cmd")} extension install --publisher ${vstsPublisher}  --extension-id ${optRelId} --accounts ${vstsUser} --token ${vstsPersonalToken}`,
+gulp.task('tfxinstall', () => {
+    exec(`${tfxCommand} extension install --publisher ${vstsPublisher}  --extension-id ${optRelId} --accounts ${vstsUser} --token ${vstsPersonalToken}`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);

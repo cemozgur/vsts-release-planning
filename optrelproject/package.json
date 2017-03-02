@@ -7,6 +7,8 @@
     "packoptrel": "./node_modules/.bin/gulp",
     "installoptrel": "./node_modules/.bin/gulp tfxinstall",
     "publishoptrel": "./node_modules/.bin/gulp publishoptrel",
+    "installwoptrel": "./node_modules/.bin/gulp publishoptrel --windows",
+    "publishwoptrel": "./node_modules/.bin/gulp publishoptrel --windows",
     "test": "./node_modules/.bin/karma start"
   },
   "keywords": [
