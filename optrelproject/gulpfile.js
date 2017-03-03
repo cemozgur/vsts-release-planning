@@ -12,27 +12,28 @@ var exec = require('child_process').exec;
 /**
  * VSTS values for configuration
  */
-const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
-const vstsUser = "ytachi0026";
-const vstsPublisher = "ytaloborjamori";
-const optRelId = "vsts-extensions-optrel";
+//const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
+//const vstsUser = "ytachi0026";
+//const vstsPublisher = "ytaloborjamori";
+//const optRelId = "vsts-extensions-optrel";
 
 
 const tsProject = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
 });
 
-var argv = yargs.string("publisher").argv;
+//var argv = yargs.string("publisher").argv;
+let argv = yargs.argv;
+console.log(argv);
 
-const publisherIdOverride = argv.publisher || "";
+
 const isBundled = argv.local ? false : true;
 const windowsEnv = argv.windows ? true : false;
 
-const distFolder = 'dist';
-const contentFolder = isBundled ? distFolder : '.';
-
-var templateValues = {};
-
+const vstsPersonalToken = argv.token;
+const publisherIdOverride = argv.publisher || "";
+const vstsUser = argv.uservst;
+const extension_vsts_id = argv.extensionvstsid;//DEV wants to change the extension id
 
 let tfxCommand;
 if (windowsEnv) {
@@ -40,6 +41,12 @@ if (windowsEnv) {
 } else {
     tfxCommand = path.join(__dirname, "node_modules", ".bin", "tfx");
 }
+
+
+const distFolder = 'dist';
+const contentFolder = isBundled ? distFolder : '.';
+
+var templateValues = {};
 
 
 if (isBundled) {
@@ -142,16 +149,19 @@ gulp.task('webpack', ['copy'], () => {
     }
 });
 
-gulp.task('tfxpack', ['webpack'], () => {
-    const vsts_dist = distFolder + "/vsts_extension";
+/**
+ * Creating the vsix file only
+ */
+gulp.task('tfxpack', () => {
     const rootArg = `--root ${contentFolder}`;
-    const outputPathArg = `--output-path ${vsts_dist}`;
+    const vsix_folder = distFolder + "/vsts_extension";
+    const outputPathArg = `--output-path ${vsix_folder}`;
     const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`;
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
+    const extensionIdOverrideArg = extension_vsts_id != "" ? `--extension-id ${extension_vsts_id}` : '';
 
-
-    exec(`${tfxCommand} extension create ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version`,
+    exec(`${tfxCommand} extension create ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} ${extensionIdOverrideArg} --rev-version`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);
@@ -161,16 +171,21 @@ gulp.task('tfxpack', ['webpack'], () => {
         });
 });
 
-gulp.task('tfxpublish', ['webpack'], () => {
-    const vsts_dist = distFolder + "/vsts_extension";
+/**
+ * Publishing the vsix file on the Publisher!, before it creates it
+ */
+gulp.task('tfxpublish', () => {
     const rootArg = `--root ${contentFolder}`;
-    const outputPathArg = `--output-path ${vsts_dist}`;
+    const vsix_folder = distFolder + "/vsts_extension";
+    const outputPathArg = `--output-path ${vsix_folder}`;
     const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`;
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
+    const extensionIdOverrideArg = extension_vsts_id != "" ? `--extension-id ${extension_vsts_id}` : '';
+    const shareWithAccountArg = vstsUser != ""? `--share-with ${vstsUser}` : '';
+    const personalPublisherTokenArg = vstsPersonalToken != "" ? `--token ${vstsPersonalToken}` : '';
 
-
-    exec(`${tfxCommand} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} --rev-version --share-with ${vstsUser} --token ${vstsPersonalToken}`,
+    exec(`${tfxCommand} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} ${extensionIdOverrideArg} ${shareWithAccountArg} ${personalPublisherTokenArg} --rev-version`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);
@@ -181,7 +196,7 @@ gulp.task('tfxpublish', ['webpack'], () => {
 });
 
 gulp.task('tfxinstall', () => {
-    exec(`${tfxCommand} extension install --publisher ${vstsPublisher}  --extension-id ${optRelId} --accounts ${vstsUser} --token ${vstsPersonalToken}`,
+    exec(`${tfxCommand} extension install --publisher ${publisherIdOverride}  --extension-id ${extension_vsts_id} --accounts ${vstsUser} --token ${vstsPersonalToken}`,
         (err, stdout, stderr) => {
             if (err) {
                 console.log(err);
@@ -191,5 +206,28 @@ gulp.task('tfxinstall', () => {
         });
 });
 
-gulp.task('default', ['template', 'tfxpack']);
-gulp.task('publishoptrel', ['template', 'tfxpublish']);
+gulp.task('buildoptrel', ['template', 'webpack']);
+
+gulp.task('publishoptrel', ['buildoptrel'], () => {
+    const rootArg = `--root ${contentFolder}`;
+    const vsix_folder = distFolder + "/vsts_extension";
+    const outputPathArg = `--output-path ${vsix_folder}`;
+    const manifestsArg = `--manifests ${isBundled ? '../' : ''}manifests/base.json`;
+    const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
+    const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
+    const extensionIdOverrideArg = extension_vsts_id != "" ? `--extension-id ${extension_vsts_id}` : '';
+    const shareWithAccountArg = vstsUser != ""? `--share-with ${vstsUser}` : '';
+    const personalPublisherTokenArg = vstsPersonalToken != "" ? `--token ${vstsPersonalToken}` : '';
+
+    exec(`${tfxCommand} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} ${extensionIdOverrideArg} ${shareWithAccountArg} ${personalPublisherTokenArg} --rev-version`,
+        (err, stdout, stderr) => {
+            if (err) {
+                console.log(err);
+            }
+            console.log(stdout);
+            console.log(stderr);
+        });
+});
+
+
+gulp.task('default', ['build', 'tfxpack']);//it build and pack the project
