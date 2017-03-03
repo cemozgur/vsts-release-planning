@@ -1,4 +1,6 @@
-const webpackConfig = require('./test.webpack.config');
+const path = require("path");
+
+const webpackConfig = require(__dirname+"/test.webpack.config");
 
 module.exports = function (config) {
     config.set({
