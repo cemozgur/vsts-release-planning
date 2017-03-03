@@ -9,18 +9,10 @@ var inversify_1 = require("inversify");
 require("reflect-metadata");
 var IFMReleasePlanningAlgorithm = (function () {
     function IFMReleasePlanningAlgorithm() {
-        this.ReleasePlan = { discountValue: 0,
-            cumulatedDiscountValue: 0, featureList: [],
-            teamCapability: 0, totalRequiredEffort: 0,
-            numberOfSprint: 0, sprintDuration: 0 };
+        this.ReleasePlan = { discountValue: 0, cumulatedDiscountValue: 0, featureList: [], teamCapability: 0, totalRequiredEffort: 0, numberOfSprint: 0, sprintDuration: 0 };
+        this.ResultReleasePlan = { discountValue: 0, cumulatedDiscountValue: 0, featureList: [], teamCapability: 0, totalRequiredEffort: 0, numberOfSprint: 0, sprintDuration: 0 };
+        this.RequiredSprint = 0;
     }
-    IFMReleasePlanningAlgorithm.prototype.getFeatureData = function () {
-        //here we are going to call the VSTS sdk web extension
-        this.ReleasePlan.featureList = [];
-    };
-    IFMReleasePlanningAlgorithm.prototype.getReleasePlanType = function () {
-        return "IFM Algortihm";
-    };
     IFMReleasePlanningAlgorithm.prototype.testDataGeneration = function (config) {
         this.ReleasePlan.discountValue = config.discountValue;
         this.ReleasePlan.teamCapability = config.teamCapability;
@@ -35,9 +27,7 @@ var IFMReleasePlanningAlgorithm = (function () {
                 timeCriticality: Math.random() * 5 + 1,
                 cost: Math.random() * 50 + 1,
                 selected: false,
-                dependency: "0",
-                feature: "Feature Name #",
-                order: "1"
+                dependency: "0"
             };
             this.ReleasePlan.featureList.push({ feature: feature });
         }
@@ -45,12 +35,9 @@ var IFMReleasePlanningAlgorithm = (function () {
         this.ReleasePlan.featureList[4].feature.dependency = "2,3";
     };
     IFMReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function () {
-        var ResultReleasePlan = { discountValue: 0, cumulatedDiscountValue: 0,
-            featureList: [], teamCapability: 0, totalRequiredEffort: 0,
-            numberOfSprint: 0, sprintDuration: 0 }; //this is only if we dont require the value again.
         this.getTotalRequiredEffort();
         this.calculateCumulatedDiscountValue();
-        this.calculateNumberOfRequiredSprint();
+        this.RequiredSprint = this.calculateNumberOfRequiredSprint();
         var maxNPV = -Number.MAX_VALUE;
         var maxFeature = -1;
         var tempNPV = -Number.MAX_VALUE;
@@ -59,7 +46,6 @@ var IFMReleasePlanningAlgorithm = (function () {
                 if (this.ReleasePlan.featureList[j].feature.selected == false) {
                     if (this.ReleasePlan.featureList[j].feature.dependency == "0") {
                         tempNPV = this.calculateNPV(j);
-                        //console.log("tempNPV is : " + tempNPV);
                         if (tempNPV > maxNPV) {
                             maxNPV = tempNPV;
                             maxFeature = j + 1;
@@ -72,7 +58,6 @@ var IFMReleasePlanningAlgorithm = (function () {
                     else {
                         if (this.checkDependence(j) == true) {
                             tempNPV = this.calculateNPV(j);
-                            //console.log("tempNPV is : " + tempNPV);
                             if (tempNPV > maxNPV) {
                                 maxNPV = tempNPV;
                                 maxFeature = j + 1;
@@ -85,20 +70,19 @@ var IFMReleasePlanningAlgorithm = (function () {
                     }
                 }
             }
-            ResultReleasePlan.featureList.push(this.ReleasePlan.featureList[maxFeature - 1].feature);
-            //console.log("Feature added to the releasePlan!!!");
+            this.ResultReleasePlan.featureList.push(this.ReleasePlan.featureList[maxFeature - 1].feature);
             this.ReleasePlan.featureList[maxFeature - 1].feature.selected = true;
             maxFeature = -1;
             maxNPV = -Number.MAX_VALUE;
             tempNPV = -Number.MAX_VALUE;
         }
-        ResultReleasePlan.discountValue = this.ReleasePlan.discountValue;
-        ResultReleasePlan.cumulatedDiscountValue = this.ReleasePlan.cumulatedDiscountValue;
-        ResultReleasePlan.teamCapability = this.ReleasePlan.teamCapability;
-        ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
-        ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
-        ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
-        return ResultReleasePlan;
+        this.ResultReleasePlan.discountValue = this.ReleasePlan.discountValue;
+        this.ResultReleasePlan.cumulatedDiscountValue = this.ReleasePlan.cumulatedDiscountValue;
+        this.ResultReleasePlan.teamCapability = this.ReleasePlan.teamCapability;
+        this.ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
+        this.ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
+        this.ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
+        return this.ResultReleasePlan;
     };
     IFMReleasePlanningAlgorithm.prototype.getTotalRequiredEffort = function () {
         var i;
@@ -111,15 +95,14 @@ var IFMReleasePlanningAlgorithm = (function () {
     IFMReleasePlanningAlgorithm.prototype.calculateCumulatedDiscountValue = function () {
         this.ReleasePlan.cumulatedDiscountValue = (Math.pow(((this.ReleasePlan.discountValue / 100.00) + 1.0), (this.ReleasePlan.sprintDuration / 52.0)) - 1.0) * 100.0;
     };
-    //This is for calculating total number of sprints needed.
     IFMReleasePlanningAlgorithm.prototype.calculateNumberOfRequiredSprint = function () {
-        Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
+        return Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
     };
     IFMReleasePlanningAlgorithm.prototype.calculateNPV = function (index) {
         var npv = 0;
         var e = 0.0;
         var i;
-        for (i = 0; i < this.ReleasePlan.featureList.length; i++) {
+        for (i = 1; i <= this.RequiredSprint; i++) {
             e = i;
             npv += this.ReleasePlan.featureList[index].feature.bussinesValue / Math.pow((1.0 + (this.ReleasePlan.cumulatedDiscountValue / 100.0)), e);
         }
