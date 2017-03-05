@@ -12,515 +12,528 @@
 <body style="overflow:auto;">
 
   <style>
-    input.error {
-      border: 1px solid #FF0000 !important;
+  input.error{
+    border:1px solid #FF0000 !important;
+    font-size: 13px;
+    color: black;
+  }
+  label.error,div.error{
+      font-weight:normal;
       font-size: 13px;
-      color: black;
-    }
-    
-    label.error,
-    div.error {
-      font-weight: normal;
-      font-size: 13px;
-      color: #FF0000 !important;
-    }
+      color:#FF0000 !important;
+  }
+
+  input{
+    border: 1px solid #a9a9a9;
+    outline: none;
+  }
+
+  input:focus{
+    height: 100%;
+    border: 1px solid #a9a9a9;
+  }
+
+  input:hover{
+    height: 100%;
+    border: 1px solid #a9a9a9;
+  }
+
+
+
   </style>
 
-  <script>
-    var workItemID;
-    var RPDSDocsExist = false;
-    var RPDSDocsName = "RPDS";
+    <script>
+        var workItemID;
+        var RPDSDocsExist = false;
+        var RPDSDocsName = "RPDS";
 
-    VSS.init({
-      explicitNotifyLoaded: true,
-      usePlatformScripts: true
-    });
+        VSS.init({
+            explicitNotifyLoaded: true,
+            usePlatformScripts: true
+        });
 
-    VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
+        VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
 
-      // Get the WorkItemFormService.  This service allows you to get/set fields/links on the 'active' work item (the work item
-      // that currently is displayed in the UI).
-      function getWorkItemFormService() {
-        return _WorkItemServices.WorkItemFormService.getService();
-      }
-
-      // Register a listener for the work item group contribution.
-      VSS.register(VSS.getContribution().id, function () {
-        return {
-          // Called when the active work item is modified
-          onFieldChanged: function (args) {
-            $(".events").append($("<div/>").text("onFieldChanged - " + JSON.stringify(args)));
-          },
-
-          // Called when a new work item is being loaded in the UI
-          /***
-           *  TODO: ytalo focus on this onLoaded
-           *
-           *
-           *
-           *
-           *
-           * */
-          onLoaded: function (args) {
-
-            getWorkItemFormService().then(function (service) {
-              // Get the current values for a few of the common fields
-              service.getFieldValue("System.Id").then(
-                function (value) {
-                  workItemID = value;
-                  console.log("Value:" + workItemID);
-                  $(".events").append($("<div/>").text("onLoaded - " + JSON.stringify(value)));
-                });
-
-              // Get data service
-              VSS.getService(VSS.ServiceIds.ExtensionData).then(function (dataService) {
-                // Get document by Work Item id
-                console.log(workItemID);
-                var id = 0;
-                dataService.getDocument(RPDSDocsName, workItemID).then(function (doc) {
-                  id = doc.id;
-                }).then(function (doc) {
-                  console.log("ID is defined?: " + (id != undefined))
-                  if (id != undefined) {
-                    RPDSDocsExist = true;
-                    document.getElementById('minBusinessValue').value = doc.BusinessValue.Min;
-                    document.getElementById('expectedBusinessValue').value = doc.BusinessValue.Expected;
-                    document.getElementById('maxBusinessValue').value = doc.BusinessValue.Max;
-                    document.getElementById('minCost').value = doc.Cost.Min;
-                    document.getElementById('expectedCost').value = doc.Cost.Expected;
-                    document.getElementById('maxCost').value = doc.Cost.Max;
-                    document.getElementById('minEffort').value = doc.Effort.Min;
-                    document.getElementById('expectedEffort').value = doc.Effort.Expected;
-                    document.getElementById('maxEffort').value = doc.Effort.Max;
-                    document.getElementById('minRisk').value = doc.Risk.Min;
-                    document.getElementById('expectedRisk').value = doc.Risk.Expected;
-                    document.getElementById('maxRisk').value = doc.Risk.Max;
-                    document.getElementById('minTimeCriticality').value = doc.timeCriticality.Min;
-                    document.getElementById('expectedTimeCriticality').value = doc.timeCriticality.Expected;
-                    document.getElementById('maxTimeCriticality').value = doc.timeCriticality.Max;
-                    document.getElementById('featureDependency').value = doc.Dependency;
-                  }
-                  console.log("RPDS: Doc exists = " + RPDSDocsExist);
-                });
-              });
-
-            })
-
-
-
-
-          },
-
-          // Called when the active work item is being unloaded in the UI
-          onUnloaded: function (args) {
-            $(".events").empty();
-            $(".events").append($("<div/>").text("onUnloaded - " + JSON.stringify(args)));
-          },
-
-          // Called after the work item has been saved
-          onSaved: function (args) {
-            $(".events").append($("<div/>").text("onSaved - " + JSON.stringify(args)));
-            getWorkItemFormService().then(function (service) {
-              //service.setFieldValue("System.Title", "Title set from your group extension!");
-              console.log("Business Value: " + document.getElementById('minBusinessValue').value + "," + document.getElementById('expectedBusinessValue').value + "," + document.getElementById('maxBusinessValue').value);
-              console.log("Cost: " + document.getElementById('minCost').value + "," + document.getElementById('expectedCost').value + "," + document.getElementById('maxCost').value);
-              console.log("Effort: " + document.getElementById('minEffort').value + "," + document.getElementById('expectedEffort').value + "," + document.getElementById('maxEffort').value);
-              console.log("Risk: " + document.getElementById('minRisk').value + "," + document.getElementById('expectedRisk').value + "," + document.getElementById('maxRisk').value);
-              console.log("Time Criticality: " + document.getElementById('minTimeCriticality').value + "," + document.getElementById('expectedTimeCriticality').value + "," + document.getElementById('maxTimeCriticality').value);
-            });
-          },
-
-          // Called when the work item is reset to its unmodified state (undo)
-          onReset: function (args) {
-            $(".events").append($("<div/>").text("onReset - " + JSON.stringify(args)));
-          },
-
-          // Called when the work item has been refreshed from the server
-          onRefreshed: function (args) {
-            $(".events").append($("<div/>").text("onRefreshed - " + JSON.stringify(args)));
-          }
-        }
-      });
-
-      VSS.notifyLoadSucceeded();
-
-      // register a handler for the 'Click me!' button.
-      $("#clickme").click(function () {
-
-
-
-
-
-
-
-
-      });
-
-      // Get work item form service
-
-      $.validator.addMethod("regex", function (value, element, regexpr) {
-        return regexpr.test(value);
-      });
-
-      $("#saveSetting").submit(function (e) {
-        e.preventDefault();
-      }).validate({
-        errorElement: 'div',
-        errorLabelContainer: '#errors',
-        rules: {
-          // The key name on the left side is the name attribute
-          // of an input field. Validation rules are defined
-          // on the right side
-          minBusinessValue: {
-            required: true,
-            number: true
-          },
-          expectedBusinessValue: {
-            required: true,
-            number: true,
-            range: function () { return [$('#minBusinessValue').val(), $('#maxBusinessValue').val()]; }
-          },
-          maxBusinessValue: {
-            required: true,
-            number: true
-          },
-          minCost: {
-            required: true,
-            number: true
-          },
-          expectedCost: {
-            required: true,
-            number: true,
-            range: function () { return [$('#minCost').val(), $('#maxCost').val()]; }
-          },
-          maxCost: {
-            required: true,
-            number: true
-          },
-          minEffort: {
-            required: true,
-            number: true
-          },
-          expectedEffort: {
-            required: true,
-            number: true,
-            range: function () { return [$('#minEffort').val(), $('#maxEffort').val()]; }
-          },
-          maxEffort: {
-            required: true,
-            number: true
-          },
-          minRisk: {
-            required: true,
-            number: true
-          },
-          expectedRisk: {
-            required: true,
-            number: true,
-            range: function () { return [$('#minRisk').val(), $('#maxRisk').val()]; }
-          },
-          maxRisk: {
-            required: true,
-            number: true
-          },
-          minTimeCriticality: {
-            required: true,
-            number: true
-          },
-          expectedTimeCriticality: {
-            required: true,
-            number: true,
-            range: function () { return [$('#minTimeCriticality').val(), $('#maxTimeCriticality').val()]; }
-          },
-          maxTimeCriticality: {
-            required: true,
-            number: true
-          },
-          featureDependency: {
-            regex: /^[0-9,]+$/,
-            required: true
-          }
-        },
-        // Specify validation error messages
-        messages: {
-          minBusinessValue: {
-            required: "- Please enter minimum Business Value </br>",
-            number: "- Invalid minimum Business Value value (Number only)</br>"
-          },
-          expectedBusinessValue: {
-            required: "- Please enter expected Business Value </br>",
-            number: "- Invalid expected Business Value value (Number only)</br>",
-            range: "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
-          },
-          maxBusinessValue: {
-            required: "- Please enter maximum Business Value </br>",
-            number: "- Invalid maximum Business Value value (Number only)</br>"
-          },
-          minCost: {
-            required: "- Please enter minimum Implementation Cost </br>",
-            number: "- Invalid minimum Implementation Cost value (Number only)</br>"
-          },
-          expectedCost: {
-            required: "- Please enter expected Implementation Cost </br>",
-            number: "- Invalid expected Implementation Cost value (Number only)</br>",
-            range: "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
-          },
-          maxCost: {
-            required: "- Please enter maximum Implementation Cost </br>",
-            number: "- Invalid maximum Implementation Cost value (Number only)</br>"
-          },
-          minEffort: {
-            required: "- Please enter minimum Effort </br>",
-            number: "- Invalid minimum Effort value (Number only)</br>"
-          },
-          expectedEffort: {
-            required: "- Please enter expected Effort </br>",
-            number: "- Invalid expected Effort value (Number only)</br>",
-            range: "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
-          },
-          maxEffort: {
-            required: "- Please enter maximum Effort </br>",
-            number: "- Invalid maximum Effort value (Number only)</br>"
-          },
-          minRisk: {
-            required: "- Please enter minimum Risk </br>",
-            number: "- Invalid minimum Risk value (Number only)</br>"
-          },
-          expectedRisk: {
-            required: "- Please enter expected Risk </br>",
-            number: "- Invalid expected Risk value (Number only)</br>",
-            range: "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
-          },
-          maxRisk: {
-            required: "- Please enter maximum Risk </br>",
-            number: "- Invalid maximum Risk value (Number only)</br>"
-          },
-          minTimeCriticality: {
-            required: "- Please enter minimum Time Criticality </br>",
-            number: "- Invalid minimum Time Criticality value (Number only)</br>"
-          },
-          expectedTimeCriticality: {
-            required: "- Please enter expected Time Criticality </br>",
-            number: "- Invalid expected Time Criticality value (Number only)</br>",
-            range: "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
-          },
-          maxTimeCriticality: {
-            required: "- Please enter maximum Time Criticality </br>",
-            number: "- Invalid maximum Time Criticality value (Number only)</br>"
-          },
-          featureDependency: {
-            required: "- Please enter Feature Dependency/Dependencies</br>",
-            regex: "- Invalid Feature Dependency/Dependencies value (Number with comma separator only)</br>"
-          }
-        },
-        submitHandler: function (form) {
-          // Get data service
-          VSS.getService(VSS.ServiceIds.ExtensionData).then(function (dataService) {
-
-            if (RPDSDocsExist == true) {
-              console.log("RPDS: Document exists. Update the existing one.");
-              // Get document first
-              dataService.getDocument(RPDSDocsName, workItemID).then(function (doc) {
-                // Update the document
-                doc.BusinessValue.Min = document.getElementById('minBusinessValue').value;
-                doc.BusinessValue.Expected = document.getElementById('expectedBusinessValue').value;
-                doc.BusinessValue.Max = document.getElementById('maxBusinessValue').value;
-                doc.Cost.Min = document.getElementById('minCost').value;
-                doc.Cost.Expected = document.getElementById('expectedCost').value;
-                doc.Cost.Max = document.getElementById('maxCost').value;
-                doc.Effort.Min = document.getElementById('minEffort').value;
-                doc.Effort.Expected = document.getElementById('expectedEffort').value;
-                doc.Effort.Max = document.getElementById('maxEffort').value;
-                doc.Risk.Min = document.getElementById('minRisk').value;
-                doc.Risk.Expected = document.getElementById('expectedRisk').value;
-                doc.Risk.Max = document.getElementById('maxRisk').value;
-                doc.timeCriticality.Min = document.getElementById('minTimeCriticality').value;
-                doc.timeCriticality.Expected = document.getElementById('expectedTimeCriticality').value;
-                doc.timeCriticality.Max = document.getElementById('maxTimeCriticality').value;
-                doc.Dependency = document.getElementById('featureDependency').value;
-                dataService.updateDocument(RPDSDocsName, doc).then(function (d) {
-                  // Check the new version
-                  console.log("Doc version: " + d.__etag);
-                });
-              });
-
-            } else {
-              console.log("RPDS: Document is not exist. Create a new one.");
-              // Prepare document first
-              var newDoc = {
-                id: workItemID,
-                BusinessValue: {
-                  Min: document.getElementById('minBusinessValue').value,
-                  Expected: document.getElementById('expectedBusinessValue').value,
-                  Max: document.getElementById('maxBusinessValue').value
-                },
-                Cost: {
-                  Min: document.getElementById('minCost').value,
-                  Expected: document.getElementById('expectedCost').value,
-                  Max: document.getElementById('maxCost').value
-                },
-                Effort: {
-                  Min: document.getElementById('minEffort').value,
-                  Expected: document.getElementById('expectedEffort').value,
-                  Max: document.getElementById('maxEffort').value
-                },
-                Risk: {
-                  Min: document.getElementById('minRisk').value,
-                  Expected: document.getElementById('expectedRisk').value,
-                  Max: document.getElementById('maxRisk').value
-                },
-                timeCriticality: {
-                  Min: document.getElementById('minTimeCriticality').value,
-                  Expected: document.getElementById('expectedTimeCriticality').value,
-                  Max: document.getElementById('maxTimeCriticality').value
-                },
-                Dependency: document.getElementById('featureDependency').value
-              };
-
-              dataService.createDocument(RPDSDocsName, newDoc).then(function (doc) {
-                // Even if no ID was passed to createDocument, one will be generated
-                console.log("RPDS: Created Doc ID =" + doc.id);
-              });
-
-              RPDSDocsExist = true;
-
+            // Get the WorkItemFormService.  This service allows you to get/set fields/links on the 'active' work item (the work item
+            // that currently is displayed in the UI).
+            function getWorkItemFormService()
+            {
+                return _WorkItemServices.WorkItemFormService.getService();
             }
 
-            alert("Save Successfully");
-          });
-        }
-      });
+            // Register a listener for the work item group contribution.
+            VSS.register(VSS.getContribution().id, function () {
+                return {
+                    // Called when the active work item is modified
+                    onFieldChanged: function(args) {
+                        $(".events").append($("<div/>").text("onFieldChanged - " + JSON.stringify(args)));
+                    },
 
-      $("#clearSetting").click(function () {
-        // Get work item form service
-        // Get data service
-        VSS.getService(VSS.ServiceIds.ExtensionData).then(function (dataService) {
-          dataService.deleteDocument(RPDSDocsName, workItemID).then(function () {
-            console.log("RPDS: Doc deleted");
-          });
+                    // Called when a new work item is being loaded in the UI
+                    /***
+                     *  TODO: ytalo focus on this onLoaded
+                     *
+                     *
+                     *
+                     *
+                     *
+                     * */
+                    onLoaded: function (args) {
 
-          RPDSDocsExist = false;
+                        getWorkItemFormService().then(function(service) {
+                            // Get the current values for a few of the common fields
+                            service.getFieldValue("System.Id").then(
+                                function (value) {
+                                    workItemID = value;
+                                    console.log("Value:"+workItemID);
+                                    $(".events").append($("<div/>").text("onLoaded - " + JSON.stringify(value)));
+                                });
 
-          alert("Setting has been cleared");
+                                // Get data service
+                                VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                                    // Get document by Work Item id
+                                    console.log(workItemID);
+                                    var id = 0;
+                                    dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
+                                      id = doc.id;
+                                    }).then(function(doc){
+                                      console.log("ID is defined?: "+(id!=undefined))
+                                      if(id!=undefined){
+                                        RPDSDocsExist = true;
+                                        document.getElementById('minBusinessValue').value = doc.BusinessValue.Min;
+                                          document.getElementById('expectedBusinessValue').value = doc.BusinessValue.Expected;
+                                            document.getElementById('maxBusinessValue').value = doc.BusinessValue.Max;
+                                        document.getElementById('minCost').value = doc.Cost.Min;
+                                          document.getElementById('expectedCost').value = doc.Cost.Expected;
+                                            document.getElementById('maxCost').value = doc.Cost.Max;
+                                        document.getElementById('minEffort').value = doc.Effort.Min;
+                                          document.getElementById('expectedEffort').value = doc.Effort.Expected;
+                                            document.getElementById('maxEffort').value = doc.Effort.Max;
+                                        document.getElementById('minRisk').value = doc.Risk.Min;
+                                          document.getElementById('expectedRisk').value = doc.Risk.Expected;
+                                            document.getElementById('maxRisk').value = doc.Risk.Max;
+                                        document.getElementById('minTimeCriticality').value = doc.timeCriticality.Min;
+                                          document.getElementById('expectedTimeCriticality').value = doc.timeCriticality.Expected;
+                                            document.getElementById('maxTimeCriticality').value = doc.timeCriticality.Max;
+                                        document.getElementById('featureDependency').value = doc.Dependency;
+                                      }
+                                      console.log("RPDS: Doc exists = "+RPDSDocsExist);
+                                    });
+                                });
+
+                        })
+
+
+
+
+                    },
+
+                    // Called when the active work item is being unloaded in the UI
+                    onUnloaded: function (args) {
+                        $(".events").empty();
+                        $(".events").append($("<div/>").text("onUnloaded - " + JSON.stringify(args)));
+                    },
+
+                    // Called after the work item has been saved
+                    onSaved: function (args) {
+                        $(".events").append($("<div/>").text("onSaved - " + JSON.stringify(args)));
+                        getWorkItemFormService().then(function(service) {
+                            //service.setFieldValue("System.Title", "Title set from your group extension!");
+                          console.log("Business Value: "+document.getElementById('minBusinessValue').value+","+document.getElementById('expectedBusinessValue').value+","+document.getElementById('maxBusinessValue').value);
+                          console.log("Cost: "+document.getElementById('minCost').value+","+document.getElementById('expectedCost').value+","+document.getElementById('maxCost').value);
+                          console.log("Effort: "+document.getElementById('minEffort').value+","+document.getElementById('expectedEffort').value+","+document.getElementById('maxEffort').value);
+                          console.log("Risk: "+document.getElementById('minRisk').value+","+document.getElementById('expectedRisk').value+","+document.getElementById('maxRisk').value);
+                          console.log("Time Criticality: "+document.getElementById('minTimeCriticality').value+","+document.getElementById('expectedTimeCriticality').value+","+document.getElementById('maxTimeCriticality').value);
+                        });
+                    },
+
+                    // Called when the work item is reset to its unmodified state (undo)
+                    onReset: function (args) {
+                        $(".events").append($("<div/>").text("onReset - " + JSON.stringify(args)));
+                    },
+
+                    // Called when the work item has been refreshed from the server
+                    onRefreshed: function (args) {
+                        $(".events").append($("<div/>").text("onRefreshed - " + JSON.stringify(args)));
+                    }
+                }
+            });
+
+            VSS.notifyLoadSucceeded();
+
+            // Get work item form service
+
+            $.validator.addMethod("regex", function(value, element, regexpr) {
+              return regexpr.test(value);
+            });
+
+            $("#saveSetting").submit(function(e) {
+              e.preventDefault();
+            }).validate({
+              errorElement : 'div',
+              errorLabelContainer: '#errors',
+              rules: {
+                // The key name on the left side is the name attribute
+                // of an input field. Validation rules are defined
+                // on the right side
+                minBusinessValue : {
+                  required: true,
+                  number : true
+                },
+                expectedBusinessValue : {
+                  required: true,
+                  number : true,
+                  range : function() { return [ $('#minBusinessValue').val(), $('#maxBusinessValue').val() ]; }
+                },
+                maxBusinessValue : {
+                  required: true,
+                  number : true
+                },
+                minCost : {
+                  required: true,
+                  number : true
+                },
+                expectedCost : {
+                  required: true,
+                  number : true,
+                  range : function() { return [ $('#minCost').val(), $('#maxCost').val() ]; }
+                },
+                maxCost : {
+                  required: true,
+                  number : true
+                },
+                minEffort : {
+                  required: true,
+                  number : true
+                },
+                expectedEffort : {
+                  required: true,
+                  number : true,
+                  range : function() { return [ $('#minEffort').val(), $('#maxEffort').val() ]; }
+                },
+                maxEffort : {
+                  required: true,
+                  number : true
+                },
+                minRisk : {
+                  required: true,
+                  number : true
+                },
+                expectedRisk : {
+                  required: true,
+                  number : true,
+                  range : function() { return [ $('#minRisk').val(), $('#maxRisk').val() ]; }
+                },
+                maxRisk : {
+                  required: true,
+                  number : true
+                },
+                minTimeCriticality : {
+                  required: true,
+                  number : true
+                },
+                expectedTimeCriticality : {
+                  required: true,
+                  number : true,
+                  range : function() { return [ $('#minTimeCriticality').val(), $('#maxTimeCriticality').val() ]; }
+                },
+                maxTimeCriticality : {
+                  required: true,
+                  number : true
+                },
+                featureDependency : {
+                  regex: /^[0-9,]+$/,
+                  required: true
+                }
+              },
+              // Specify validation error messages
+              messages: {
+                minBusinessValue : {
+                  required: "- Please enter minimum Business Value </br>",
+                  number: "- Invalid minimum Business Value value (Number only)</br>"
+                },
+                expectedBusinessValue : {
+                  required: "- Please enter expected Business Value </br>",
+                  number: "- Invalid expected Business Value value (Number only)</br>",
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
+
+                },
+                maxBusinessValue : {
+                  required: "- Please enter maximum Business Value </br>",
+                  number: "- Invalid maximum Business Value value (Number only)</br>"
+                },
+                minCost : {
+                  required: "- Please enter minimum Implementation Cost </br>",
+                  number: "- Invalid minimum Implementation Cost value (Number only)</br>"
+                },
+                expectedCost : {
+                  required: "- Please enter expected Implementation Cost </br>",
+                  number: "- Invalid expected Implementation Cost value (Number only)</br>",
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
+
+                },
+                maxCost : {
+                  required: "- Please enter maximum Implementation Cost </br>",
+                  number: "- Invalid maximum Implementation Cost value (Number only)</br>"
+                },
+                minEffort : {
+                  required: "- Please enter minimum Effort </br>",
+                  number: "- Invalid minimum Effort value (Number only)</br>"
+                },
+                expectedEffort : {
+                  required: "- Please enter expected Effort </br>",
+                  number: "- Invalid expected Effort value (Number only)</br>",
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
+
+                },
+                maxEffort : {
+                  required: "- Please enter maximum Effort </br>",
+                  number: "- Invalid maximum Effort value (Number only)</br>"
+                },
+                minRisk : {
+                  required: "- Please enter minimum Risk </br>",
+                  number: "- Invalid minimum Risk value (Number only)</br>"
+                },
+                expectedRisk : {
+                  required: "- Please enter expected Risk </br>",
+                  number: "- Invalid expected Risk value (Number only)</br>",
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
+
+                },
+                maxRisk : {
+                  required: "- Please enter maximum Risk </br>",
+                  number: "- Invalid maximum Risk value (Number only)</br>"
+                },
+                minTimeCriticality : {
+                  required: "- Please enter minimum Time Criticality </br>",
+                  number: "- Invalid minimum Time Criticality value (Number only)</br>"
+                },
+                expectedTimeCriticality : {
+                  required: "- Please enter expected Time Criticality </br>",
+                  number: "- Invalid expected Time Criticality value (Number only)</br>",
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
+
+                },
+                maxTimeCriticality : {
+                  required: "- Please enter maximum Time Criticality </br>",
+                  number: "- Invalid maximum Time Criticality value (Number only)</br>"
+                },
+                featureDependency : {
+                  required: "- Please enter Feature Dependency/Dependencies</br>",
+                  regex: "- Invalid Feature Dependency/Dependencies value (Number with comma separator only)</br>"
+                }
+              },
+              submitHandler : function(form){
+                // Get data service
+                VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+
+                    if(RPDSDocsExist == true){
+                      console.log("RPDS: Document exists. Update the existing one.");
+                          // Get document first
+                          dataService.getDocument(RPDSDocsName, workItemID).then(function(doc) {
+                              // Update the document
+                              doc.BusinessValue.Min = document.getElementById('minBusinessValue').value;
+                              doc.BusinessValue.Expected = document.getElementById('expectedBusinessValue').value;
+                              doc.BusinessValue.Max = document.getElementById('maxBusinessValue').value;
+                              doc.Cost.Min = document.getElementById('minCost').value;
+                              doc.Cost.Expected = document.getElementById('expectedCost').value;
+                              doc.Cost.Max = document.getElementById('maxCost').value;
+                              doc.Effort.Min = document.getElementById('minEffort').value;
+                              doc.Effort.Expected = document.getElementById('expectedEffort').value;
+                              doc.Effort.Max = document.getElementById('maxEffort').value;
+                              doc.Risk.Min = document.getElementById('minRisk').value;
+                              doc.Risk.Expected = document.getElementById('expectedRisk').value;
+                              doc.Risk.Max = document.getElementById('maxRisk').value;
+                              doc.timeCriticality.Min = document.getElementById('minTimeCriticality').value;
+                              doc.timeCriticality.Expected = document.getElementById('expectedTimeCriticality').value;
+                              doc.timeCriticality.Max = document.getElementById('maxTimeCriticality').value;
+                              doc.Dependency = document.getElementById('featureDependency').value;
+                              dataService.updateDocument(RPDSDocsName, doc).then(function(d) {
+                                  // Check the new version
+                                  console.log("Doc version: " + d.__etag);
+                              });
+                          });
+
+                    }else{
+                      console.log("RPDS: Document is not exist. Create a new one.");
+                      // Prepare document first
+                      var newDoc = {
+                        id: workItemID,
+                        BusinessValue: {
+                          Min : document.getElementById('minBusinessValue').value,
+                          Expected :  document.getElementById('expectedBusinessValue').value,
+                          Max : document.getElementById('maxBusinessValue').value
+                        },
+                        Cost: {
+                          Min : document.getElementById('minCost').value,
+                          Expected :  document.getElementById('expectedCost').value,
+                          Max : document.getElementById('maxCost').value
+                        },
+                        Effort: {
+                          Min : document.getElementById('minEffort').value,
+                          Expected :  document.getElementById('expectedEffort').value,
+                          Max : document.getElementById('maxEffort').value
+                        },
+                        Risk: {
+                          Min : document.getElementById('minRisk').value,
+                          Expected : document.getElementById('expectedRisk').value,
+                          Max : document.getElementById('maxRisk').value
+                        },
+                        timeCriticality:{
+                          Min : document.getElementById('minTimeCriticality').value,
+                          Expected :  document.getElementById('expectedTimeCriticality').value,
+                          Max : document.getElementById('maxTimeCriticality').value
+                        },
+                        Dependency: document.getElementById('featureDependency').value
+                      };
+
+                      dataService.createDocument(RPDSDocsName, newDoc).then(function(doc) {
+                          // Even if no ID was passed to createDocument, one will be generated
+                          console.log("RPDS: Created Doc ID =" + doc.id);
+                      });
+
+                       RPDSDocsExist = true;
+
+                    }
+
+                    alert("Save Successfully"); });
+                  }
+              });
+
+            $("#clearSetting").click(function() {
+              // Get work item form service
+              // Get data service
+               VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                   dataService.deleteDocument(RPDSDocsName, workItemID).then(function() {
+                       console.log("RPDS: Doc deleted");
+                   });
+
+                   RPDSDocsExist = false;
+
+                   alert("Setting has been cleared");
+
+               });
+            });
+
+            VSS.resize();
 
         });
-      });
 
-    });
-  </script>
 
-  <div id="errors"></div>
 
-  <form action="" id="saveSetting">
+    </script>
+
+    <div id="errors"></div>
+
+    <form action="" id="saveSetting">
 
     <div class="control">
       <div class="workitemlabel label-control">
-        <label class="workitemcontrol-label">Business Value (Currency) (Min,Expected,Max): </label>
+        <label class="workitemcontrol-label">Business Value (How much this feature value in financial value?): </label>
       </div>
       <div class="workitemcontrol work-item-control initialized">
         <div class="combo input-text-box list text emptyBorder">
           <div class="wrap">
-            <input type="text" id="minBusinessValue" name="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-            <input type="text" id="expectedBusinessValue" name="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-            <input type="text" id="maxBusinessValue" name="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true"></br>
+            <input type="text" style="width:33%" id="minBusinessValue" placeholder="(Minimum) Business Value" name="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" style="width:33%" id="expectedBusinessValue" placeholder="(Expected) Business Value" name="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text" style="width:33%" id="maxBusinessValue" placeholder="(Maximum) Business Value" name="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
           </div>
+      </div>
+    </div>
+
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Implementation Cost (How much does it cost, in financial value, to implement this feature?): </label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+        <input type="text" style="width:33%" id="minCost" placeholder="(Minimum) Cost" name="minCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" style="width:33%" id="expectedCost" placeholder="(Expected) Cost" name="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true">
+        <input type="text" style="width:33%" id="maxCost" placeholder="(Maximum) Cost" name="maxCost" autocomplete="off" maxlength="255" aria-invalid="true">
         </div>
       </div>
+    </div>
 
-      <div class="control" style="padding-top: 3px">
-        <div class="workitemlabel label-control">
-          <label class="workitemcontrol-label">Implementation Cost (Currency) (Min,Expected,Max): </label>
-        </div>
-        <div class="workitemcontrol work-item-control initialized">
-          <div class="combo input-text-box list text emptyBorder">
-            <div class="wrap">
-              <input type="text" id="minCost" name="minCost" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-              <input type="text" id="expectedCost" name="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-              <input type="text" id="maxCost" name="maxCost" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-            </div>
-          </div>
-        </div>
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Effort (How much effort does it takes weekly to implement this feature?) (Min,Expected,Max): </label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+        <input type="text"  style="width:33%" id="minEffort" placeholder="(Minimum) Effort" name="minEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text"  style="width:33%" id="expectedEffort" placeholder="(Expected) Effort" name="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+            <input type="text"  style="width:33%" id="maxEffort" placeholder="(Maximum) Effort" name="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+      </div>
+      </div>
+    </div>
 
-        <div class="control" style="padding-top: 3px">
-          <div class="workitemlabel label-control">
-            <label class="workitemcontrol-label">Effort (Hrs/Release) (Min,Expected,Max): </label>
-          </div>
-          <div class="workitemcontrol work-item-control initialized">
-            <div class="combo input-text-box list text emptyBorder">
-              <div class="wrap">
-                <input type="text" id="minEffort" name="minEffort" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-                <input type="text" id="expectedEffort" name="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-                <input type="text" id="maxEffort" name="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-              </div>
-            </div>
-          </div>
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Risk (What are the risk esitmation for developing this feature?): </label>
+      </div>
+      <div  class="combo input-text-box list text emptyBorder">
 
-          <div class="control" style="padding-top: 3px">
-            <div class="workitemlabel label-control">
-              <label class="workitemcontrol-label">Risk (Min,Expected,Max): </label>
-            </div>
-            <div class="workitemcontrol work-item-control initialized">
-
-              <div class="wrap">
-                <select id="minRisk" name="minRisk">
+        <div class="wrap">
+        <select id="minRisk" placeholder="(Minimum) Risk" name="minRisk">
         <option value="1">Very Low</option>
         <option value="2">Low</option>
         <option value="3">Medium</option>
         <option value="4">High</option>
         <option value="5">Very High</option>
         </select>
-                <select id="expectedRisk" name="expectedRisk">
+        <select id="expectedRisk" placeholder="(Expected) Risk" name="expectedRisk">
         <option value="1">Very Low</option>
         <option value="2">Low</option>
         <option value="3">Medium</option>
         <option value="4">High</option>
         <option value="5">Very High</option>
         </select>
-                <select id="maxRisk" name="maxRisk">
+        <select id="maxRisk" placeholder="(Maximum) Risk" name="maxRisk">
         <option value="1">Very Low</option>
         <option value="2">Low</option>
         <option value="3">Medium</option>
         <option value="4">High</option>
         <option value="5">Very High</option>
         </select>
-              </div>
-            </div>
+      </div>
+    </div>
 
-            <div class="control" style="padding-top: 3px">
-              <div class="workitemlabel label-control">
-                <label class="workitemcontrol-label">Time Criticality (Percentage) (Min,Expected,Max): </label>
-              </div>
-              <div class="workitemcontrol work-item-control initialized">
-                <div class="combo input-text-box list text emptyBorder">
-                  <div class="wrap">
-                    <input type="text" id="minTimeCriticality" name="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-                    <input type="text" id="expectedTimeCriticality" name="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-                    <input type="text" id="maxTimeCriticality" name="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true"></br>
-                  </div>
-                </div>
-              </div>
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Time Criticality (How importance (in percentage) of this feature to develop within the given deadline?): </label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+          <input type="text" style="width:33%" id="minTimeCriticality" placeholder="(Minimum) Time Criticality" name="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" style="width:33%" id="expectedTimeCriticality" placeholder="(Expected) Time Criticality" name="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <input type="text" style="width:33%" id="maxTimeCriticality" placeholder="(Maximum) Time Criticality" name="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+      </div>
+      </div>
+    </div>
 
-              <div class="control" style="padding-top: 3px">
-                <div class="workitemlabel label-control">
-                  <label class="workitemcontrol-label">Dependency (Sequence of Feature WorkItem ID): </label>
-                </div>
-                <div class="workitemcontrol work-item-control initialized">
-                  <div class="combo input-text-box list text emptyBorder">
-                    <div class="wrap">
-                      <input type="text" id="featureDependency" name="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
-                    </div>
-                  </div>
-                </div>
+    <div class="control" style="padding-top: 3px">
+      <div class="workitemlabel label-control">
+        <label class="workitemcontrol-label">Dependency (Which Feature(s) required to develop before this): </label>
+      </div>
+      <div class="workitemcontrol work-item-control initialized">
+        <div class="combo input-text-box list text emptyBorder">
+          <div class="wrap">
+          <input type="text" style="width:100%" id="featureDependency" placeholder="(Sequence of Features' WorkItem ID)" name="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
+      </div>
+      </div>
+    </div>
 
-                <button type="submit">Save Setting</button><br/>
-                <button type="button" id="clearSetting">Clear Setting</button><br/>
+    <div style="padding-top: 6px">
+      <button type="submit" >Save Setting</button>
+      <button type="button" id="clearSetting">Clear Setting</button>
+    </div>
 
-  </form>
+
+
+    </form>
 
 </body>
 
