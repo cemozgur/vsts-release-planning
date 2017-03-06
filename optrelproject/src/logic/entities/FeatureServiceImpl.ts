@@ -40,6 +40,12 @@ class FeatureServiceImpl implements IFeatureService {
                 WHERE  ([System.TeamProject] = @project)  
                 AND 
                 ([System.WorkItemType] = 'Feature') 
+                AND 
+                (
+                    ([System.State] = 'New')
+                    OR
+                    ([System.State] = 'Active')
+                ) 
                 ORDER BY [System.ChangedDate] DESC`
         };
     }
