@@ -15,14 +15,13 @@ export class IFMReleasePlanResult extends React.Component<IFMReleasePlanResultPr
         featureOrder = this._getReleasePlanFeatures(releasePlan);
 
         return <div>
-            <h2>Release Plan:</h2>
             <div>
-                <Label>Cumulated Discount Value: {releasePlan.cumulatedDiscountValue}</Label>
-                <Label>Discount Value: {releasePlan.discountValue}</Label>
-                <Label>Number of Sprint: {releasePlan.numberOfSprint}</Label>
-                <Label>Sprint Duration: {releasePlan.sprintDuration}</Label>
-                <Label>Team Capability: {releasePlan.teamCapability}</Label>
-                <Label>Total Required Effort: {releasePlan.totalRequiredEffort}</Label>
+                <Label>The release plan was generated considering a discount value of {releasePlan.discountValue}%. </Label>
+                <Label>All {releasePlan.featureList.length} features are placed in {releasePlan.numberOfSprint} sprints, where
+                    each sprint last {releasePlan.sprintDuration} weeks. Additionally, per sprint the whole team can
+                    work {releasePlan.teamCapability} hours.
+                </Label>
+
             </div>
             {featureOrder}
         </div>;
@@ -36,11 +35,11 @@ export class IFMReleasePlanResult extends React.Component<IFMReleasePlanResultPr
 
         let columnsReleasePlan = [
             {
-                name: "Order",
+                name: "Sprint",
                 referenceName: "order"
             },
             {
-                name: "Id",
+                name: "ID",
                 referenceName: "workItemId"
             },
             {

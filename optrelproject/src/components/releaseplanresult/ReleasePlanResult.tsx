@@ -21,11 +21,13 @@ export class ReleasePlanResult extends React.Component<ReleasePlanResultProps, u
                 releasePlanResult = <IFMReleasePlanResult result={this.props.result} />
                 break;
             case ALGORITHM_TYPE.GA:
-                releasePlanResult = <GAReleasePlanResult result={this.props.result}/>;
+                releasePlanResult = <GAReleasePlanResult result={this.props.result} />;
                 break;
         }
 
         return <div>
+            <hr className="separator" />
+            <h3>Release Plan Result:</h3>
             {releasePlanResult}
         </div>;
     }
