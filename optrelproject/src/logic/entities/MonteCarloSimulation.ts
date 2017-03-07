@@ -36,7 +36,11 @@ class MonteCarloSimulation implements IDataSimulator {
   }
 
 
+
+
 }
+
+export default MonteCarloSimulation;
 
 var config = {
     populationSize : 30000,

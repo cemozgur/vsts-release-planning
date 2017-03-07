@@ -23,6 +23,8 @@ var MonteCarloSimulation = (function () {
     };
     return MonteCarloSimulation;
 }());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = MonteCarloSimulation;
 var config = {
     populationSize: 30000,
     debug: false
