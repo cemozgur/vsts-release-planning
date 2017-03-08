@@ -1,7 +1,8 @@
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
-
+import { IValidationMessage } from "../../model/IValidationMessage";
+import { Util } from "./Util";
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 
 
@@ -14,27 +15,6 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     teamCapability: 0, totalRequiredEffort: 0,
     numberOfSprint: 0, sprintDuration: 0
   };
-
-
-  private getRandomValue(info: any): string {
-    let order = Math.floor(Math.random() * 3) + 1;
-    if (order == 1) {
-      return info.Min;
-    } else if (order == 2) {
-      return info.Expected
-    } else {
-      return info.Max;
-    }
-  }
-
-  private isValidReleaseTriangularInput(infoObject: Object): boolean {
-    if (!infoObject) {
-      return false;
-    }
-    return infoObject.hasOwnProperty("Min") && infoObject["Min"] && (infoObject["Min"].length > 0)
-      && infoObject.hasOwnProperty("Expected") && infoObject["Expected"] && (infoObject["Expected"].length > 0)
-      && infoObject.hasOwnProperty("Max") && infoObject["Max"] && (infoObject["Max"].length > 0);
-  }
 
   getFeatureData(featuresVSTS: WorkItem[], featuresDeailtDocument: any): boolean {
     let featuresReleasePlan = [];
@@ -55,11 +35,11 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       });
 
       if (detailInfo.length > 0) {
-        this.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = Number(this.getRandomValue(detailInfo[0].BusinessValue)) : success = false;
-        this.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = Number(this.getRandomValue(detailInfo[0].Effort)) : success = false;
-        this.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = Number(this.getRandomValue(detailInfo[0].Cost)) : success = false;
-        this.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = this.getRandomValue(detailInfo[0].Risk) : success = false;
-        this.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = Number(this.getRandomValue(detailInfo[0].timeCriticality)) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = Number(Util.getRandomValue(detailInfo[0].BusinessValue)) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = Number(Util.getRandomValue(detailInfo[0].Effort)) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = Number(Util.getRandomValue(detailInfo[0].Cost)) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = Util.getRandomValue(detailInfo[0].Risk) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = Number(Util.getRandomValue(detailInfo[0].timeCriticality)) : success = false;
 
         detailInfo[0].Dependency ? feature.dependency = detailInfo[0].Dependency : feature.dependency = "0";
         detailInfo[0].Dependency ? feature.dependencyWorkItemId = detailInfo[0].Dependency : feature.dependencyWorkItemId = "0";
@@ -102,13 +82,37 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
   }
 
 
-  validateConfigAlgorithm(config: any): boolean {
-    
-    if (!config) return false;
+  validateConfigAlgorithm(config: any): IValidationMessage {
+    if (!config) return {
+      success: false,
+      error: "Please fill all the fields on the above section."
+    };
 
-    return this.isValidReleaseTriangularInput(config.discountValue) &&
-      this.isValidReleaseTriangularInput(config.teamCapability) &&
-      config.numberOfSprint && config.sprintDuration;
+    if (!(config.numberOfSprint && Util.isNumber(config.numberOfSprint))) {
+      return {
+        success: false,
+        error: "Please, fill a correct Number of Sprint."
+      }
+    }
+    if (!(config.sprintDuration && Util.isNumber(config.sprintDuration))) {
+      return {
+        success: false,
+        error: "Please, fill a correct Sprint Duration."
+      }
+    }
+    if (!Util.isValidReleaseTriangularInput(config.teamCapability)) {
+      return {
+        success: false,
+        error: "Please, fill a correct Team Capability."
+      }
+    }
+    if (!Util.isValidReleaseTriangularInput(config.discountValue)) {
+      return {
+        success: false,
+        error: "Please, fill a correct discount value."
+      }
+    }
+    return { success: true };
   }
 
 
@@ -150,8 +154,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   getOptimalReleasePlan(config: any): any {
 
-    this.ReleasePlan.discountValue = Number(this.getRandomValue(config.discountValue));
-    this.ReleasePlan.teamCapability = Number(this.getRandomValue(config.teamCapability));
+    this.ReleasePlan.discountValue = Number(Util.getRandomValue(config.discountValue));
+    this.ReleasePlan.teamCapability = Number(Util.getRandomValue(config.teamCapability));
     this.ReleasePlan.numberOfSprint = Number(config.numberOfSprint);
     this.ReleasePlan.sprintDuration = Number(config.sprintDuration);
 

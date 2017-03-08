@@ -52,15 +52,15 @@ export class ReleasePlanInput extends React.Component<IReleasePlanInputProps, un
             </div>
             <div className="ifm-section">
                 <Label>Team Capability</Label>
-                <input type="number" placeholder="(Min) Available Hours" name="Min" required={true} className="release-input" onChange={this._handleTeamCapabilityChange.bind(this)} />
-                <input type="number" placeholder="(Expected) Available Hours" name="Expected" required={true} className="release-input" onChange={this._handleTeamCapabilityChange.bind(this)} />
-                <input type="number" placeholder="(Max) Available Hours" name="Max" required={true} className="release-input" onChange={this._handleTeamCapabilityChange.bind(this)} />
+                <input type="number" placeholder="(Min) Available Hours / Sprint" name="Min" required={true} className="release-input" onChange={this._handleTeamCapabilityChange.bind(this)} />
+                <input type="number" placeholder="(Expected) Available Hours / Sprint" name="Expected" required={true} className="release-input" onChange={this._handleTeamCapabilityChange.bind(this)} />
+                <input type="number" placeholder="(Max) Available Hours / Sprint" name="Max" required={true} className="release-input" onChange={this._handleTeamCapabilityChange.bind(this)} />
             </div>
             <div className="ifm-section">
                 <Label>Discount Value</Label>
-                <input type="number" placeholder="(Min)" name="Min" required={true} className="release-input" onChange={this._handleDiscountValueChange.bind(this)} />
-                <input type="number" placeholder="(Expected)" name="Expected" required={true} className="release-input" onChange={this._handleDiscountValueChange.bind(this)} />
-                <input type="number" placeholder="(Max)" name="Max" required={true} className="release-input" onChange={this._handleDiscountValueChange.bind(this)} />
+                <input type="number" placeholder="(Min) in percentage %" name="Min" required={true} className="release-input" onChange={this._handleDiscountValueChange.bind(this)} />
+                <input type="number" placeholder="(Expected) in percentage %" name="Expected" required={true} className="release-input" onChange={this._handleDiscountValueChange.bind(this)} />
+                <input type="number" placeholder="(Max) in percentage %" name="Max" required={true} className="release-input" onChange={this._handleDiscountValueChange.bind(this)} />
             </div>
 
 

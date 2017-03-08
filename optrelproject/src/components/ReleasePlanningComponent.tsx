@@ -17,6 +17,11 @@ import { ButtonType } from '../../node_modules/office-ui-fabric-react/lib-amd/co
 import { ChoiceGroup, IChoiceGroupOption } from '../../node_modules/office-ui-fabric-react/lib-amd/components/ChoiceGroup';
 import { Label } from '../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 import { TextField } from '../../node_modules/office-ui-fabric-react/lib-amd/components/TextField/TextField';
+import {
+    Spinner,
+    SpinnerType
+} from '../../node_modules/office-ui-fabric-react/lib-amd/components/Spinner';
+import { MessageBar, MessageBarType } from '../../node_modules/office-ui-fabric-react/lib-amd/components/MessageBar';
 
 
 import { Header } from "./common/Header";
@@ -65,11 +70,23 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         let algorithmChoiceSection: JSX.Element = null;
         let algorithmGenerationSection: JSX.Element = null;
         let algorithmButtonSection: JSX.Element = null;
+        let releasePlanInputSection: JSX.Element = null;
+
 
         featureSection = <FeatureList features={this.props.features.queryResult} />
         algorithmChoiceSection = <AlgorithmChoice updateAlgorithmState={this._onChange.bind(this)} disabled={!this._canGenerateReleasePlan(this.state)} />;
         algorithmGenerationSection = <ReleasePlanInput algorithmType={this.state.releasePlanGeneration.algorithmType} updateStateConfig={this.updateConfigState.bind(this)} />
         algorithmButtonSection = this._getAlgorithmButtonSection();
+
+        releasePlanInputSection = <div>
+            <hr className="separator"/>
+            <h3>Release Plan Generation:</h3>
+            {algorithmChoiceSection}
+            {algorithmGenerationSection}
+            &nbsp;
+            {algorithmButtonSection}
+        </div>;
+
 
         let releasePlanResultSection: JSX.Element = null
         let releasePlanGenerationState = this.state.releasePlanGeneration;
@@ -77,21 +94,19 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         if (releasePlanGenerationState.result) {
             releasePlanResultSection = <ReleasePlanResult result={releasePlanGenerationState.result} algorithmType={releasePlanGenerationState.algorithmType} />;
         } else if (releasePlanGenerationState.processing) {
-            releasePlanResultSection = <Label>Processing..</Label>
+            releasePlanResultSection = <Spinner label='Processing...' />
         } else if (releasePlanGenerationState.error) {
-            releasePlanResultSection = <Label>{releasePlanGenerationState.error}</Label>
+            releasePlanResultSection =
+                <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
+                    {releasePlanGenerationState.error}</MessageBar>
+
         }
 
 
         return <div>
             <Header description={this.props.description} />
-            {featureSection}
-            &nbsp;
-            {algorithmChoiceSection}
-            {algorithmGenerationSection}
-            &nbsp;
-            {algorithmButtonSection}
-            &nbsp;
+            {featureSection}         
+            {releasePlanInputSection}
             {releasePlanResultSection}
         </div>;
     }
@@ -178,7 +193,8 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         let algorithmService = container.getNamed<IReleasePlanningAlgorithm>(SERVICE_IDENTIFIER.IReleasePlanningAlgorithm, this.state.releasePlanGeneration.algorithmType);
         let config = this.state.releasePlanGeneration.config;
 
-        if (algorithmService.validateConfigAlgorithm(config)) {
+        let configStatus = algorithmService.validateConfigAlgorithm(config);
+        if (configStatus.success) {
             this._setState(true, null);
             VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
                 dataService.getDocuments(VSTS_DOCUMENT.RPDS).then(
@@ -194,7 +210,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
                     });
             });
         } else {
-            this._setStateError("Please fill all the fields on the above section.");
+            this._setStateError(configStatus.error);
         }
     }
     private _onChange(ev: React.SyntheticEvent<HTMLElement>, option: IChoiceGroupOption) {

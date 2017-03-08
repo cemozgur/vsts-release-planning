@@ -1,6 +1,7 @@
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
+import { IValidationMessage } from "../../model/IValidationMessage";
 
 
 import * as Q from 'q';
@@ -23,13 +24,13 @@ class GAReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
 
 
-    getFeatureData(featuresVSTS: any[], featuresDeailtDocument: any[]) : boolean{
+    getFeatureData(featuresVSTS: any[], featuresDeailtDocument: any[]): boolean {
         return true;
     }
 
-        validateConfigAlgorithm(config: any): boolean{
-            return true;
-        }
+    validateConfigAlgorithm(config: any): IValidationMessage {
+        return {success: true};
+    }
 
 
 }

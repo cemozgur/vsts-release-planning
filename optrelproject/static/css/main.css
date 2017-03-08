@@ -9,5 +9,14 @@
 } 
 
 .features-list-table {
-    width: 70%;
+    width: 100%;
+}
+
+.release-input-error {
+    width: 78%;
+}
+
+
+.separator {
+    width: 100%;
 }

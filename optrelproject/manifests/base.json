@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "vsts-extensions-optrel",
-    "version": "1.0.316",
+    "version": "1.0.331",
     "publisher": "ytaloborjamori",
     "name": "OptRel Release Planning",
     "public": false,
