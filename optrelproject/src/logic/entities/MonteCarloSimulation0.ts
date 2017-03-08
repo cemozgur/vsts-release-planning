@@ -1,7 +1,7 @@
-import Random from "./Random";
-import IDataSimulator from "../interfaces/IDataSimulator";
 
-class MonteCarloSimulation implements IDataSimulator {
+import Random from "./Random";
+
+class MonteCarloSimulation{
 
   private config;
   sum;
