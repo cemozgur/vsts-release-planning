@@ -26,7 +26,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         workItemId: el.id,
         feature: el.fields["System.Title"],
         state: el.fields["System.State"],
-        order: "0",
+        sprint: "0",
         selected: false
       }
 
@@ -169,7 +169,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     let ResultReleasePlan = {
       discountValue: 0, cumulatedDiscountValue: 0,
       featureList: [], teamCapability: 0, totalRequiredEffort: 0,
-      numberOfSprint: 0, sprintDuration: 0
+      numberOfSprint: 0, sprintDuration: 0,
+      additional: false
     };//this is only if we dont require the value again.
 
 
@@ -229,11 +230,11 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
 
-    //updating the order
-    ResultReleasePlan.featureList.map((el, index) => {
-      el.order = (index + 1).toString();
-    });
 
+    let totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
+    if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
+      ResultReleasePlan.additional = true;
+    }
     return ResultReleasePlan;
   }
 

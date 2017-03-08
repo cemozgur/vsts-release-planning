@@ -48,4 +48,44 @@ export class Util {
             return info.Max;
         }
     }
+    static sprintAssignation(ResultReleasePlan: any): number {
+        //updating sprint selection
+        let working = 0.0;
+        let sprintStatus = 1;
+        let sprintArray = [];
+        let featureEffortTemp = 0;
+        let workTempAdvance = 0;
+        let sprintDurationCalc = ResultReleasePlan.teamCapability;
+
+
+        ResultReleasePlan.featureList.map((featureWork) => {
+            if (((sprintStatus * sprintDurationCalc) - working) >= featureWork.effort) {
+                featureWork.sprint = sprintStatus.toString();
+                working += featureWork.effort;
+            } else {
+                sprintArray = [];
+                featureEffortTemp = featureWork.effort;
+                workTempAdvance = 0;
+
+                while (((sprintStatus * sprintDurationCalc) - working) <= featureEffortTemp) {
+                    if (((sprintStatus * sprintDurationCalc) - working) != 0) {
+                        sprintArray.push(sprintStatus);
+                    }
+                    workTempAdvance = ((sprintStatus * sprintDurationCalc) - working);
+                    featureEffortTemp -= workTempAdvance
+                    working += workTempAdvance;
+                    sprintStatus++;
+                }
+
+                if (featureEffortTemp != 0) {
+                    sprintArray.push(sprintStatus);
+                    working += featureEffortTemp;
+                }
+                featureWork.sprint = sprintArray.join(",");
+            }
+
+        });
+
+        return sprintStatus;
+    }
 }
