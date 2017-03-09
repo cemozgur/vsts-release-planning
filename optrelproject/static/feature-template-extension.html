@@ -5,39 +5,50 @@
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/jquery.validate.min.js"></script>
   <script src="scripts/VSS.SDK.min.js"></script>
-  <meta charset="UTF-8">
-  <title>Release Planning Optimal Template</title>
+  <link href="css/fabric.min.css" rel="stylesheet" />
+  <link href="css/fabric.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="fabric.components.min.css">
+    <meta charset="UTF-8">
+    <title>Release Planning Optimal Template</title>
 </head>
 
 <body style="overflow:auto;">
 
   <style>
+
+  .error{
+    font-size: 13px;
+    color:#FF0000 !important;
+  }
+
   input.error{
     border:1px solid #FF0000 !important;
     font-size: 13px;
-    color: black;
   }
-  label.error,div.error{
+
+  label.error,div.error,{
       font-weight:normal;
       font-size: 13px;
       color:#FF0000 !important;
   }
 
-  input{
-    border: 1px solid #a9a9a9;
-    outline: none;
+  .form-select{
+    color:#333;
+    font-family:'Segoe UI Regular WestEuropean','Segoe UI','Segoe WP',Tahoma,Arial,sans-serif;
+    font-size:14px;
+    font-weight:400;
+    box-sizing:border-box;
+    margin:0 0 8px;
+    padding:0;
+    box-shadow:none;
+    width:100%;
+    height: 34px;
   }
 
-  input:focus{
-    height: 100%;
-    border: 1px solid #a9a9a9;
+  .form-select.error{
+    color:#FF0000 !important;
+    border:1px solid #FF0000 !important;
   }
-
-  input:hover{
-    height: 100%;
-    border: 1px solid #a9a9a9;
-  }
-
 
 
   </style>
@@ -165,11 +176,38 @@
             $("#clickme").click(function() {
 
 
+              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+                  // Get document by Work Item id
+
+                  dataService.getDocument(RPDSDocsName, "Test").then(function(doc) {
+                    id = doc.id;
+                  }).then(function(doc){
+                    console.log("ID is defined?: "+(id!=undefined))
+                    if(id!=undefined){
+                      RPDSDocsExist = true;
+                      console.log("Value" + doc.value);
+                    }
+                    console.log("RPDS: Doc exists = "+RPDSDocsExist);
+                  });
+              });
 
 
 
+              VSS.getService(VSS.ServiceIds.ExtensionData).then(function(dataService) {
+              var newDoc = {
+                id: "Test",
+                value: 556421,
+                valueB : "Test Value"
+              };
+
+              dataService.createDocument(RPDSDocsName, newDoc).then(function(doc) {
+                  // Even if no ID was passed to createDocument, one will be generated
+                  console.log("RPDS: Created Doc ID =" + doc.id);
+              });
 
 
+
+            });
 
             });
 
@@ -438,134 +476,112 @@
 
     </script>
 
-    <div id="errors"></div>
+
+    <div class="ms-Grid-col msu-sm2 action-box ms-font-l ms-fontColor-error ms-borderColor-error ms-bgColor-error" id="errors"></div>
 
     <form action="" id="saveSetting">
 
-    <div class="control">
-      <div class="workitemlabel label-control">
-        <b><label class="workitemcontrol-label">Business Value (How much this feature value in currency?): </label></b>
-      </div>
-      <div class="workitemcontrol work-item-control initialized">
-        <div class="combo input-text-box list text emptyBorder">
-          <div class="wrap">
-            <label class="workitemcontrol-label">(Minimum Value) Business Value: </label>
-            <input type="text" style="width:33%" id="minBusinessValue" name="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
-          </div><div class="wrap">
-            <label class="workitemcontrol-label">(Expected Value) Business Value: </label><input type="text" style="width:33%" id="expectedBusinessValue"  name="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
-          </div><div class="wrap">
-            <label class="workitemcontrol-label">(Maximum Value) Business Value: </label><input type="text" style="width:33%" id="maxBusinessValue" name="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
-          </div>
-      </div>
-    </div>
+      <div class="ms-Grid-col ms-u-sm12 block">
 
-    <div class="control" style="padding-top: 3px">
-      <div class="workitemlabel label-control">
-        <b><label class="workitemcontrol-label">Implementation Cost (How much does it cost, in currency, to implement this feature?): </label></b>
-      </div>
-      <div class="workitemcontrol work-item-control initialized">
-        <div class="combo input-text-box list text emptyBorder">
-          <div class="wrap">
-            <label class="workitemcontrol-label">(Minimum Value) Cost: </label>
-        <input type="text" style="width:33%" id="minCost" name="minCost" autocomplete="off" maxlength="255" aria-invalid="true">
-      </div><div class="wrap">
-        <label class="workitemcontrol-label">(Expected Value) Cost: </label>
-        <input type="text" style="width:33%" id="expectedCost"  name="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true">
-        </div><div class="wrap">
-          <label class="workitemcontrol-label">(Maximum Value) Cost: </label>
-          <input type="text" style="width:33%" id="maxCost" name="maxCost" autocomplete="off" maxlength="255" aria-invalid="true">
-        </div>
-      </div>
-    </div>
+      <p class="ms-font-m ms-fontWeight-semibold">Business Value (How much this feature value in currency?): </p>
 
-    <div class="control" style="padding-top: 3px">
-      <div class="workitemlabel label-control">
-        <b><label class="workitemcontrol-label">Effort (How many hours does it takes weekly to implement this feature?): </label></b>
-      </div>
-      <div class="workitemcontrol work-item-control initialized">
-        <div class="combo input-text-box list text emptyBorder">
-          <div class="wrap">
-            <label class="workitemcontrol-label">(Minimum Value) Effort: </label>
-        <input type="text"  style="width:33%" id="minEffort" name="minEffort" autocomplete="off" maxlength="255" aria-invalid="true">
-      </div><div class="wrap">
-        <label class="workitemcontrol-label">(Expected Value) Effort: </label>
-        <input type="text"  style="width:33%" id="expectedEffort"  name="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true">
-    </div><div class="wrap">
-      <label class="workitemcontrol-label">(Maximum Value) Effort: </label>
-      <input type="text"  style="width:33%" id="maxEffort" name="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true">
-      </div>
-      </div>
-    </div>
+          <label class="ms-Label">Minimum Value: </label>
+          <input class="ms-TextField-field" type="text" id="minBusinessValue" name="minBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
 
-    <div class="control" style="padding-top: 3px">
-      <div class="workitemlabel label-control">
-        <b><label class="workitemcontrol-label">Risk (What are the risk esitmation for developing this feature?): </label></b>
-      </div>
-      <div  class="combo input-text-box list text emptyBorder">
+          <label class="ms-Label">Expected Value: </label>
+          <input  class="ms-TextField-field" type="text" id="expectedBusinessValue"  name="expectedBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
 
-        <div class="wrap">
-        <label class="workitemcontrol-label">(Minimum Value) Risk: </label>
-        <select id="minRisk" name="minRisk">
-        <option value="1">Very Low</option>
-        <option value="2">Low</option>
-        <option value="3">Medium</option>
-        <option value="4">High</option>
-        <option value="5">Very High</option>
-      </select></div>  <div class="wrap">
-        <label class="workitemcontrol-label">(Expected Value) Risk: </label>
-        <select id="expectedRisk"  name="expectedRisk">
-        <option value="1">Very Low</option>
-        <option value="2">Low</option>
-        <option value="3">Medium</option>
-        <option value="4">High</option>
-        <option value="5">Very High</option>
-      </select></div>  <div class="wrap">
-        <label class="workitemcontrol-label">(Maximum Value) Risk: </label>
-        <select id="maxRisk" name="maxRisk">
-        <option value="1">Very Low</option>
-        <option value="2">Low</option>
-        <option value="3">Medium</option>
-        <option value="4">High</option>
-        <option value="5">Very High</option>
+          <label class="ms-Label">Maximum Value: </label>
+          <input class="ms-TextField-field" type="text" id="maxBusinessValue" name="maxBusinessValue" autocomplete="off" maxlength="255" aria-invalid="true">
+
+
+
+        <p class="ms-font-m ms-fontWeight-semibold">Implementation Cost (How much does it cost, in currency, to implement this feature?): </p>
+
+
+        <label class="ms-Label">Minimum Value: </label>
+        <input class="ms-TextField-field" type="text" id="minCost" name="minCost" autocomplete="off" maxlength="255" aria-invalid="true">
+
+        <label class="ms-Label">Expected Value: </label>
+        <input class="ms-TextField-field" type="text" id="expectedCost"  name="expectedCost" autocomplete="off" maxlength="255" aria-invalid="true">
+
+        <label class="ms-Label">Maximum Value: </label>
+        <input class="ms-TextField-field" type="text" id="maxCost" name="maxCost" autocomplete="off" maxlength="255" aria-invalid="true">
+
+
+
+
+        <p class="ms-font-m ms-fontWeight-semibold">Effort (How many hours does it takes weekly to implement this feature?): </p>
+
+        <label class="ms-Label">Minimum Value: </label>
+        <input class="ms-TextField-field" type="text"  id="minEffort" name="minEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+
+        <label class="ms-Label">Expected Value: </label>
+        <input class="ms-TextField-field" type="text"  id="expectedEffort"  name="expectedEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+
+        <label class="ms-Label">Maximum Value: </label>
+        <input class="ms-TextField-field" type="text"  id="maxEffort" name="maxEffort" autocomplete="off" maxlength="255" aria-invalid="true">
+
+        <p class="ms-font-m ms-fontWeight-semibold">Risk (What are the risk esitmation for developing this feature?): </p>
+
+        <label class="ms-Label">Minimum Value: </label>
+
+        <select class="form-select" id="minRisk" name="minRisk">
+          <option value="1">Very Low</option>
+          <option value="2">Low</option>
+          <option value="3">Medium</option>
+          <option value="4">High</option>
+          <option value="5">Very High</option>
         </select>
+
+        <label class="ms-Label">Expected Value: </label>
+
+          <select class="form-select" id="expectedRisk"  name="expectedRisk">
+          <option value="1">Very Low</option>
+          <option value="2">Low</option>
+          <option value="3">Medium</option>
+          <option value="4">High</option>
+          <option value="5">Very High</option>
+        </select>
+
+        <label class="ms-Label">Maximum Value: </label>
+
+          <select class="form-select" id="maxRisk" name="maxRisk">
+          <option value="1">Very Low</option>
+          <option value="2">Low</option>
+          <option value="3">Medium</option>
+          <option value="4">High</option>
+          <option value="5">Very High</option>
+        </select>
+
+        <p class="ms-font-m ms-fontWeight-semibold">Time Criticality (How importance (in percentage) of this feature to develop within the given deadline?): </p>
+
+          <label class="ms-Label">Minimum Value: </label>
+          <input class="ms-TextField-field" type="text" id="minTimeCriticality"  name="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+
+          <label class="ms-Label">Expected Value: </label>
+          <input class="ms-TextField-field" type="text" id="expectedTimeCriticality" name="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+
+          <label class="ms-Label">Maximum Value: </label>
+          <input class="ms-TextField-field" type="text" id="maxTimeCriticality"  name="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+
+
+
+        <p class="ms-font-m ms-fontWeight-semibold">Dependency (Which Feature(s) required to develop before this, "0" for No Dependency): </p>
+
+          <input class="ms-TextField-field" type="text" style="width:100%" id="featureDependency" name="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
+
+      <div style="padding-top:10px" >
+      <button class="ms-Button ms-Button--primary" type="submit">
+        <span class="ms-Button-label">Save Setting</span>
+      </button>
+      <button class="ms-Button" type="button" id="clearSetting">Clear Setting</button>
       </div>
+
     </div>
 
-    <div class="control" style="padding-top: 3px">
-      <div class="workitemlabel label-control">
-        <b><label class="workitemcontrol-label">Time Criticality (How importance (in percentage) of this feature to develop within the given deadline?): </label></b>
-      </div>
-      <div class="workitemcontrol work-item-control initialized">
-        <div class="combo input-text-box list text emptyBorder">
-          <div class="wrap">
-            <label class="workitemcontrol-label">(Expected Value) Time Criticality: </label>
-          <input type="text" style="width:33%" id="minTimeCriticality"  name="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
-        </div>  <div class="wrap">
-          <label class="workitemcontrol-label">(Expected Value) Time Criticality: </label><input type="text" style="width:33%" id="expectedTimeCriticality" name="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
-        </div>  <div class="wrap">
-          <label class="workitemcontrol-label">(Maximum Value) Time Criticality: </label><input type="text" style="width:33%" id="maxTimeCriticality"  name="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
-      </div>
-      </div>
-    </div>
 
-    <div class="control" style="padding-top: 3px">
-      <div class="workitemlabel label-control">
-        <b><label class="workitemcontrol-label">Dependency (Which Feature(s) required to develop before this, "0" for No Dependency): </label></b>
-      </div>
-      <div class="workitemcontrol work-item-control initialized">
-        <div class="combo input-text-box list text emptyBorder">
-          <div class="wrap">
-          <input type="text" style="width:100%" id="featureDependency" name="featureDependency" autocomplete="off" maxlength="255" aria-invalid="true">
-      </div>
-      </div>
-    </div>
-
-    <div style="padding-top: 6px">
-      <button type="submit" >Save Setting</button>
-      <button type="button" id="clearSetting">Clear Setting</button>
-    </div>
-
-
+    <!--<button type="button" id="clickme">Click Me</button>-->
 
     </form>
 
