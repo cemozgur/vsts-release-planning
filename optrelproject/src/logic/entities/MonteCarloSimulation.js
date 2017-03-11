@@ -10,7 +10,7 @@ var MonteCarloSimulation = (function () {
         if (distribution.name === "triangular") {
             for (var i = 0; i < this.config.populationSize; i++) {
                 var rand = new Random_1.default(Math.random() * 10);
-                var temp = rand.triangular(distribution.value.lowerBound, distribution.value.mode, distribution.value.upperBound);
+                var temp = rand.triangular(distribution.value.lowerBound, distribution.value.upperBound, distribution.value.mode);
                 if (this.config.debug == true) {
                     console.log(temp);
                 }
@@ -23,17 +23,5 @@ var MonteCarloSimulation = (function () {
     };
     return MonteCarloSimulation;
 }());
-var config = {
-    populationSize: 30000,
-    debug: false
-};
-var distribution = {
-    name: "triangular",
-    value: {
-        lowerBound: 10,
-        upperBound: 100,
-        mode: 12
-    }
-};
-var test = new MonteCarloSimulation(config, distribution);
-console.log("Expected Value: " + test.getExpectedValue());
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = MonteCarloSimulation;
