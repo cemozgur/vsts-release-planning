@@ -19,6 +19,7 @@ export interface FeatureListProps { features: IWiqlQueryResult; }
 
 
 export class FeatureList extends React.Component<FeatureListProps, undefined> {
+    private description = "Only features with New or Active state will be considered in the generation of a release plan.";
 
     public render() {
         let featureSection: JSX.Element = null;
@@ -31,8 +32,8 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
     }
 
     private _getProjectFeaturesList(queryResult: IWiqlQueryResult): JSX.Element {
-        let _minWidths = [50, 400, 100];
-        let _maxWidths = [50, 500, 100];
+        let _minWidths = [50, 900, 100];
+        let _maxWidths = [50, 900, 100];
         let columns = queryResult.columns.map((c, i) => {
             return {
                 key: c.referenceName,
@@ -45,14 +46,13 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
         });
         let items = queryResult.workItems.map(wi => wi.fields);
 
+
         return <div>
+            <h3>Features</h3>
             <DetailsList
                 columns={columns}
                 items={items}
                 checkboxVisibility={CheckboxVisibility.hidden}
-                constrainMode={ConstrainMode.horizontalConstrained}
-                setKey='set'
-                className="features-list-table"
                 onItemInvoked={(item) => {
                     WorkItemFormNavigationService.getService().then(svc => {
                         svc.openWorkItem(item["System.Id"]);

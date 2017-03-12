@@ -3,7 +3,7 @@ import * as React from 'react';
 import container from "../logic/config/inversify.config";
 import IReleasePlanningAlgorithm from "../logic/interfaces/IReleasePlanningAlgorithm";
 import SERVICE_IDENTIFIER from "../logic/constants/identifiers";
-import ALGORITHM_TYPE from "../logic/constants/algorithmType"
+import ALGORITHM_TYPE from "../logic/constants/algorithmType";
 
 
 import { IWorkItemSearchResult } from "../model/IWorkItemSearchResult";
@@ -34,7 +34,6 @@ import { FeatureList } from "./features/FeatureList";
 
 
 interface IReleasePlanningProps {
-    description: string;
     features: IWorkItemSearchResult;
 }
 
@@ -78,9 +77,8 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         algorithmGenerationSection = <ReleasePlanInput algorithmType={this.state.releasePlanGeneration.algorithmType} updateStateConfig={this.updateConfigState.bind(this)} />
         algorithmButtonSection = this._getAlgorithmButtonSection();
 
-        releasePlanInputSection = <div>
-            <hr className="separator"/>
-            <h3>Release Plan Generation:</h3>
+        releasePlanInputSection = <div id="releaseplaninput">
+            <h3>Release Plan Configuration</h3>
             {algorithmChoiceSection}
             {algorithmGenerationSection}
             &nbsp;
@@ -92,7 +90,13 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         let releasePlanGenerationState = this.state.releasePlanGeneration;
 
         if (releasePlanGenerationState.result) {
-            releasePlanResultSection = <ReleasePlanResult result={releasePlanGenerationState.result} algorithmType={releasePlanGenerationState.algorithmType} />;
+            releasePlanResultSection = <div id="releaseplanresult">
+                <ReleasePlanResult result={releasePlanGenerationState.result} algorithmType={releasePlanGenerationState.algorithmType} />
+                <div className="actions">
+                    <Button onClick={this._onGenerateReleasePlanClick.bind(this)} buttonType={ButtonType.normal} className="action-button">Save Release Plan</Button>
+                    <Button onClick={this._onCancelReleasePlanClick.bind(this)} buttonType={ButtonType.normal} className="action-button">Cancel Release Plan</Button>
+                </div>
+            </div>;
         } else if (releasePlanGenerationState.processing) {
             releasePlanResultSection = <Spinner label='Processing...' />
         } else if (releasePlanGenerationState.error) {
@@ -104,8 +108,8 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
 
 
         return <div>
-            <Header description={this.props.description} />
-            {featureSection}         
+            <h2>Release Plan Generation</h2>
+            {featureSection}
             {releasePlanInputSection}
             {releasePlanResultSection}
         </div>;
@@ -203,6 +207,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
                         if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
                             let releasePlanResult = algorithmService.getOptimalReleasePlan(config);
                             this._setState(false, releasePlanResult);
+                            window.location.hash = '#releaseplanresult';
                         } else {
                             this._setStateError("The features information is not completed");
                         }
@@ -213,6 +218,22 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
             this._setStateError(configStatus.error);
         }
     }
+
+    private _onSaveReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
+        console.log("SAVE");
+    }
+    private _onCancelReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
+        let releasePlanGenerationState = this.state.releasePlanGeneration;
+
+        releasePlanGenerationState.processing = false;
+        releasePlanGenerationState.result = null;
+        releasePlanGenerationState.error = null;
+
+        this.setState({ releasePlanGeneration: releasePlanGenerationState });
+        window.location.hash = '#releaseplaninput';
+    }
+
+
     private _onChange(ev: React.SyntheticEvent<HTMLElement>, option: IChoiceGroupOption) {
         this._setStateAlgorithmType(option.key);
     }

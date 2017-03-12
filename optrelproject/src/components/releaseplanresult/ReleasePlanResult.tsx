@@ -4,6 +4,8 @@ import ALGORITHM_TYPE from "../../logic/constants/algorithmType"
 
 import { IFMReleasePlanResult } from "./IFMReleasePlanResult";
 import { GAReleasePlanResult } from "./GAReleasePlanResult";
+import { Button } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button';
+import { ButtonType } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button.Props';
 
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
@@ -26,10 +28,8 @@ export class ReleasePlanResult extends React.Component<ReleasePlanResultProps, u
         }
 
         return <div>
-            <hr className="separator" />
-            <h3>Release Plan Result:</h3>
+            <h3>Release Plan Result</h3>
             {releasePlanResult}
         </div>;
     }
-
 }

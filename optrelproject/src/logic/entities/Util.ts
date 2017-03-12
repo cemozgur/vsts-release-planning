@@ -49,7 +49,6 @@ export class Util {
         }
     }
     static sprintAssignation(ResultReleasePlan: any): number {
-        //updating sprint selection
         let working = 0.0;
         let sprintStatus = 1;
         let sprintArray = [];

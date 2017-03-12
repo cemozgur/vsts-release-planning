@@ -40,8 +40,8 @@ export class IFMReleasePlanResult extends React.Component<IFMReleasePlanResultPr
 
     private _getReleasePlanFeatures(releasePlan: any): JSX.Element {
 
-        let _minWidths = [50, 50, 400, 100, 100, 100, 100, 100];
-        let _maxWidths = [50, 50, 500, 100, 100, 100, 100, 100];
+        let _minWidths = [150, 50, 300, 100, 100, 100, 100, 100];
+        let _maxWidths = [150, 50, 400, 100, 100, 100, 100, 100];
 
         let columnsReleasePlan = [
             {
