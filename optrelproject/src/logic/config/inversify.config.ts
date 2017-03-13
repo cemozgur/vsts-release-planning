@@ -3,7 +3,7 @@ import TYPES from "../constants/identifiers";
 import ALGORITHM_TYPE from "../constants/algorithmType";
 import DATA_SIMULATOR_TYPE from "../constants/datasimulatortype"
 
-import GAReleasePlanningAlgorithm from "../entities/GAReleasePlanningAlgorithm";
+import NSGA2ReleasePlanningAlgorithm from "../entities/NSGA2ReleasePlanningAlgorithm";
 import IFMReleasePlanningAlgorithm from "../entities/IFMReleasePlanningAlgorithm";
 import FeatureServiceImpl from "../entities/FeatureServiceImpl";
 
@@ -20,7 +20,7 @@ import {IFeatureService} from "../interfaces/IFeatureService";
  */
 var container = new Container();
 
-container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(GAReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.GA);
+container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(NSGA2ReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.GA);
 
 container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(IFMReleasePlanningAlgorithm).whenTargetNamed(ALGORITHM_TYPE.IFM);
 

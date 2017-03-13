@@ -3,234 +3,259 @@ import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
 import { ReleasePlan } from "../../model/ReleasePlan";
 import MonteCarloSimulation from "./MonteCarloSimulation";
+import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import { IValidationMessage } from "../../model/IValidationMessage";
+import { Util } from "./Util";
+
+const monteCarloConfig = {
+  populationSize: 10000,
+  debug: false
+};
+const algorithmConfig = {
+  population_size: 20, //POPULATION SIZE MUST BE EVEN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  generation_number: 50,
+  testing: {
+    enable: false
+  }
+};
+const crossoverConfig = {
+  crossoverRate: 0.9,
+  crossSectionPosition: 0, //As percentage 0 mean random position per crossover
+  testing: {
+    enable: false
+  }
+};
+const mutationConfig = {
+  probability: 0.03, //As percentage
+  testing: {
+    enable: false
+  }
+};
 
 @injectable()
 class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
-    //Unused As of Now
-    private TeamCapability: number[];
 
-    private populationSize;
-    private generationNumber;
-    private discountValue;
-    private crossoverConfig;
-    private mutationConfig;
+  private TeamCapability: number[];
+
+  private populationSize;
+  private generationNumber;
+  private discountValue;
 
 
-    getReleasePlanType(): string {
-        return "NSGA2 Algortihm";
+
+
+
+  private ReleasePlan = {//EVALUATE THIS
+    discountValue: 0,
+    cumulatedDiscountValue: 0, featureList: [],
+    teamCapability: 0, totalRequiredEffort: 0,
+    numberOfSprint: 0, sprintDuration: 0
+  };
+
+
+  getFeatureData(featuresVSTS: WorkItem[], featuresDeailtDocument: any): boolean {
+    let featuresReleasePlan = [];
+    let success = true;
+
+    featuresVSTS.map((el, index) => {
+      let feature: any = {
+        featureNumber: (index + 1),//id in ifm
+        workItemId: el.id,
+        feature: el.fields["System.Title"],
+        state: el.fields["System.State"],
+        sprint: "0",
+        selected: false
+      }
+
+      let detailInfo = featuresDeailtDocument.filter(el => {
+        return (el.id == feature.workItemId);
+      });
+
+      if (detailInfo.length > 0) {
+        Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.businessValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].BusinessValue.Min), mode: Number(detailInfo[0].BusinessValue.Expected), upperBound: Number(detailInfo[0].BusinessValue.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Effort.Min), mode: Number(detailInfo[0].Effort.Expected), upperBound: Number(detailInfo[0].Effort.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Cost.Min), mode: Number(detailInfo[0].Cost.Expected), upperBound: Number(detailInfo[0].Cost.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Risk.Min), mode: Number(detailInfo[0].Risk.Expected), upperBound: Number(detailInfo[0].Risk.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].timeCriticality.Min), mode: Number(detailInfo[0].timeCriticality.Expected), upperBound: Number(detailInfo[0].timeCriticality.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+
+        detailInfo[0].Dependency ? feature.dependsOn = detailInfo[0].Dependency : feature.dependsOn = "0";
+        detailInfo[0].Dependency ? feature.dependsOnWorkItemId = detailInfo[0].Dependency : feature.dependsOnWorkItemId = "0";
+      } else {
+        success = false;
+      }
+      featuresReleasePlan.push(feature);
+    });
+
+    if (success) {
+      featuresReleasePlan.map(feature => {
+        if (feature.dependsOnWorkItemId != "0") {
+          let dependencies = feature.dependsOnWorkItemId.split(",");
+          let indexDependency = [];
+
+          dependencies.map(workItemIdCheck => {
+            let result = featuresReleasePlan.filter(el => {
+              return (el.workItemId == workItemIdCheck)
+            });
+            if (result.length > 0) {
+              indexDependency.push(result[0].featureNumber);
+            }
+          });
+
+          feature.dependsOn = indexDependency.join(",");
+        }
+      });
+
+      this.ReleasePlan.featureList = featuresReleasePlan;
     }
+    return success;
+  }
 
-    testDataGeneration(config: any) {
+
+  getReleasePlanType(): string {
+    return "NSGA2 Algortihm";
+  }
+
+  testDataGeneration(config: any) {
+  }
+
+  validateConfigAlgorithm(config: any): IValidationMessage {
+    if (!config) return {
+      success: false,
+      error: "Please fill all the fields on the above section."
+    };
+
+    if (!(config.numberOfSprint && Util.isNumber(config.numberOfSprint))) {
+      return {
+        success: false,
+        error: "Please, fill a correct Number of Sprint."
+      }
     }
-
-    getOptimalReleasePlan() {
-        return {result: "Implementing"};
+    if (!(config.sprintDuration && Util.isNumber(config.sprintDuration))) {
+      return {
+        success: false,
+        error: "Please, fill a correct Sprint Duration."
+      }
     }
+    if (!Util.isValidReleaseTriangularInput(config.teamCapability)) {
+      return {
+        success: false,
+        error: "Please, fill a correct Team Capability."
+      }
+    }
+    if (!Util.isValidReleaseTriangularInput(config.discountValue)) {
+      return {
+        success: false,
+        error: "Please, fill a correct discount value."
+      }
+    }
+    return { success: true };
+  }
 
-    constructor(crossoverConfig : any,mutationConfig : any,algorithmConfig : any){
-      this.populationSize = algorithmConfig.population_size;
-      this.generationNumber = algorithmConfig.generation_number;
-      this.crossoverConfig = crossoverConfig;
-      this.mutationConfig = mutationConfig;
-      this.discountValue = algorithmConfig.discount_value;
-      var bestPlan = "";
 
-      var monteCarloConfig = {
-          populationSize : 10000,
-          debug : false
-      };
 
-      if(algorithmConfig.testing.enable == true){
-        //NSGA-II Flow, To be tested
-        var featuresList = [
-          {
-            featureNumber : "1",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 50, mode: 60, upperBound : 100}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 3, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 3, upperBound : 5}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "2",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 30, mode: 40, upperBound : 200}}).getExpectedValue()).toString(),10),
-            effort : "20",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 4, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 5, mode: 9, upperBound : 15}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "3",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 100, mode: 140, upperBound : 200}}).getExpectedValue()).toString(),10),
-            effort : "30",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 1, upperBound : 1}}).getExpectedValue()).toString(),10),
-            dependsOn : "",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 70, mode: 80, upperBound : 90}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 3, upperBound : 4}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "4",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 50, mode: 100, upperBound : 110}}).getExpectedValue()).toString(),10),
-            effort : "40",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound :3, mode: 4, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 90, mode: 100, upperBound : 130}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 2}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "5",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "6",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "7",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "8",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "9",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "10",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          },
-          {
-            featureNumber : "11",
-            businessValue : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 500, mode: 600, upperBound : 1000}}).getExpectedValue()).toString(),10),
-            effort : "10",
-            timeCriticality : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 2, mode: 2, upperBound : 5}}).getExpectedValue()).toString(),10),
-            dependsOn : "3",
-            cost : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 10, mode: 30, upperBound : 50}}).getExpectedValue()).toString(),10),
-            risk : parseInt((new MonteCarloSimulation(monteCarloConfig,{ name : "triangular" , value : {lowerBound : 1, mode: 2, upperBound : 3}}).getExpectedValue()).toString(),10)
-          }
-        ];
+  getOptimalReleasePlan(config: any): any {
+    this.populationSize = algorithmConfig.population_size;
+    this.generationNumber = algorithmConfig.generation_number;
 
-        var fronts = [];
+    this.discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+
+    let bestPlan = "";
+
+    //if (algorithmConfig.testing.enable == true) {
+    if (true) {
+      //NSGA-II Flow, To be tested
+      var featuresList = this.ReleasePlan.featureList;
+
+      console.log("FEATURE TO BE ANALYSED");
+      console.log(featuresList);
+
+      var fronts = [];
+      fronts.push("");
+      var population = [];
+      var doublePopulation = [];
+
+      population = this.initialiseParameters(population);
+      population = this.initialisePopulation(featuresList, this.populationSize, population);
+      doublePopulation = this.initialiseParameters(doublePopulation);
+
+      var obj = [];
+      obj = this.performNonDominatedSort(population, fronts, featuresList, this.discountValue);
+      population = obj[0];
+      fronts = obj[1];
+
+      for (var i = 0; i < this.generationNumber; i++) {
+        doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
+        fronts = [];
         fronts.push("");
-        var population = [];
-        var doublePopulation = [];
-
-        population = this.initialiseParameters(population);
-        population = this.initialisePopulation(featuresList, this.populationSize, population);
-        doublePopulation = this.initialiseParameters(doublePopulation);
-
-        var obj = [];
-        obj = this.performNonDominatedSort(population, fronts, featuresList, this.discountValue);
+        population = this.resetParameters(population);
+        doublePopulation = this.resetParameters(doublePopulation);
+        obj = this.performNonDominatedSort(doublePopulation, fronts, featuresList, this.discountValue);
+        obj[0] = this.updatePopulation(obj[0], obj[1]);
         population = obj[0];
         fronts = obj[1];
 
-       for(var i = 0 ; i < this.generationNumber ; i++){
-         doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
-          fronts = [];
-          fronts.push("");
-          population = this.resetParameters(population);
-          doublePopulation = this.resetParameters(doublePopulation);
-          obj = this.performNonDominatedSort(doublePopulation, fronts, featuresList, this.discountValue);
-          obj[0] = this.updatePopulation(obj[0],obj[1]);
-          population = obj[0];
-          fronts = obj[1];
-
-          if(i == (this.generationNumber-1)){
-            bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
-          }
-
-          fronts = [];
-          fronts.push("");
-
+        if (i == (this.generationNumber - 1)) {
+          bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
         }
-        console.log("bestPlan is :" +bestPlan);
+
+        fronts = [];
+        fronts.push("");
+
       }
+      console.log("bestPlan is :" + bestPlan);
     }
+  }
 
 
 
-  combinePopulations(population : any, secondPopulation : any){
+  combinePopulations(population: any, secondPopulation: any) {
     var doublePopulation = [];
-    for(var i=0 ; i<population.length ; i++){
+    for (var i = 0; i < population.length; i++) {
       doublePopulation.push(population[i]);
     }
-    for(var i=0 ; i<population.length ; i++){
+    for (var i = 0; i < population.length; i++) {
       doublePopulation.push(secondPopulation[i]);
     }
     return doublePopulation;
   }
 
-  initialisePopulation(features : any, populationSize: any , population : any){
+  initialisePopulation(features: any, populationSize: any, population: any) {
 
     var usedFeatures = "";
     var temp = "";
-    for(var i=0 ; i < populationSize ; i++){
+    for (var i = 0; i < populationSize; i++) {
 
-      for(var j = 0 ; j < features.length ; j++){
-        temp = this.generateRandomFeature(usedFeatures,j,features);
-        if(j==0){
+      for (var j = 0; j < features.length; j++) {
+        temp = this.generateRandomFeature(usedFeatures, j, features);
+        if (j == 0) {
           usedFeatures = temp;
-        }else{
+        } else {
           usedFeatures = usedFeatures + "," + temp;
         }
       }
       population[i].releasePlan = usedFeatures;
       usedFeatures = "";
-      }
-      return population;
+    }
+    return population;
   }
 
-  getRandomNumber(number : number){
+  getRandomNumber(number: number) {
     return Math.floor(Math.random() * number);
   }
 
-  generateRandomFeature(usedFeatures : string, numberOfUsedFeatures : number, features : any){
+  generateRandomFeature(usedFeatures: string, numberOfUsedFeatures: number, features: any) {
 
     var options = "";
     var count = 0;
     var tempI = "";
-    for(var i = 1 ; i < features.length+1 ; i++){
+    for (var i = 1; i < features.length + 1; i++) {
       tempI = i.toString();
-      if(this.checkDependency(tempI, usedFeatures, features) == true){
+      if (this.checkDependency(tempI, usedFeatures, features) == true) {
         options += tempI + ",";
         count++;
       }
     }
-    options = options.substring(0,(options.length-1));
+    options = options.substring(0, (options.length - 1));
     var rand = this.getRandomNumber(count);
 
     var temps = options.split(",");
@@ -238,54 +263,54 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
-  checkDependency(featureNumber : string, usedFeatures : string, features : any){
-    if(this.checkIfUsed(featureNumber, usedFeatures) == false){
-      if(this.checkIfDepends(featureNumber, features) == false){
+  checkDependency(featureNumber: string, usedFeatures: string, features: any) {
+    if (this.checkIfUsed(featureNumber, usedFeatures) == false) {
+      if (this.checkIfDepends(featureNumber, features) == false) {
         return true;
       } else {
-        if(this.checkIfDependsOnUsed(featureNumber, usedFeatures, features) == true){
+        if (this.checkIfDependsOnUsed(featureNumber, usedFeatures, features) == true) {
           return true;
-        } else{
+        } else {
           return false;
         }
       }
-    }else {
+    } else {
       return false;
     }
   }
 
-  checkIfUsed(featureNumber : string, usedFeatures : string){
+  checkIfUsed(featureNumber: string, usedFeatures: string) {
 
     var usedFeaturesSeparated = usedFeatures.split(",");
 
-    for(var i = 0 ; i < usedFeaturesSeparated.length ; i++){
-      if(featureNumber == usedFeaturesSeparated[i]){
+    for (var i = 0; i < usedFeaturesSeparated.length; i++) {
+      if (featureNumber == usedFeaturesSeparated[i]) {
         return true;
       }
     }
     return false;
   }
 
-  checkIfDepends(featureNumber : string, features : any){
-    if(features[parseInt(featureNumber)-1].dependsOn == ""){
+  checkIfDepends(featureNumber: string, features: any) {
+    if (features[parseInt(featureNumber) - 1].dependsOn == "") {
       return false;
     }
     return true;
   }
 
-  checkIfDependsOnUsed(featureNumber : string, usedFeatures : string, features : any){
+  checkIfDependsOnUsed(featureNumber: string, usedFeatures: string, features: any) {
     var usedFeaturesSeparated = usedFeatures.split(",");
-    var dependentFeaturesSeparated = features[parseInt(featureNumber)-1].dependsOn.split(",");
+    var dependentFeaturesSeparated = features[parseInt(featureNumber) - 1].dependsOn.split(",");
 
     var answer = false;
 
-    for(var i=0 ; i < dependentFeaturesSeparated.length ; i++){
-      for(var j=0 ; j < usedFeaturesSeparated.length ; j++){
-        if((dependentFeaturesSeparated[i] == usedFeaturesSeparated[j]) == true){
+    for (var i = 0; i < dependentFeaturesSeparated.length; i++) {
+      for (var j = 0; j < usedFeaturesSeparated.length; j++) {
+        if ((dependentFeaturesSeparated[i] == usedFeaturesSeparated[j]) == true) {
           answer = true;
         }
       }
-      if(answer == false){
+      if (answer == false) {
         return false;
       }
       answer = false;
@@ -293,21 +318,21 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return true;
   }
 
-  performNonDominatedSort(population : any , fronts : any , featuresList : any , discountValue : number){
+  performNonDominatedSort(population: any, fronts: any, featuresList: any, discountValue: number) {
 
-    for(var i=0; i<population.length ; i++){
-      for(var j=0; j<population.length ; j++){
-        if(i == j){
+    for (var i = 0; i < population.length; i++) {
+      for (var j = 0; j < population.length; j++) {
+        if (i == j) {
           continue;
         }
-        if(this.checkIfFirstDominatesSecond(population[i].releasePlan, population[j].releasePlan, featuresList, discountValue) == true){
-          if(population[i].setS == ""){
+        if (this.checkIfFirstDominatesSecond(population[i].releasePlan, population[j].releasePlan, featuresList, discountValue) == true) {
+          if (population[i].setS == "") {
             population[i].setS = "" + j;
-          }else{
+          } else {
             population[i].setS = population[i].setS + "," + j;
           }
-        }else if(this.checkIfFirstDominatesSecond(population[j].releasePlan, population[i].releasePlan, featuresList, discountValue) == true){
-          population[i].n = String(parseInt(population[i].n)+1);
+        } else if (this.checkIfFirstDominatesSecond(population[j].releasePlan, population[i].releasePlan, featuresList, discountValue) == true) {
+          population[i].n = String(parseInt(population[i].n) + 1);
 
         }
       }
@@ -315,57 +340,61 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
     var wrapper = [];
 
-    wrapper = this.updateFronts(population , fronts);
+    wrapper = this.updateFronts(population, fronts);
     wrapper = this.calculateCrowdingDistances(wrapper[0], wrapper[1], featuresList, discountValue);
     return wrapper;
   }
 
-  checkIfFirstDominatesSecond(plan1 : string, plan2 : string, features : any, discountValue : number){
-    if((this.calculateObjective1(plan1, features, discountValue)==this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features)>this.calculateObjective2(plan2, features)) ||
-      (this.calculateObjective1(plan1, features, discountValue)>this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features)==this.calculateObjective2(plan2, features)) ||
-      (this.calculateObjective1(plan1, features, discountValue)>this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features)>this.calculateObjective2(plan2, features)) ){
-            return true;
+  checkIfFirstDominatesSecond(plan1: string, plan2: string, features: any, discountValue: number) {
+    if ((this.calculateObjective1(plan1, features, discountValue) == this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features) > this.calculateObjective2(plan2, features)) ||
+      (this.calculateObjective1(plan1, features, discountValue) > this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features) == this.calculateObjective2(plan2, features)) ||
+      (this.calculateObjective1(plan1, features, discountValue) > this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features) > this.calculateObjective2(plan2, features))) {
+      return true;
     }
     return false;
   }
 
-  calculateObjective1(plan : any, features :any , discountValue : any){
+  calculateObjective1(plan: any, features: any, discountValue: any) {
     var npv = 0;
     var e = 0.0;
     var f = 0.0;
     var splitPlan = plan.split(",");
-    for(var j = 0 ; j < splitPlan.length ; j++){
-      for(var i=j+1; i <=(splitPlan.length) ; i++){
+    console.log("FEATURES");
+    console.log(features);
+    for (var j = 0; j < splitPlan.length; j++) {
+      for (var i = j + 1; i <= (splitPlan.length); i++) {
+        console.log("ASDF");
+        console.log(splitPlan[j]);
         e = i;
-        npv += features[parseInt(splitPlan[j])-1].businessValue/Math.pow((1+(discountValue/100)),e);
+        npv += features[parseInt(splitPlan[j]) - 1].businessValue / Math.pow((1 + (discountValue / 100)), e);
 
       }
       f = j;
-      npv -= features[parseInt(splitPlan[j])-1].cost/Math.pow((1+(discountValue/100)),f);
+      npv -= features[parseInt(splitPlan[j]) - 1].cost / Math.pow((1 + (discountValue / 100)), f);
     }
 
     return npv;
   }
 
-  calculateObjective2(plan : string, features : any){
+  calculateObjective2(plan: string, features: any) {
     var totalWeight = 0.0;
     var separatedPlan = plan.split(",");
 
-    for(var i =0 ; i < separatedPlan.length ; i++){
-      totalWeight += parseFloat(features[parseInt(separatedPlan[i])-1].timeCriticality)/(parseFloat(features[parseInt(separatedPlan[i])-1].risk)*(i+1));
+    for (var i = 0; i < separatedPlan.length; i++) {
+      totalWeight += parseFloat(features[parseInt(separatedPlan[i]) - 1].timeCriticality) / (parseFloat(features[parseInt(separatedPlan[i]) - 1].risk) * (i + 1));
       //totalWeight += Double.parseDouble(features[Integer.parseInt(separatedPlan[i])-1][3])/(Double.parseDouble(features[Integer.parseInt(separatedPlan[i])-1][6])*(i+1));
     }
 
     return totalWeight;
   }
 
-  updateFronts(population : any, fronts : any){
+  updateFronts(population: any, fronts: any) {
 
-    for(var i=0 ; i < population.length ; i++){
-      if(population[i].n == "0"){
-        if(fronts[0] == ""){
+    for (var i = 0; i < population.length; i++) {
+      if (population[i].n == "0") {
+        if (fronts[0] == "") {
           fronts[0] = "" + i;
-        }else {
+        } else {
           fronts[0] = fronts[0] + "," + i;
         }
         population[i].rank = "1";
@@ -382,27 +411,27 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     var tempForLastFront = "";
     var tempArray = [];
 
-   while(proceed != 0 && frontCounter<population.length){
+    while (proceed != 0 && frontCounter < population.length) {
       frontSizeTemp = fronts.length;
       separatedPopulationIndex = fronts[frontCounter].split(",");
-      if(separatedPopulationIndex[0] == ""){
+      if (separatedPopulationIndex[0] == "") {
         break;
       }
-      for(var i = 0 ; i < separatedPopulationIndex.length ; i ++){
+      for (var i = 0; i < separatedPopulationIndex.length; i++) {
         eachQ = population[parseInt(separatedPopulationIndex[i])].setS.split(",");
 
-        if(eachQ[0] == ""){
+        if (eachQ[0] == "") {
           continue;
         }
 
-        for(var j = 0; j < eachQ.length ; j++){
-          population[parseInt(eachQ[j])].n = String(parseInt(population[parseInt(eachQ[j])].n)-1);
-          if(population[parseInt(eachQ[j])].n == "0"){
-            population[parseInt(eachQ[j])].rank = String(frontCounter+1);
+        for (var j = 0; j < eachQ.length; j++) {
+          population[parseInt(eachQ[j])].n = String(parseInt(population[parseInt(eachQ[j])].n) - 1);
+          if (population[parseInt(eachQ[j])].n == "0") {
+            population[parseInt(eachQ[j])].rank = String(frontCounter + 1);
 
-            if(tempSetQ==""){
+            if (tempSetQ == "") {
               tempSetQ = "" + eachQ[j];
-            }else{
+            } else {
               tempSetQ = tempSetQ + "," + eachQ[j];
             }
           }
@@ -412,26 +441,26 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       fronts.push(tempSetQ);
       tempSetQ = "";
       frontCounter++;
-      if(fronts.length == frontSizeTemp){
-        for(var i=0; i<fronts.length ; i++){
-          if(tempForLastFront == ""){
+      if (fronts.length == frontSizeTemp) {
+        for (var i = 0; i < fronts.length; i++) {
+          if (tempForLastFront == "") {
             tempForLastFront = fronts[i];
-          }else{
+          } else {
             tempForLastFront = tempForLastFront + "," + fronts[i];
           }
         }
         tempArray = tempForLastFront.split(",");
         var isItUsed = false;
-        for(var i = 0; i < population.length; i++){
-          for(var j = 0; j < tempArray.length; j++){
-            if(tempArray[j] == ("" + i)){
+        for (var i = 0; i < population.length; i++) {
+          for (var j = 0; j < tempArray.length; j++) {
+            if (tempArray[j] == ("" + i)) {
               isItUsed = true;
             }
           }
-          if(isItUsed == false){
-            if(lastFront == ""){
+          if (isItUsed == false) {
+            if (lastFront == "") {
               lastFront = "" + i;
-            }else{
+            } else {
               lastFront = lastFront + "," + i;
             }
           }
@@ -451,30 +480,30 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return wrapper;
   }
 
-  updatePopulation(oldPopulation : any, fronts : any){
+  updatePopulation(oldPopulation: any, fronts: any) {
     var tempPopulation = [];
-    var populationLeft = oldPopulation.length/2;
+    var populationLeft = oldPopulation.length / 2;
     var tempForPopulationLeft = populationLeft;
     var i = 0;
     var b = 0;
     var separatedReleasePlans = [];
 
-    while((populationLeft>0)/*&& (fronts.length<i)*/){
+    while ((populationLeft > 0)/*&& (fronts.length<i)*/) {
       separatedReleasePlans = fronts[b].split(",");
       b++;
       /*if(separatedReleasePlans[0] == ""){
         i++;
         continue;
       }*/
-      if(separatedReleasePlans.length<=populationLeft){
-        for(var j = 0 ; j < separatedReleasePlans.length ; j++){
+      if (separatedReleasePlans.length <= populationLeft) {
+        for (var j = 0; j < separatedReleasePlans.length; j++) {
           tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];
           i++;
           populationLeft--;
         }
-      }else{
+      } else {
         tempForPopulationLeft = populationLeft;
-        for(var j = 0 ; j < tempForPopulationLeft ; j++){
+        for (var j = 0; j < tempForPopulationLeft; j++) {
           tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];
           i++;
           populationLeft--;
@@ -484,22 +513,22 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return tempPopulation;
   }
 
-  initialiseParameters(population : any){
+  initialiseParameters(population: any) {
     population = [];
-    for(var i = 0; i < this.populationSize ; i++){
+    for (var i = 0; i < this.populationSize; i++) {
       var temp = {
-        setS : "",
-        n : "0",
-        crowdingDistance : "0.0",
-        rank : "0"
+        setS: "",
+        n: "0",
+        crowdingDistance: "0.0",
+        rank: "0"
       };
       population.push(temp);
     }
     return population;
   }
 
-  resetParameters(population : any){
-    for(var i = 0; i < this.populationSize ; i++){
+  resetParameters(population: any) {
+    for (var i = 0; i < this.populationSize; i++) {
       population[i].setS = "";
       population[i].n = "0";
       population[i].crowdingDistance = "0.0";
@@ -508,18 +537,18 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return population;
   }
 
-  calculateCrowdingDistances(population : any, fronts : any, features : any, discountValue : number){
+  calculateCrowdingDistances(population: any, fronts: any, features: any, discountValue: number) {
     var sorted = "";
     var separatedFrontElement;
 
-    for(var i = 0 ; i < fronts.length ; i++){
-      for(var j = 0 ; j < 2 ; j++){
+    for (var i = 0; i < fronts.length; i++) {
+      for (var j = 0; j < 2; j++) {
         sorted = this.sort(fronts[i], j, population, features, discountValue);
         separatedFrontElement = sorted.split(",");
         population[parseInt(separatedFrontElement[0])].crowdingDistance = String(999999999999.0);
-        population[parseInt(separatedFrontElement[separatedFrontElement.length-1])].crowdingDistance = String(999999999999.0);
-        for(var k = 1; k < separatedFrontElement.length-1 ; k++){
-          population[parseInt(separatedFrontElement[k])].crowdingDistance = String(parseFloat(population[parseInt(separatedFrontElement[k])].crowdingDistance) + ((this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[k+1])].releasePlan, j , features, discountValue) - this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[k-1])].releasePlan, j , features, discountValue))/(this.getObjectiveValueRange(j))));
+        population[parseInt(separatedFrontElement[separatedFrontElement.length - 1])].crowdingDistance = String(999999999999.0);
+        for (var k = 1; k < separatedFrontElement.length - 1; k++) {
+          population[parseInt(separatedFrontElement[k])].crowdingDistance = String(parseFloat(population[parseInt(separatedFrontElement[k])].crowdingDistance) + ((this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[k + 1])].releasePlan, j, features, discountValue) - this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[k - 1])].releasePlan, j, features, discountValue)) / (this.getObjectiveValueRange(j))));
         }
       }
     }
@@ -530,25 +559,25 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return wrapper;
   }
 
-  getObjectiveValueRange(j : number){
-    if(j == 0){ //For the first objective function
+  getObjectiveValueRange(j: number) {
+    if (j == 0) { //For the first objective function
       return 99999999.0;
-    }else{ //For the second objective function
+    } else { //For the second objective function
       return 5.0;
     }
   }
 
-  sort(frontElement : string, j : number, population : any, features : any, discountValue : number){
+  sort(frontElement: string, j: number, population: any, features: any, discountValue: number) {
     var separatedFrontElement = frontElement.split(",");
 
     var swapped = true;
     var temp = "";
-    while(swapped == true){
+    while (swapped == true) {
       swapped = false;
-      for(var i = 1 ; i < separatedFrontElement.length ; i++){
-        if(this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[i-1])].releasePlan, j , features, discountValue)>this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[i])].releasePlan, j , features, discountValue)){
-          temp = separatedFrontElement[i-1];
-          separatedFrontElement[i-1] = separatedFrontElement[i];
+      for (var i = 1; i < separatedFrontElement.length; i++) {
+        if (this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[i - 1])].releasePlan, j, features, discountValue) > this.calculateObjectiveForCrowding(population[parseInt(separatedFrontElement[i])].releasePlan, j, features, discountValue)) {
+          temp = separatedFrontElement[i - 1];
+          separatedFrontElement[i - 1] = separatedFrontElement[i];
           separatedFrontElement[i] = temp;
           swapped = true;
         }
@@ -556,10 +585,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
 
     var sortedFronts = "";
-    for(var i = 0; i < separatedFrontElement.length ; i++){
-      if(i == 0){
+    for (var i = 0; i < separatedFrontElement.length; i++) {
+      if (i == 0) {
         sortedFronts = separatedFrontElement[i];
-      }else{
+      } else {
         sortedFronts = sortedFronts + "," + separatedFrontElement[i];
       }
     }
@@ -568,110 +597,118 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
-  calculateObjectiveForCrowding(plan : string, a : number, features : any, discountValue : number){
+  calculateObjectiveForCrowding(plan: string, a: number, features: any, discountValue: number) {
     var result = 0.0;
-    if(a == 0){
+    if (a == 0) {
       result = this.calculateObjective1(plan, features, discountValue);
-    }else{
+    } else {
       result = this.calculateObjective2(plan, features);
     }
     return result;
   }
 
 
-  applyGeneticOperations(population : any){
+  applyGeneticOperations(population: any) {
     var father = 0;
     var mother = 0;
     var children = [];
     var newPopulation = []
     newPopulation = this.initialiseParameters(newPopulation);
 
-    for(var i = 0; i < newPopulation.length/2 ; i++){
+    for (var i = 0; i < newPopulation.length / 2; i++) {
       father = this.selection(population);
       mother = this.selection(population);
       children = this.makeCrossover(population[father].releasePlan, population[mother].releasePlan);
       var firstChild = children[0];
       var secondChild = children[1];
-      newPopulation[2*i].releasePlan = this.makeMutation(firstChild);
-      newPopulation[2*i+1].releasePlan = this.makeMutation(secondChild);
+      newPopulation[2 * i].releasePlan = this.makeMutation(firstChild);
+      newPopulation[2 * i + 1].releasePlan = this.makeMutation(secondChild);
     }
 
     return newPopulation;
   }
 
-  selection(population : any){
+  selection(population: any) {
     var parentIndex = parseInt((Math.random() * population.length).toString(), 10);
     var tempParentIndex = 0;
     var tournamentSize = 10;
 
-    for(var i = 0 ; i < 10 ; i++){
-      tempParentIndex =  parseInt((Math.random() * population.length).toString(), 10);
-      if((parseInt(population[tempParentIndex].rank)<parseInt(population[parentIndex].rank))||((parseInt(population[tempParentIndex].rank)==parseInt(population[parentIndex].rank)) && ((parseFloat(population[tempParentIndex].crowdingDistance))>(parseFloat(population[parentIndex].crowdingDistance))))){
+    for (var i = 0; i < 10; i++) {
+      tempParentIndex = parseInt((Math.random() * population.length).toString(), 10);
+      if ((parseInt(population[tempParentIndex].rank) < parseInt(population[parentIndex].rank)) || ((parseInt(population[tempParentIndex].rank) == parseInt(population[parentIndex].rank)) && ((parseFloat(population[tempParentIndex].crowdingDistance)) > (parseFloat(population[parentIndex].crowdingDistance))))) {
         parentIndex = tempParentIndex;
       }
     }
     return parentIndex;
   }
 
-  makeCrossover(father : string, mother : string){
+  makeCrossover(father: string, mother: string) {
     var result = [];
 
-    var fatherSet = father.split(",");
-    var motherSet = mother.split(",");
-    var crossOverLocation = Math.ceil(this.crossoverConfig.crossSectionPosition * fatherSet.length);
-    while((crossOverLocation == 0)||(crossOverLocation == (father.length-1))){
-      crossOverLocation = Math.ceil(Math.random() * fatherSet.length);
-    }
+    var rand = Math.random();
 
-    var firstFatherHalf = fatherSet.slice(0,crossOverLocation);
-    var firstChild = fatherSet.slice(0,crossOverLocation);
-
-    var firstMotherHalf = motherSet.slice(0,crossOverLocation);
-    var secondChild = motherSet.slice(0,crossOverLocation);
-
-    while(firstChild.length < motherSet.length){
-      var pointer = Math.ceil(Math.random()*motherSet.length)-1;
-      if(this.contains(firstChild,motherSet[pointer])==false){
-        firstChild.push(motherSet[pointer]);
+    if (rand <= crossoverConfig.crossoverRate) {
+      var fatherSet = father.split(",");
+      var motherSet = mother.split(",");
+      var crossOverLocation = Math.ceil(crossoverConfig.crossSectionPosition * fatherSet.length);
+      while ((crossOverLocation == 0) || (crossOverLocation == (father.length - 1))) {
+        crossOverLocation = Math.ceil(Math.random() * fatherSet.length);
       }
-    }
 
-    while(secondChild.length < fatherSet.length){
-      var pointer = Math.ceil(Math.random()*fatherSet.length)-1;
-      if(this.contains(secondChild,fatherSet[pointer])==false){
-        secondChild.push(fatherSet[pointer]);
+      var firstFatherHalf = fatherSet.slice(0, crossOverLocation);
+      var firstChild = fatherSet.slice(0, crossOverLocation);
+
+      var firstMotherHalf = motherSet.slice(0, crossOverLocation);
+      var secondChild = motherSet.slice(0, crossOverLocation);
+
+      while (firstChild.length < motherSet.length) {
+        var pointer = Math.ceil(Math.random() * motherSet.length) - 1;
+        if (this.contains(firstChild, motherSet[pointer]) == false) {
+          firstChild.push(motherSet[pointer]);
+        }
       }
+
+      while (secondChild.length < fatherSet.length) {
+        var pointer = Math.ceil(Math.random() * fatherSet.length) - 1;
+        if (this.contains(secondChild, fatherSet[pointer]) == false) {
+          secondChild.push(fatherSet[pointer]);
+        }
+      }
+
+      result.push(firstChild.toString());
+      result.push(secondChild.toString());
+    } else {
+      result.push(father);
+      result.push(mother);
     }
 
-    result.push(firstChild.toString());
-    result.push(secondChild.toString());
 
     return result;
 
   }
 
-  contains(target : string[] , key : string){
+  contains(target: string[], key: string) {
     var result = false;
-    for(var i = 0 ; i < target.length ; i++){
-      if(target[i]==key){
+    for (var i = 0; i < target.length; i++) {
+      if (target[i] == key) {
         result = true;
       }
     }
     return result;
   }
 
-  makeMutation(solution : string){
+  makeMutation(solution: string) {
     var solutionSet = solution.split(",");
-    var probability = this.mutationConfig.probability;
-    for(var i = 0 ; i < solutionSet.length ; i++){
+    var probability = mutationConfig.probability;
+    for (var i = 0; i < solutionSet.length; i++) {
       var random = Math.random();
-      if(random < probability){
+      if (random < probability) {
 
         var target = solutionSet[i];
 
-        var swapIndex = Math.ceil(Math.random()*(solutionSet.length-1));
-        while(swapIndex == i){
-          swapIndex = Math.ceil(Math.random()*(solutionSet.length-1));
+        var swapIndex = Math.ceil(Math.random() * (solutionSet.length - 1));
+        while (swapIndex == i) {
+          swapIndex = Math.ceil(Math.random() * (solutionSet.length - 1));
         }
         var swapTarget = solutionSet[swapIndex];
         solutionSet[i] = swapTarget;
