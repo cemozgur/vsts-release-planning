@@ -1,12 +1,14 @@
 import { Container } from "inversify";
 import TYPES from "../constants/identifiers";
 import ALGORITHM_TYPE from "../constants/algorithmType";
+import DATA_SIMULATOR_TYPE from "../constants/datasimulatortype"
 
 import GAReleasePlanningAlgorithm from "../entities/GAReleasePlanningAlgorithm";
 import IFMReleasePlanningAlgorithm from "../entities/IFMReleasePlanningAlgorithm";
 import FeatureServiceImpl from "../entities/FeatureServiceImpl";
 
-
+import MonteCarloSimulation from "../entities/MonteCarloSimulation"
+import IDataSimulator from "../interfaces/IDataSimulator";
 
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
 import {IFeatureService} from "../interfaces/IFeatureService";
@@ -24,6 +26,7 @@ container.bind<IReleasePlanningAlgorithm>(TYPES.IReleasePlanningAlgorithm).to(IF
 
 container.bind<IFeatureService>(TYPES.IFeatureService).to(FeatureServiceImpl).inSingletonScope();
 
+container.bind<IDataSimulator>(TYPES.IDataSimulator).to(MonteCarloSimulation).whenTargetNamed(DATA_SIMULATOR_TYPE.Monte_Carlo);
 
 
 export default container;
