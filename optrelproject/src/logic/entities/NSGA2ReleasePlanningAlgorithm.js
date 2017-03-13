@@ -156,7 +156,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         population = obj[0];
         fronts = obj[1];
         for (var i = 0; i < generationNumber; i++) {
-            doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
+            doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population, featuresList));
             fronts = [];
             fronts.push("");
             population = this.resetParameters(population);
@@ -416,7 +416,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 proceed = 0;
             }
         }
-        fronts.splice(-1); //Remove the last element of the array ?
+        fronts.splice(-1);
         var wrapper = [];
         wrapper.push(population);
         wrapper.push(fronts);
@@ -429,13 +429,9 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var i = 0;
         var b = 0;
         var separatedReleasePlans = [];
-        while ((populationLeft > 0) /*&& (fronts.length<i)*/) {
+        while ((populationLeft > 0)) {
             separatedReleasePlans = fronts[b].split(",");
             b++;
-            /*if(separatedReleasePlans[0] == ""){
-              i++;
-              continue;
-            }*/
             if (separatedReleasePlans.length <= populationLeft) {
                 for (var j = 0; j < separatedReleasePlans.length; j++) {
                     tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];
@@ -539,22 +535,57 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         }
         return result;
     };
-    NSGA2ReleasePlanningAlgorithm.prototype.applyGeneticOperations = function (population) {
+    NSGA2ReleasePlanningAlgorithm.prototype.applyGeneticOperations = function (population, features) {
         var father = 0;
         var mother = 0;
         var children = [];
         var newPopulation = [];
         newPopulation = this.initialiseParameters(newPopulation);
+        var proceed = true;
+        var temp1 = "";
+        var temp2 = "";
         for (var i = 0; i < newPopulation.length / 2; i++) {
-            father = this.selection(population);
-            mother = this.selection(population);
-            children = this.makeCrossover(population[father].releasePlan, population[mother].releasePlan);
-            var firstChild = children[0];
-            var secondChild = children[1];
-            newPopulation[2 * i].releasePlan = this.makeMutation(firstChild);
-            newPopulation[2 * i + 1].releasePlan = this.makeMutation(secondChild);
+            while (proceed == true) {
+                father = this.selection(population);
+                mother = this.selection(population);
+                children = this.makeCrossover(population[father].releasePlan, population[mother].releasePlan);
+                temp1 = this.makeMutation(children[0]);
+                temp2 = this.makeMutation(children[1]);
+                if ((this.checkIfSuitable(temp1, features) == true) && (this.checkIfSuitable(temp2, features) == true)) {
+                    proceed = false;
+                    newPopulation[2 * i].releasePlan = temp1;
+                    newPopulation[2 * i + 1].releasePlan = temp2;
+                }
+            }
+            proceed = true;
         }
         return newPopulation;
+    };
+    NSGA2ReleasePlanningAlgorithm.prototype.checkIfSuitable = function (childsElement, features) {
+        var separatedElement = childsElement.split(",");
+        var separatedDependents;
+        if ((features[parseInt(separatedElement[0]) - 1].dependsOn == "") == false) {
+            return false;
+        }
+        for (var i = 0; i < separatedElement.length; i++) {
+            if ((features[parseInt(separatedElement[i]) - 1].dependsOn == "") == false) {
+                separatedDependents = features[parseInt(separatedElement[i]) - 1].dependsOn.split(",");
+                for (var j = 0; j < separatedDependents.length; j++) {
+                    if (this.checkDependsOnUsedBefore(i, separatedElement, separatedDependents[j]) == false) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    };
+    NSGA2ReleasePlanningAlgorithm.prototype.checkDependsOnUsedBefore = function (i, separatedElement, separatedDependentElement) {
+        for (var a = 0; a < i; a++) {
+            if (separatedElement[a] == separatedDependentElement) {
+                return true;
+            }
+        }
+        return false;
     };
     NSGA2ReleasePlanningAlgorithm.prototype.selection = function (population) {
         var parentIndex = parseInt((Math.random() * population.length).toString(), 10);
