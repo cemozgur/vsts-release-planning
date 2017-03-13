@@ -49,6 +49,9 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         return { releasePlanGeneration: releasePlanGenerationInitial };
     }
 
+    private componentDidMount() {
+        console.log("DID MOUnT TESTING");
+    }
 
     public render(): JSX.Element {
         let featureSection: JSX.Element = null;
@@ -206,6 +209,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
 
     private _onSaveReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
         let releasePlan = this.state.releasePlanGeneration.result;
+        let messageSuccess = "The optimal ReleasePlan was stored successfully.";
         VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
             Q.all(dataService.getDocument(VSTS_DOCUMENT.RELEASEPLANDOCUMENT, VSTS_DOCUMENT.RESULTID)).
                 then(document => {
@@ -216,6 +220,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
                         result => {
                             console.log("UPDATE");
                             console.log(result);
+                            alert(messageSuccess);
                         }
                     );
                 })
@@ -228,6 +233,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
                         result => {
                             console.log("CREATE");
                             console.log(result);
+                            alert(messageSuccess);
                         }
                     );
                 });
