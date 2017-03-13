@@ -32,8 +32,8 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
     }
 
     private _getProjectFeaturesList(queryResult: IWiqlQueryResult): JSX.Element {
-        let _minWidths = [50, 900, 100];
-        let _maxWidths = [50, 900, 100];
+        let _minWidths = [50, 400, 100];
+        let _maxWidths = [50, 500, 120];
         let columns = queryResult.columns.map((c, i) => {
             return {
                 key: c.referenceName,
@@ -41,15 +41,16 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
                 fieldName: c.referenceName,
                 minWidth: _minWidths[i],
                 maxWidth: _maxWidths[i],
-                isResizable: true
+                isResizable: false
             }
         });
         let items = queryResult.workItems.map(wi => wi.fields);
 
 
-        return <div>
+        return <div id="featuresRelease" >
             <h3>Features</h3>
             <DetailsList
+                className="feature-list-info"
                 columns={columns}
                 items={items}
                 checkboxVisibility={CheckboxVisibility.hidden}
@@ -58,6 +59,7 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
                         svc.openWorkItem(item["System.Id"]);
                     });
                 }}
+                setKey='set'
             />
         </div>;
     }

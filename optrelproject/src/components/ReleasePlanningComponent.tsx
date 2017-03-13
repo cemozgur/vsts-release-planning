@@ -1,37 +1,27 @@
 import * as React from 'react';
+import * as Q from 'q';
 
 import container from "../logic/config/inversify.config";
 import IReleasePlanningAlgorithm from "../logic/interfaces/IReleasePlanningAlgorithm";
 import SERVICE_IDENTIFIER from "../logic/constants/identifiers";
 import ALGORITHM_TYPE from "../logic/constants/algorithmType";
+import VSTS_DOCUMENT from "../logic/constants/vstsDocumentID";
 
 
 import { IWorkItemSearchResult } from "../model/IWorkItemSearchResult";
 import { ExtensionDataService } from 'VSS/SDK/Services/ExtensionData';
 import { IReleasePlanGeneration } from "../model/IReleasePlanGeneration";
 
-
-
 import { Button } from '../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button';
 import { ButtonType } from '../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button.Props';
-import { ChoiceGroup, IChoiceGroupOption } from '../../node_modules/office-ui-fabric-react/lib-amd/components/ChoiceGroup';
-import { Label } from '../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
-import { TextField } from '../../node_modules/office-ui-fabric-react/lib-amd/components/TextField/TextField';
-import {
-    Spinner,
-    SpinnerType
-} from '../../node_modules/office-ui-fabric-react/lib-amd/components/Spinner';
+import { IChoiceGroupOption } from '../../node_modules/office-ui-fabric-react/lib-amd/components/ChoiceGroup';
+import { Spinner, SpinnerType } from '../../node_modules/office-ui-fabric-react/lib-amd/components/Spinner';
 import { MessageBar, MessageBarType } from '../../node_modules/office-ui-fabric-react/lib-amd/components/MessageBar';
 
-
-import { Header } from "./common/Header";
-import { ReleasePlanResult } from "./releaseplanresult/ReleasePlanResult";
+import { FeatureList } from "./features/FeatureList";
 import { AlgorithmChoice } from "./releaseplan/AlgorithmChoice";
 import { ReleasePlanInput } from "./releaseplan/ReleasePlanInput";
-
-
-import { FeatureList } from "./features/FeatureList";
-
+import { ReleasePlanResult } from "./releaseplanresult/ReleasePlanResult";
 
 interface IReleasePlanningProps {
     features: IWorkItemSearchResult;
@@ -39,10 +29,6 @@ interface IReleasePlanningProps {
 
 interface IReleasePlanningState {
     releasePlanGeneration: IReleasePlanGeneration;
-}
-
-const VSTS_DOCUMENT = {
-    RPDS: "RPDS"
 }
 
 export class ReleasePlanningComponent extends React.Component<IReleasePlanningProps, IReleasePlanningState> {
@@ -93,8 +79,8 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
             releasePlanResultSection = <div id="releaseplanresult">
                 <ReleasePlanResult result={releasePlanGenerationState.result} algorithmType={releasePlanGenerationState.algorithmType} />
                 <div className="actions">
-                    <Button onClick={this._onGenerateReleasePlanClick.bind(this)} buttonType={ButtonType.normal} className="action-button">Save Release Plan</Button>
-                    <Button onClick={this._onCancelReleasePlanClick.bind(this)} buttonType={ButtonType.normal} className="action-button">Cancel Release Plan</Button>
+                    <Button onClick={this._onSaveReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Save Release Plan</Button>
+                    <Button onClick={this._onCancelReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Cancel Release Plan</Button>
                 </div>
             </div>;
         } else if (releasePlanGenerationState.processing) {
@@ -103,7 +89,6 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
             releasePlanResultSection =
                 <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
                     {releasePlanGenerationState.error}</MessageBar>
-
         }
 
 
@@ -163,7 +148,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
     private setStateConfigKey(configKey: string, triangular: boolean): void {
         let releasePlanGenerationState = this.state.releasePlanGeneration;
         let update = false;
-        let mock = {
+        let mockTriangular = {
             Min: null,
             Expected: null,
             Max: null
@@ -171,11 +156,11 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
 
         if (!releasePlanGenerationState.config) {
             releasePlanGenerationState.config = {};
-            triangular ? releasePlanGenerationState.config[configKey] = mock : releasePlanGenerationState.config[configKey] = null;
+            triangular ? releasePlanGenerationState.config[configKey] = mockTriangular : releasePlanGenerationState.config[configKey] = null;
             update = true;
         } else {
             if (!releasePlanGenerationState.config[configKey]) {
-                triangular ? releasePlanGenerationState.config[configKey] = mock : releasePlanGenerationState.config[configKey] = null;
+                triangular ? releasePlanGenerationState.config[configKey] = mockTriangular : releasePlanGenerationState.config[configKey] = null;
                 update = true;
             }
         }
@@ -220,7 +205,33 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
     }
 
     private _onSaveReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
-        console.log("SAVE");
+        let releasePlan = this.state.releasePlanGeneration.result;
+        VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
+            Q.all(dataService.getDocument(VSTS_DOCUMENT.RELEASEPLANDOCUMENT, VSTS_DOCUMENT.RESULTID)).
+                then(document => {
+                    console.log("GET");
+                    console.log(document);
+                    document["releasePlanResult"] = releasePlan;
+                    dataService.updateDocument(VSTS_DOCUMENT.RELEASEPLANDOCUMENT, document).then(
+                        result => {
+                            console.log("UPDATE");
+                            console.log(result);
+                        }
+                    );
+                })
+                .catch(error => {
+                    let createDocument = {
+                        id: VSTS_DOCUMENT.RESULTID,
+                        releasePlanResult: releasePlan
+                    };
+                    dataService.createDocument(VSTS_DOCUMENT.RELEASEPLANDOCUMENT, createDocument).then(
+                        result => {
+                            console.log("CREATE");
+                            console.log(result);
+                        }
+                    );
+                });
+        });
     }
     private _onCancelReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
         let releasePlanGenerationState = this.state.releasePlanGeneration;

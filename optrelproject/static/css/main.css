@@ -20,3 +20,15 @@
 .separator {
     width: 100%;
 }
+
+.feature-list-info {
+    -webkit-overflow-scrolling: touch;
+    max-height: 50vh;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.button-save-release{
+    margin-right: 10px;
+}

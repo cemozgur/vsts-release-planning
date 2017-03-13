@@ -12,7 +12,7 @@ const monteCarloConfig = {
   debug: false
 };
 const algorithmConfig = {
-  population_size: 20, //POPULATION SIZE MUST BE EVEN!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  population_size: 20,
   generation_number: 50,
   testing: {
     enable: false
@@ -20,13 +20,13 @@ const algorithmConfig = {
 };
 const crossoverConfig = {
   crossoverRate: 0.9,
-  crossSectionPosition: 0, //As percentage 0 mean random position per crossover
+  crossSectionPosition: 0,
   testing: {
     enable: false
   }
 };
 const mutationConfig = {
-  probability: 0.03, //As percentage
+  probability: 0.03,
   testing: {
     enable: false
   }
@@ -34,24 +34,8 @@ const mutationConfig = {
 
 @injectable()
 class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
-
-  private TeamCapability: number[];
-
   private populationSize;
-  private generationNumber;
-  private discountValue;
-
-
-
-
-
-  private ReleasePlan = {//EVALUATE THIS
-    discountValue: 0,
-    cumulatedDiscountValue: 0, featureList: [],
-    teamCapability: 0, totalRequiredEffort: 0,
-    numberOfSprint: 0, sprintDuration: 0
-  };
-
+  private featureList: any[];
 
   getFeatureData(featuresVSTS: WorkItem[], featuresDeailtDocument: any): boolean {
     let featuresReleasePlan = [];
@@ -59,7 +43,7 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
     featuresVSTS.map((el, index) => {
       let feature: any = {
-        featureNumber: (index + 1),//id in ifm
+        featureNumber: (index + 1),
         workItemId: el.id,
         feature: el.fields["System.Title"],
         state: el.fields["System.State"],
@@ -102,10 +86,13 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
           });
 
           feature.dependsOn = indexDependency.join(",");
+        } else {
+          feature.dependsOn = "";
+          feature.dependsOnWorkItemId = "";
         }
       });
 
-      this.ReleasePlan.featureList = featuresReleasePlan;
+      this.featureList = featuresReleasePlan;
     }
     return success;
   }
@@ -155,55 +142,74 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   getOptimalReleasePlan(config: any): any {
     this.populationSize = algorithmConfig.population_size;
-    this.generationNumber = algorithmConfig.generation_number;
 
-    this.discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+    let generationNumber = algorithmConfig.generation_number;
+    let discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+    let teamCapability = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.teamCapability.Min), mode: Number(config.teamCapability.Expected), upperBound: Number(config.teamCapability.Max) } }).getExpectedValue()).toString(), 10);
+
+    let ResultReleasePlan = {
+      discountValue: discountValue,
+      featureList: [], teamCapability: teamCapability, totalRequiredEffort: 0,
+      numberOfSprint: Number(config.numberOfSprint), sprintDuration: Number(config.sprintDuration),
+      additional: false
+    };
+    let totalEffort = 0;
+    this.featureList.map(el => {
+      totalEffort += el.feature.effort;
+    });
+    ResultReleasePlan.totalRequiredEffort = totalEffort;
 
     let bestPlan = "";
 
-    //if (algorithmConfig.testing.enable == true) {
-    if (true) {
-      //NSGA-II Flow, To be tested
-      var featuresList = this.ReleasePlan.featureList;
+    var featuresList = this.featureList;
+    var fronts = [];
+    fronts.push("");
+    var population = [];
+    var doublePopulation = [];
 
-      console.log("FEATURE TO BE ANALYSED");
-      console.log(featuresList);
+    population = this.initialiseParameters(population);
+    population = this.initialisePopulation(featuresList, this.populationSize, population);
+    doublePopulation = this.initialiseParameters(doublePopulation);
 
-      var fronts = [];
+    var obj = [];
+    obj = this.performNonDominatedSort(population, fronts, featuresList, discountValue);
+    population = obj[0];
+    fronts = obj[1];
+
+    for (var i = 0; i < generationNumber; i++) {
+      doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
+      fronts = [];
       fronts.push("");
-      var population = [];
-      var doublePopulation = [];
-
-      population = this.initialiseParameters(population);
-      population = this.initialisePopulation(featuresList, this.populationSize, population);
-      doublePopulation = this.initialiseParameters(doublePopulation);
-
-      var obj = [];
-      obj = this.performNonDominatedSort(population, fronts, featuresList, this.discountValue);
+      population = this.resetParameters(population);
+      doublePopulation = this.resetParameters(doublePopulation);
+      obj = this.performNonDominatedSort(doublePopulation, fronts, featuresList, discountValue);
+      obj[0] = this.updatePopulation(obj[0], obj[1]);
       population = obj[0];
       fronts = obj[1];
 
-      for (var i = 0; i < this.generationNumber; i++) {
-        doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
-        fronts = [];
-        fronts.push("");
-        population = this.resetParameters(population);
-        doublePopulation = this.resetParameters(doublePopulation);
-        obj = this.performNonDominatedSort(doublePopulation, fronts, featuresList, this.discountValue);
-        obj[0] = this.updatePopulation(obj[0], obj[1]);
-        population = obj[0];
-        fronts = obj[1];
-
-        if (i == (this.generationNumber - 1)) {
-          bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
-        }
-
-        fronts = [];
-        fronts.push("");
-
+      if (i == (generationNumber - 1)) {
+        bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
       }
-      console.log("bestPlan is :" + bestPlan);
+
+      fronts = [];
+      fronts.push("");
+
     }
+
+    let orderFeatures = bestPlan.split(",");
+    orderFeatures.map(featureNumberId => {
+      let target = featuresList.filter(el => {
+        if (el.featureNumber == featureNumberId)
+          return el;
+      });
+      ResultReleasePlan.featureList.push(target[0]);
+    });
+
+    let totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
+    if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
+      ResultReleasePlan.additional = true;
+    }
+    return ResultReleasePlan;
   }
 
 
@@ -359,12 +365,9 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     var e = 0.0;
     var f = 0.0;
     var splitPlan = plan.split(",");
-    console.log("FEATURES");
-    console.log(features);
+
     for (var j = 0; j < splitPlan.length; j++) {
       for (var i = j + 1; i <= (splitPlan.length); i++) {
-        console.log("ASDF");
-        console.log(splitPlan[j]);
         e = i;
         npv += features[parseInt(splitPlan[j]) - 1].businessValue / Math.pow((1 + (discountValue / 100)), e);
 

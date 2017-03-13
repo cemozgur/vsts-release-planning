@@ -35,12 +35,6 @@ var mutationConfig = {
 };
 var NSGA2ReleasePlanningAlgorithm = (function () {
     function NSGA2ReleasePlanningAlgorithm() {
-        this.ReleasePlan = {
-            discountValue: 0,
-            cumulatedDiscountValue: 0, featureList: [],
-            teamCapability: 0, totalRequiredEffort: 0,
-            numberOfSprint: 0, sprintDuration: 0
-        };
     }
     NSGA2ReleasePlanningAlgorithm.prototype.getFeatureData = function (featuresVSTS, featuresDeailtDocument) {
         var featuresReleasePlan = [];
@@ -86,8 +80,12 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                     });
                     feature.dependsOn = indexDependency_1.join(",");
                 }
+                else {
+                    feature.dependsOn = "";
+                    feature.dependsOnWorkItemId = "";
+                }
             });
-            this.ReleasePlan.featureList = featuresReleasePlan;
+            this.featureList = featuresReleasePlan;
         }
         return success;
     };
@@ -130,44 +128,62 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
     };
     NSGA2ReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function (config) {
         this.populationSize = algorithmConfig.population_size;
-        this.generationNumber = algorithmConfig.generation_number;
-        this.discountValue = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+        var generationNumber = algorithmConfig.generation_number;
+        var discountValue = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+        var teamCapability = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.teamCapability.Min), mode: Number(config.teamCapability.Expected), upperBound: Number(config.teamCapability.Max) } }).getExpectedValue()).toString(), 10);
+        var ResultReleasePlan = {
+            discountValue: discountValue,
+            featureList: [], teamCapability: teamCapability, totalRequiredEffort: 0,
+            numberOfSprint: Number(config.numberOfSprint), sprintDuration: Number(config.sprintDuration),
+            additional: false
+        };
+        var totalEffort = 0;
+        this.featureList.map(function (el) {
+            totalEffort += el.feature.effort;
+        });
+        ResultReleasePlan.totalRequiredEffort = totalEffort;
         var bestPlan = "";
-        //if (algorithmConfig.testing.enable == true) {
-        if (true) {
-            //NSGA-II Flow, To be tested
-            var featuresList = this.ReleasePlan.featureList;
-            console.log("FEATURE TO BE ANALYSED");
-            console.log(featuresList);
-            var fronts = [];
+        var featuresList = this.featureList;
+        var fronts = [];
+        fronts.push("");
+        var population = [];
+        var doublePopulation = [];
+        population = this.initialiseParameters(population);
+        population = this.initialisePopulation(featuresList, this.populationSize, population);
+        doublePopulation = this.initialiseParameters(doublePopulation);
+        var obj = [];
+        obj = this.performNonDominatedSort(population, fronts, featuresList, discountValue);
+        population = obj[0];
+        fronts = obj[1];
+        for (var i = 0; i < generationNumber; i++) {
+            doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
+            fronts = [];
             fronts.push("");
-            var population = [];
-            var doublePopulation = [];
-            population = this.initialiseParameters(population);
-            population = this.initialisePopulation(featuresList, this.populationSize, population);
-            doublePopulation = this.initialiseParameters(doublePopulation);
-            var obj = [];
-            obj = this.performNonDominatedSort(population, fronts, featuresList, this.discountValue);
+            population = this.resetParameters(population);
+            doublePopulation = this.resetParameters(doublePopulation);
+            obj = this.performNonDominatedSort(doublePopulation, fronts, featuresList, discountValue);
+            obj[0] = this.updatePopulation(obj[0], obj[1]);
             population = obj[0];
             fronts = obj[1];
-            for (var i = 0; i < this.generationNumber; i++) {
-                doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
-                fronts = [];
-                fronts.push("");
-                population = this.resetParameters(population);
-                doublePopulation = this.resetParameters(doublePopulation);
-                obj = this.performNonDominatedSort(doublePopulation, fronts, featuresList, this.discountValue);
-                obj[0] = this.updatePopulation(obj[0], obj[1]);
-                population = obj[0];
-                fronts = obj[1];
-                if (i == (this.generationNumber - 1)) {
-                    bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
-                }
-                fronts = [];
-                fronts.push("");
+            if (i == (generationNumber - 1)) {
+                bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
             }
-            console.log("bestPlan is :" + bestPlan);
+            fronts = [];
+            fronts.push("");
         }
+        var orderFeatures = bestPlan.split(",");
+        orderFeatures.map(function (featureNumberId) {
+            var target = featuresList.filter(function (el) {
+                if (el.featureNumber == featureNumberId)
+                    return el;
+            });
+            ResultReleasePlan.featureList.push(target[0]);
+        });
+        var totalSprintRequired = Util_1.Util.sprintAssignation(ResultReleasePlan);
+        if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
+            ResultReleasePlan.additional = true;
+        }
+        return ResultReleasePlan;
     };
     NSGA2ReleasePlanningAlgorithm.prototype.combinePopulations = function (population, secondPopulation) {
         var doublePopulation = [];
@@ -303,12 +319,8 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var e = 0.0;
         var f = 0.0;
         var splitPlan = plan.split(",");
-        console.log("FEATURES");
-        console.log(features);
         for (var j = 0; j < splitPlan.length; j++) {
             for (var i = j + 1; i <= (splitPlan.length); i++) {
-                console.log("ASDF");
-                console.log(splitPlan[j]);
                 e = i;
                 npv += features[parseInt(splitPlan[j]) - 1].businessValue / Math.pow((1 + (discountValue / 100)), e);
             }
