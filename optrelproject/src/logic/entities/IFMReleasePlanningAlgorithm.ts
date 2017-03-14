@@ -5,7 +5,13 @@ import { IValidationMessage } from "../../model/IValidationMessage";
 import { Util } from "./Util";
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import ALGORITHM_TYPE from "../constants/algorithmType";
+import MonteCarloSimulation from "./MonteCarloSimulation";
 
+
+const monteCarloConfig = {
+  populationSize: 10000,
+  debug: false
+};
 
 @injectable()
 class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
@@ -36,11 +42,12 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       });
 
       if (detailInfo.length > 0) {
-        Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = Number(Util.getRandomValue(detailInfo[0].BusinessValue)) : success = false;
-        Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = Number(Util.getRandomValue(detailInfo[0].Effort)) : success = false;
-        Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = Number(Util.getRandomValue(detailInfo[0].Cost)) : success = false;
-        Util.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = Util.getRandomValue(detailInfo[0].Risk) : success = false;
-        Util.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = Number(Util.getRandomValue(detailInfo[0].timeCriticality)) : success = false;
+
+        Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].BusinessValue.Min), mode: Number(detailInfo[0].BusinessValue.Expected), upperBound: Number(detailInfo[0].BusinessValue.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Effort.Min), mode: Number(detailInfo[0].Effort.Expected), upperBound: Number(detailInfo[0].Effort.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Cost.Min), mode: Number(detailInfo[0].Cost.Expected), upperBound: Number(detailInfo[0].Cost.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Risk.Min), mode: Number(detailInfo[0].Risk.Expected), upperBound: Number(detailInfo[0].Risk.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].timeCriticality) ? feature.timeCriticality = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].timeCriticality.Min), mode: Number(detailInfo[0].timeCriticality.Expected), upperBound: Number(detailInfo[0].timeCriticality.Max) } }).getExpectedValue()).toString(), 10) : success = false;
 
         detailInfo[0].Dependency ? feature.dependency = detailInfo[0].Dependency : feature.dependency = "0";
         detailInfo[0].Dependency ? feature.dependencyWorkItemId = detailInfo[0].Dependency : feature.dependencyWorkItemId = "0";
@@ -154,8 +161,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   getOptimalReleasePlan(config: any): any {
 
-    this.ReleasePlan.discountValue = Number(Util.getRandomValue(config.discountValue));
-    this.ReleasePlan.teamCapability = Number(Util.getRandomValue(config.teamCapability));
+    this.ReleasePlan.discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+    this.ReleasePlan.teamCapability = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.teamCapability.Min), mode: Number(config.teamCapability.Expected), upperBound: Number(config.teamCapability.Max) } }).getExpectedValue()).toString(), 10);
     this.ReleasePlan.numberOfSprint = Number(config.numberOfSprint);
     this.ReleasePlan.sprintDuration = Number(config.sprintDuration);
 
@@ -172,8 +179,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       numberOfSprint: 0, sprintDuration: 0,
       additional: false,
       algorithmType: ALGORITHM_TYPE.IFM
-    };//this is only if we dont require the value again.
-
+    };
 
     this.getTotalRequiredEffort();
     this.calculateCumulatedDiscountValue();
@@ -230,7 +236,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
-    
+
 
 
     let totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
