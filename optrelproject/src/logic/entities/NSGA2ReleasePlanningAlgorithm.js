@@ -9,6 +9,7 @@ var inversify_1 = require("inversify");
 require("reflect-metadata");
 var MonteCarloSimulation_1 = require("./MonteCarloSimulation");
 var Util_1 = require("./Util");
+var algorithmType_1 = require("../constants/algorithmType");
 var monteCarloConfig = {
     populationSize: 10000,
     debug: false
@@ -135,7 +136,8 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             discountValue: discountValue,
             featureList: [], teamCapability: teamCapability, totalRequiredEffort: 0,
             numberOfSprint: Number(config.numberOfSprint), sprintDuration: Number(config.sprintDuration),
-            additional: false
+            additional: false,
+            algorithmType: algorithmType_1.default.GA
         };
         var totalEffort = 0;
         this.featureList.map(function (el) {

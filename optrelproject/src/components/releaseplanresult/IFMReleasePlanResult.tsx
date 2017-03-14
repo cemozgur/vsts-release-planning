@@ -3,7 +3,6 @@ import * as React from 'react';
 import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
-
 export interface IFMReleasePlanResultProps { result: any; }
 
 

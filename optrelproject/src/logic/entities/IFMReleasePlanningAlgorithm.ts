@@ -4,6 +4,7 @@ import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
 import { IValidationMessage } from "../../model/IValidationMessage";
 import { Util } from "./Util";
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
+import ALGORITHM_TYPE from "../constants/algorithmType";
 
 
 @injectable()
@@ -117,11 +118,11 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
 
   testDataGeneration(config: any) {
-    this.ReleasePlan.discountValue = config.discountValue;//ok
-    this.ReleasePlan.teamCapability = config.teamCapability;//ok
+    this.ReleasePlan.discountValue = config.discountValue;
+    this.ReleasePlan.teamCapability = config.teamCapability;
     this.ReleasePlan.totalRequiredEffort = config.totalRequiredEffort;
-    this.ReleasePlan.numberOfSprint = config.numberOfSprint;//ok
-    this.ReleasePlan.sprintDuration = config.sprintDuration;//okyt
+    this.ReleasePlan.numberOfSprint = config.numberOfSprint;
+    this.ReleasePlan.sprintDuration = config.sprintDuration;
 
     /**
      * featureNumber, vsts feature total.
@@ -131,7 +132,6 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
      * number of sprint, single value, user input (only one field)
      * sprint duration, per week (how many week), integer
      */
-    //cover
     for (var i = 0; i <= config.featureNumber - 1; i++) {
       var feature = {
         id: i + 1,//ok
@@ -170,7 +170,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       discountValue: 0, cumulatedDiscountValue: 0,
       featureList: [], teamCapability: 0, totalRequiredEffort: 0,
       numberOfSprint: 0, sprintDuration: 0,
-      additional: false
+      additional: false,
+      algorithmType: ALGORITHM_TYPE.IFM
     };//this is only if we dont require the value again.
 
 
@@ -229,6 +230,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.totalRequiredEffort = this.ReleasePlan.totalRequiredEffort;
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
+    
 
 
     let totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
