@@ -180,7 +180,7 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     fronts = obj[1];
 
     for (var i = 0; i < generationNumber; i++) {
-      doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population));
+      doublePopulation = this.combinePopulations(population, this.applyGeneticOperations(population , featuresList));
       fronts = [];
       fronts.push("");
       population = this.resetParameters(population);
@@ -614,24 +614,65 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
   }
 
 
-  applyGeneticOperations(population: any) {
+  applyGeneticOperations(population : any, features : any){
     var father = 0;
     var mother = 0;
     var children = [];
     var newPopulation = []
     newPopulation = this.initialiseParameters(newPopulation);
+    var proceed = true;
+    var temp1 = "";
+    var temp2 = "";
 
-    for (var i = 0; i < newPopulation.length / 2; i++) {
-      father = this.selection(population);
-      mother = this.selection(population);
-      children = this.makeCrossover(population[father].releasePlan, population[mother].releasePlan);
-      var firstChild = children[0];
-      var secondChild = children[1];
-      newPopulation[2 * i].releasePlan = this.makeMutation(firstChild);
-      newPopulation[2 * i + 1].releasePlan = this.makeMutation(secondChild);
+    for(var i = 0; i < newPopulation.length/2 ; i++){
+      while(proceed == true){
+        father = this.selection(population);
+        mother = this.selection(population);
+        children = this.makeCrossover(population[father].releasePlan, population[mother].releasePlan);
+        temp1 = this.makeMutation(children[0]);
+        temp2 = this.makeMutation(children[1]);
+
+        if((this.checkIfSuitable(temp1, features) == true)&&(this.checkIfSuitable(temp2, features)==true)){
+          proceed = false;
+          newPopulation[2*i].releasePlan = temp1;
+          newPopulation[2*i+1].releasePlan = temp2;
+        }
+      }
+      proceed = true;
     }
 
     return newPopulation;
+  }
+
+  checkIfSuitable(childsElement : string, features : any){
+    var separatedElement = childsElement.split(",");
+    var separatedDependents;
+
+    if((features[parseInt(separatedElement[0])-1].dependsOn=="")==false){
+      return false;
+    }
+
+    for(var i = 0 ; i < separatedElement.length ; i++){
+      if((features[parseInt(separatedElement[i])-1].dependsOn=="")==false){
+        separatedDependents = features[parseInt(separatedElement[i])-1].dependsOn.split(",");
+        for(var j =0 ; j < separatedDependents.length ; j++){
+          if(this.checkDependsOnUsedBefore(i,separatedElement, separatedDependents[j]) == false){
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+
+  }
+
+  checkDependsOnUsedBefore(i : number, separatedElement : any, separatedDependentElement : any){
+    for(var a = 0 ; a<i ; a++){
+      if(separatedElement[a]==separatedDependentElement){
+        return true;
+      }
+    }
+    return false;
   }
 
   selection(population: any) {
