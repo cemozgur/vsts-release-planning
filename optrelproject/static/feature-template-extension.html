@@ -227,149 +227,175 @@
                 // on the right side
                 minBusinessValue : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 expectedBusinessValue : {
                   required: true,
                   number : true,
-                  range : function() { return [ $('#minBusinessValue').val(), $('#maxBusinessValue').val() ]; }
+                  range : function() { return [ $('#minBusinessValue').val(), $('#maxBusinessValue').val() ]; },
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 maxBusinessValue : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 minCost : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 expectedCost : {
                   required: true,
                   number : true,
-                  range : function() { return [ $('#minCost').val(), $('#maxCost').val() ]; }
+                  range : function() { return [ $('#minCost').val(), $('#maxCost').val() ]; },
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 maxCost : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 minEffort : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 expectedEffort : {
                   required: true,
                   number : true,
-                  range : function() { return [ $('#minEffort').val(), $('#maxEffort').val() ]; }
+                  range : function() { return [ $('#minEffort').val(), $('#maxEffort').val() ]; },
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 maxEffort : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 minRisk : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 expectedRisk : {
                   required: true,
                   number : true,
-                  range : function() { return [ $('#minRisk').val(), $('#maxRisk').val() ]; }
+                  range : function() { return [ $('#minRisk').val(), $('#maxRisk').val() ]; },
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 maxRisk : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 minTimeCriticality : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 expectedTimeCriticality : {
                   required: true,
                   number : true,
-                  range : function() { return [ $('#minTimeCriticality').val(), $('#maxTimeCriticality').val() ]; }
+                  range : function() { return [ $('#minTimeCriticality').val(), $('#maxTimeCriticality').val() ]; },
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 maxTimeCriticality : {
                   required: true,
-                  number : true
+                  number : true,
+                  regex : /^\d+(?:\.\d\d?)?$/
                 },
                 featureDependency : {
                   regex: /^[0-9,]+$/,
-                  required: true
+                  required: true,
                 }
               },
               // Specify validation error messages
               messages: {
                 minBusinessValue : {
                   required: "- Please enter minimum Business Value </br>",
-                  number: "- Invalid minimum Business Value value (Number only)</br>"
+                  number: "- Invalid minimum Business Value value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 expectedBusinessValue : {
                   required: "- Please enter expected Business Value </br>",
                   number: "- Invalid expected Business Value value (Number only)</br>",
-                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 maxBusinessValue : {
                   required: "- Please enter maximum Business Value </br>",
-                  number: "- Invalid maximum Business Value value (Number only)</br>"
+                  number: "- Invalid maximum Business Value value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 minCost : {
                   required: "- Please enter minimum Implementation Cost </br>",
-                  number: "- Invalid minimum Implementation Cost value (Number only)</br>"
+                  number: "- Invalid minimum Implementation Cost value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 expectedCost : {
                   required: "- Please enter expected Implementation Cost </br>",
                   number: "- Invalid expected Implementation Cost value (Number only)</br>",
-                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 maxCost : {
                   required: "- Please enter maximum Implementation Cost </br>",
-                  number: "- Invalid maximum Implementation Cost value (Number only)</br>"
+                  number: "- Invalid maximum Implementation Cost value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 minEffort : {
                   required: "- Please enter minimum Effort </br>",
-                  number: "- Invalid minimum Effort value (Number only)</br>"
+                  number: "- Invalid minimum Effort value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 expectedEffort : {
                   required: "- Please enter expected Effort </br>",
                   number: "- Invalid expected Effort value (Number only)</br>",
-                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 maxEffort : {
                   required: "- Please enter maximum Effort </br>",
-                  number: "- Invalid maximum Effort value (Number only)</br>"
+                  number: "- Invalid maximum Effort value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 minRisk : {
                   required: "- Please enter minimum Risk </br>",
-                  number: "- Invalid minimum Risk value (Number only)</br>"
+                  number: "- Invalid minimum Risk value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 expectedRisk : {
                   required: "- Please enter expected Risk </br>",
                   number: "- Invalid expected Risk value (Number only)</br>",
-                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 maxRisk : {
                   required: "- Please enter maximum Risk </br>",
-                  number: "- Invalid maximum Risk value (Number only)</br>"
+                  number: "- Invalid maximum Risk value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 minTimeCriticality : {
                   required: "- Please enter minimum Time Criticality </br>",
-                  number: "- Invalid minimum Time Criticality value (Number only)</br>"
+                  number: "- Invalid minimum Time Criticality value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 expectedTimeCriticality : {
                   required: "- Please enter expected Time Criticality </br>",
                   number: "- Invalid expected Time Criticality value (Number only)</br>",
-                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>"
-
+                  range : "- Invalid Range; Expected Value must be within Minimum and Maximum Range, Maximum Value must more than or equal than Expected Value and/or Minimum Value must less or equal than Expected Value </br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 maxTimeCriticality : {
                   required: "- Please enter maximum Time Criticality </br>",
-                  number: "- Invalid maximum Time Criticality value (Number only)</br>"
+                  number: "- Invalid maximum Time Criticality value (Number only)</br>",
+                  regex: "- Invalid Number Range (Postive Number Only)"
                 },
                 featureDependency : {
                   required: "- Please enter Feature Dependency/Dependencies</br>",
                   regex: "- Invalid Feature Dependency/Dependencies value (Number with comma separator only)</br>"
+
                 }
               },
               submitHandler : function(form){
