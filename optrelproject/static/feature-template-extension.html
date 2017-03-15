@@ -6,7 +6,6 @@
   <script src="scripts/jquery.validate.min.js"></script>
   <script src="scripts/VSS.SDK.min.js"></script>
   <link href="css/fabric.min.css" rel="stylesheet" />
-  <link href="css/fabric.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="fabric.components.min.css">
     <meta charset="UTF-8">
     <title>Release Planning Optimal Template</title>
@@ -557,15 +556,31 @@
         <p class="ms-font-m ms-fontWeight-semibold">Time Criticality (How importance (in percentage) of this feature to develop within the given deadline?): </p>
 
           <label class="ms-Label">Minimum Value: </label>
-          <input class="ms-TextField-field" type="text" id="minTimeCriticality"  name="minTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <select class="form-select" id="minTimeCriticality" name="minTimeCriticality">
+            <option value="1">Very Low</option>
+            <option value="2">Low</option>
+            <option value="3">Medium</option>
+            <option value="4">High</option>
+            <option value="5">Very High</option>
+          </select>
 
           <label class="ms-Label">Expected Value: </label>
-          <input class="ms-TextField-field" type="text" id="expectedTimeCriticality" name="expectedTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
+          <select class="form-select" id="expectedTimeCriticality" name="expectedTimeCriticality">
+            <option value="1">Very Low</option>
+            <option value="2">Low</option>
+            <option value="3">Medium</option>
+            <option value="4">High</option>
+            <option value="5">Very High</option>
+          </select>
 
           <label class="ms-Label">Maximum Value: </label>
-          <input class="ms-TextField-field" type="text" id="maxTimeCriticality"  name="maxTimeCriticality" autocomplete="off" maxlength="255" aria-invalid="true">
-
-
+          <select class="form-select" id="maxTimeCriticality" name="maxTimeCriticality">
+            <option value="1">Very Low</option>
+            <option value="2">Low</option>
+            <option value="3">Medium</option>
+            <option value="4">High</option>
+            <option value="5">Very High</option>
+          </select>
 
         <p class="ms-font-m ms-fontWeight-semibold">Dependency (Which Feature(s) required to develop before this, "0" for No Dependency): </p>
 
