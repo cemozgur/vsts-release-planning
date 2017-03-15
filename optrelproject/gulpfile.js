@@ -126,6 +126,9 @@ gulp.task('copy', ['build'], () => {
         gulp.src('static/css/main.css')
             .pipe(gulp.dest(contentFolder + '/css'));
 
+        gulp.src('static/css/fabric.components.min.css')
+            .pipe(gulp.dest(contentFolder + '/css'));
+
         gulp.src('static/images/*.png')
             .pipe(gulp.dest(contentFolder + '/images'));
 
@@ -182,7 +185,7 @@ gulp.task('tfxpublish', () => {
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
     const extensionIdOverrideArg = extension_vsts_id != "" ? `--extension-id ${extension_vsts_id}` : '';
-    const shareWithAccountArg = vstsUser != ""? `--share-with ${vstsUser}` : '';
+    const shareWithAccountArg = vstsUser != "" ? `--share-with ${vstsUser}` : '';
     const personalPublisherTokenArg = vstsPersonalToken != "" ? `--token ${vstsPersonalToken}` : '';
 
     exec(`${tfxCommand} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} ${extensionIdOverrideArg} ${shareWithAccountArg} ${personalPublisherTokenArg} --rev-version`,
@@ -216,7 +219,7 @@ gulp.task('publishoptrel', ['buildoptrel'], () => {
     const overridesFileArg = `--overrides-file manifests/${isBundled ? 'bundled.json' : 'local.json'}`;
     const publisherOverrideArg = publisherIdOverride != "" ? `--publisher ${publisherIdOverride}` : '';
     const extensionIdOverrideArg = extension_vsts_id != "" ? `--extension-id ${extension_vsts_id}` : '';
-    const shareWithAccountArg = vstsUser != ""? `--share-with ${vstsUser}` : '';
+    const shareWithAccountArg = vstsUser != "" ? `--share-with ${vstsUser}` : '';
     const personalPublisherTokenArg = vstsPersonalToken != "" ? `--token ${vstsPersonalToken}` : '';
 
     exec(`${tfxCommand} extension publish ${rootArg} ${outputPathArg} ${manifestsArg} ${overridesFileArg} ${publisherOverrideArg} ${extensionIdOverrideArg} ${shareWithAccountArg} ${personalPublisherTokenArg} --rev-version`,

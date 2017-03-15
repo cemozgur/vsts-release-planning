@@ -37,7 +37,7 @@ const mutationConfig = {
 @injectable()
 class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
   private populationSize;
-  private featureList: any[];
+  featureList: any[];
 
   getFeatureData(featuresVSTS: WorkItem[], featuresDeailtDocument: any): boolean {
     let featuresReleasePlan = [];

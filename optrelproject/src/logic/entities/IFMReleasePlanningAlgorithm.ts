@@ -16,7 +16,7 @@ const monteCarloConfig = {
 @injectable()
 class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
-  private ReleasePlan = {
+  ReleasePlan = {
     discountValue: 0,
     cumulatedDiscountValue: 0, featureList: [],
     teamCapability: 0, totalRequiredEffort: 0,
@@ -246,7 +246,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return ResultReleasePlan;
   }
 
-  private getTotalRequiredEffort() {
+  getTotalRequiredEffort() {
     var i;
     var totalEffort = 0;
     for (i = 0; i < this.ReleasePlan.featureList.length; i++) {
@@ -255,16 +255,16 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     this.ReleasePlan.totalRequiredEffort = totalEffort;
   }
 
-  private calculateCumulatedDiscountValue() {
+  calculateCumulatedDiscountValue() {
     this.ReleasePlan.cumulatedDiscountValue = (Math.pow(((this.ReleasePlan.discountValue / 100.00) + 1.0), (this.ReleasePlan.sprintDuration / 52.0)) - 1.0) * 100.0;
   }
 
   //This is for calculating total number of sprints needed.
-  private calculateNumberOfRequiredSprint() {
+  calculateNumberOfRequiredSprint() {
     Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
   }
 
-  private calculateNPV(index: number) {
+  calculateNPV(index: number) {
     var npv = 0;
     var e = 0.0;
     var i;
@@ -275,7 +275,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return npv - this.ReleasePlan.featureList[index].feature.cost;
   }
 
-  private checkDependence(index: number) {
+  checkDependence(index: number) {
     var dependency = this.ReleasePlan.featureList[index].feature.dependency;
     var dependencies = dependency.split(",");
 
