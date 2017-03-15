@@ -261,7 +261,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   //This is for calculating total number of sprints needed.
   calculateNumberOfRequiredSprint() {
-    Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
+    return Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
   }
 
   calculateNPV(index: number) {
