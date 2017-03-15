@@ -19,7 +19,7 @@ export class IFMReleasePlanInput extends React.Component<IIFMReleasePlanInputPro
             <div className="ms-Grid-row">
                 <div className="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4">
                     <Label>Number of Sprint (How many iterations for the project?)</Label>
-                    <input type="number" className="release-input" required={true} onChange={this._handleNumberOfSprintChange.bind(this)} />
+                    <input className="release-input" type="number" required={true} onChange={this._handleNumberOfSprintChange.bind(this)} />
                 </div>
             </div>
             <div className="ms-Grid-row">

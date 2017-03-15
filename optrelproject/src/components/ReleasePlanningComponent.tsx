@@ -103,9 +103,8 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                 } else if (releasePlanGenerationState.processing) {
                     releasePlanResultSection = <Spinner label='Processing...' />
                 } else if (releasePlanGenerationState.error) {
-                    releasePlanResultSection =
-                        <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
-                            {releasePlanGenerationState.error}</MessageBar>
+                    releasePlanResultSection = <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
+                            {releasePlanGenerationState.error}</MessageBar>;
                 }
 
                 workingReleasePlanGeneration = <div>
@@ -219,7 +218,7 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                             this._setState(false, releasePlanResult);
                             window.location.hash = '#releaseplanresult';
                         } else {
-                            this._setStateError("The features information is not completed");
+                            this._setStateError("The provided features information is not completed.");
                         }
 
                     });
