@@ -6,6 +6,8 @@ import MonteCarloSimulation from "./MonteCarloSimulation";
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { IValidationMessage } from "../../model/IValidationMessage";
 import { Util } from "./Util";
+import ALGORITHM_TYPE from "../constants/algorithmType";
+
 
 const monteCarloConfig = {
   populationSize: 10000,
@@ -151,7 +153,8 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       discountValue: discountValue,
       featureList: [], teamCapability: teamCapability, totalRequiredEffort: 0,
       numberOfSprint: Number(config.numberOfSprint), sprintDuration: Number(config.sprintDuration),
-      additional: false
+      additional: false,
+      algorithmType: ALGORITHM_TYPE.GA
     };
     let totalEffort = 0;
     this.featureList.map(el => {

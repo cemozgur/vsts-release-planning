@@ -10,7 +10,7 @@ import { ButtonType } from '../../../node_modules/office-ui-fabric-react/lib-amd
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
 
-export interface ReleasePlanResultProps { algorithmType: string; result: any; }
+export interface ReleasePlanResultProps { result: any; }
 
 
 export class ReleasePlanResult extends React.Component<ReleasePlanResultProps, undefined> {
@@ -18,7 +18,7 @@ export class ReleasePlanResult extends React.Component<ReleasePlanResultProps, u
     public render() {
         let releasePlanResult: JSX.Element = null;
 
-        switch (this.props.algorithmType) {
+        switch (this.props.result.algorithmType) {
             case ALGORITHM_TYPE.IFM:
                 releasePlanResult = <IFMReleasePlanResult result={this.props.result} />
                 break;

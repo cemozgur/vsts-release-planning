@@ -22,19 +22,20 @@ import { FeatureList } from "./features/FeatureList";
 import { AlgorithmChoice } from "./releaseplan/AlgorithmChoice";
 import { ReleasePlanInput } from "./releaseplan/ReleasePlanInput";
 import { ReleasePlanResult } from "./releaseplanresult/ReleasePlanResult";
+import { Loader } from '../components/common/Loader';
 
-interface IReleasePlanningProps {
-    features: IWorkItemSearchResult;
-}
+import { WarningMessage } from "./common/WarningMessage";
+
+import { IFeatureService } from "../logic/interfaces/IFeatureService";
 
 interface IReleasePlanningState {
     releasePlanGeneration: IReleasePlanGeneration;
 }
 
-export class ReleasePlanningComponent extends React.Component<IReleasePlanningProps, IReleasePlanningState> {
+export class ReleasePlanningComponent extends React.Component<undefined, IReleasePlanningState> {
 
-    constructor(props?: IReleasePlanningProps) {
-        super(props);
+    constructor() {
+        super();
         this.state = this._getDefaultState();
     }
 
@@ -50,7 +51,17 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
     }
 
     private componentDidMount() {
-        console.log("DID MOUnT TESTING");
+        let featureService = container.get<IFeatureService>(SERVICE_IDENTIFIER.IFeatureService);
+        let vstsProjectId = VSS.getWebContext().project.id;
+        let state = this.state;
+
+        featureService.getAllFeatureByProjectResult(vstsProjectId).then(
+            (features: IWorkItemSearchResult) => {
+                state.releasePlanGeneration.features = features;
+                this.setState(state);
+            }
+        );
+
     }
 
     public render(): JSX.Element {
@@ -60,47 +71,58 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
         let algorithmButtonSection: JSX.Element = null;
         let releasePlanInputSection: JSX.Element = null;
 
+        let workingReleasePlanGeneration: JSX.Element = null;
+        let featuresVSTS = this.state.releasePlanGeneration.features;
+        if (featuresVSTS) {
+            if (featuresVSTS.queryResult.workItems.length > 0) {
+                featureSection = <FeatureList features={this.state.releasePlanGeneration.features.queryResult} />
+                algorithmChoiceSection = <AlgorithmChoice updateAlgorithmState={this._onChange.bind(this)} disabled={!this._canGenerateReleasePlan(this.state)} />;
+                algorithmGenerationSection = <ReleasePlanInput algorithmType={this.state.releasePlanGeneration.algorithmType} updateStateConfig={this.updateConfigState.bind(this)} />
+                algorithmButtonSection = this._getAlgorithmButtonSection();
 
-        featureSection = <FeatureList features={this.props.features.queryResult} />
-        algorithmChoiceSection = <AlgorithmChoice updateAlgorithmState={this._onChange.bind(this)} disabled={!this._canGenerateReleasePlan(this.state)} />;
-        algorithmGenerationSection = <ReleasePlanInput algorithmType={this.state.releasePlanGeneration.algorithmType} updateStateConfig={this.updateConfigState.bind(this)} />
-        algorithmButtonSection = this._getAlgorithmButtonSection();
-
-        releasePlanInputSection = <div id="releaseplaninput">
-            <h3>Release Plan Configuration</h3>
-            {algorithmChoiceSection}
-            {algorithmGenerationSection}
-            &nbsp;
-            {algorithmButtonSection}
-        </div>;
+                releasePlanInputSection = <div id="releaseplaninput">
+                    <h3>Release Plan Configuration</h3>
+                    {algorithmChoiceSection}
+                    {algorithmGenerationSection}
+                    &nbsp;
+                        {algorithmButtonSection}
+                </div>;
 
 
-        let releasePlanResultSection: JSX.Element = null
-        let releasePlanGenerationState = this.state.releasePlanGeneration;
+                let releasePlanResultSection: JSX.Element = null
+                let releasePlanGenerationState = this.state.releasePlanGeneration;
 
-        if (releasePlanGenerationState.result) {
-            releasePlanResultSection = <div id="releaseplanresult">
-                <ReleasePlanResult result={releasePlanGenerationState.result} algorithmType={releasePlanGenerationState.algorithmType} />
-                <div className="actions">
-                    <Button onClick={this._onSaveReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Save Release Plan</Button>
-                    <Button onClick={this._onCancelReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Cancel Release Plan</Button>
-                </div>
-            </div>;
-        } else if (releasePlanGenerationState.processing) {
-            releasePlanResultSection = <Spinner label='Processing...' />
-        } else if (releasePlanGenerationState.error) {
-            releasePlanResultSection =
-                <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
-                    {releasePlanGenerationState.error}</MessageBar>
+                if (releasePlanGenerationState.result) {
+                    releasePlanResultSection = <div id="releaseplanresult">
+                        <ReleasePlanResult result={releasePlanGenerationState.result} />
+                        <div className="actions">
+                            <Button onClick={this._onSaveReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Save Release Plan</Button>
+                            <Button onClick={this._onCancelReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Cancel Release Plan</Button>
+                        </div>
+                    </div>;
+                } else if (releasePlanGenerationState.processing) {
+                    releasePlanResultSection = <Spinner label='Processing...' />
+                } else if (releasePlanGenerationState.error) {
+                    releasePlanResultSection =
+                        <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
+                            {releasePlanGenerationState.error}</MessageBar>
+                }
+
+                workingReleasePlanGeneration = <div>
+                    <h2>Release Plan Generation</h2>
+                    {featureSection}
+                    {releasePlanInputSection}
+                    {releasePlanResultSection}
+                </div>;
+            } else {
+                workingReleasePlanGeneration = <WarningMessage message="The project does not contains features with New or Active State." />;
+            }
+
+        } else {
+            workingReleasePlanGeneration = <Loader message="Collecting the Project features." />;
         }
 
-
-        return <div>
-            <h2>Release Plan Generation</h2>
-            {featureSection}
-            {releasePlanInputSection}
-            {releasePlanResultSection}
-        </div>;
+        return workingReleasePlanGeneration;
     }
 
     private _canGenerateReleasePlan(state: IReleasePlanningState): boolean {
@@ -191,7 +213,7 @@ export class ReleasePlanningComponent extends React.Component<IReleasePlanningPr
             VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
                 dataService.getDocuments(VSTS_DOCUMENT.RPDS).then(
                     (featuresDeailtDocument) => {
-                        let featuresVSTS = this.props.features.queryResult.workItems;
+                        let featuresVSTS = this.state.releasePlanGeneration.features.queryResult.workItems;
                         if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
                             let releasePlanResult = algorithmService.getOptimalReleasePlan(config);
                             this._setState(false, releasePlanResult);

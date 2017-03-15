@@ -9,6 +9,7 @@ var inversify_1 = require("inversify");
 require("reflect-metadata");
 var MonteCarloSimulation_1 = require("./MonteCarloSimulation");
 var Util_1 = require("./Util");
+var algorithmType_1 = require("../constants/algorithmType");
 var monteCarloConfig = {
     populationSize: 10000,
     debug: false
@@ -135,7 +136,8 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             discountValue: discountValue,
             featureList: [], teamCapability: teamCapability, totalRequiredEffort: 0,
             numberOfSprint: Number(config.numberOfSprint), sprintDuration: Number(config.sprintDuration),
-            additional: false
+            additional: false,
+            algorithmType: algorithmType_1.default.GA
         };
         var totalEffort = 0;
         this.featureList.map(function (el) {
@@ -416,7 +418,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 proceed = 0;
             }
         }
-        fronts.splice(-1);
+        fronts.splice(-1); //Remove the last element of the array ?
         var wrapper = [];
         wrapper.push(population);
         wrapper.push(fronts);
@@ -429,9 +431,13 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var i = 0;
         var b = 0;
         var separatedReleasePlans = [];
-        while ((populationLeft > 0)) {
+        while ((populationLeft > 0) /*&& (fronts.length<i)*/) {
             separatedReleasePlans = fronts[b].split(",");
             b++;
+            /*if(separatedReleasePlans[0] == ""){
+              i++;
+              continue;
+            }*/
             if (separatedReleasePlans.length <= populationLeft) {
                 for (var j = 0; j < separatedReleasePlans.length; j++) {
                     tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];
