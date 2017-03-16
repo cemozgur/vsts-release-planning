@@ -162,7 +162,13 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     });
     ResultReleasePlan.totalRequiredEffort = totalEffort;
 
-    let bestPlan = "";
+    var bestPlan1 = "";
+    var bestPlan2 = "";
+    var bestPlan3 = "";
+    var proceed = true;
+    var a = 0;
+
+    var bestPlanSet = [];
 
     var featuresList = this.featureList;
     var fronts = [];
@@ -190,8 +196,27 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       population = obj[0];
       fronts = obj[1];
 
-      if (i == (generationNumber - 1)) {
-        bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
+      if(i == (this.generationNumber-1)){
+        bestPlan1 = doublePopulation[(fronts[0].split(","))[0]].releasePlan;
+        console.log("bestPlan1 triggered" +bestPlan1);
+        a++;
+        while(proceed == true){
+          bestPlan2 = this.getNextBestPlan(doublePopulation, fronts, a);
+          console.log("bestPlan2 triggered" +bestPlan2);
+          a++;
+          if((bestPlan2 != bestPlan1)||((a+1)>=doublePopulation.length)){
+            proceed = false;
+          }
+        }
+        proceed = true;
+        while(proceed == true){
+          bestPlan3 = this.getNextBestPlan(doublePopulation, fronts, a);
+          console.log("bestPlan3 triggered:" +bestPlan3);
+          a++;
+          if(((bestPlan3 != bestPlan1) && (bestPlan3 != bestPlan2)) || ((a+1)>=doublePopulation.length)){
+            proceed = false;
+          }
+        }
       }
 
       fronts = [];
@@ -199,6 +224,15 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
     }
 
+    bestPlanSet.push(bestPlan1);
+    if(bestPlan1 != bestPlan2){
+      bestPlanSet.push(bestPlan2);
+    }
+    if((bestPlan1 != bestPlan3)&&(bestPlan2 != bestPlan3)){
+      bestPlanSet.push(bestPlan3);
+    }
+
+    //TODO: Ytalo integreate this to support bestPlanSet
     let orderFeatures = bestPlan.split(",");
     orderFeatures.map(featureNumberId => {
       let target = featuresList.filter(el => {
@@ -215,6 +249,54 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return ResultReleasePlan;
   }
 
+  getNextBestPlan(population : any, fronts : any, a : number){
+    //console.log("a: "+a);
+
+    //console.log("length "+fronts.length);
+
+    if(fronts.length==1){
+      var nextBestPlanIndex = "";
+      nextBestPlanIndex = fronts[0].split(",")[a];
+      /*console.log(fronts[0].split(","));
+      console.log(nextBestPlanIndex);*/
+      return population[parseInt(nextBestPlanIndex)].releasePlan;
+    }else if(fronts.length==2){
+      var lengthOfFirstFront = fronts[0].split(",").length;
+      var lengthOfSecondFront = fronts[1].split(",").length;
+      var nextBestPlanIndex = "";
+
+      if(lengthOfFirstFront > a){
+        nextBestPlanIndex = fronts[0].split(",")[a];
+      }
+      else{
+        nextBestPlanIndex = fronts[0].split(",")[a-lengthOfFirstFront];
+      }
+      /*console.log(fronts[0].split(","));
+      console.log(nextBestPlanIndex);*/
+      return population[parseInt(nextBestPlanIndex)].releasePlan;
+
+    }else{
+
+      var lengthOfFirstFront = fronts[0].split(",").length;
+      var lengthOfSecondFront = fronts[1].split(",").length;
+      var lengthOfThirdFront = fronts[2].split(",").length;
+      var nextBestPlanIndex = "";
+
+      if(lengthOfFirstFront > a){
+        nextBestPlanIndex = fronts[0].split(",")[a];
+      }
+      else if((lengthOfSecondFront+lengthOfFirstFront)>a){
+        nextBestPlanIndex = fronts[1].split(",")[a-lengthOfFirstFront];
+      }else{
+        /*console.log(fronts);
+        console.log(a+"-"+lengthOfFirstFront+"-"+lengthOfSecondFront+"-"+2);*/
+        nextBestPlanIndex = fronts[2].split(",")[a-lengthOfFirstFront-lengthOfSecondFront];
+      }
+      //console.log(nextBestPlanIndex);
+      return population[parseInt(nextBestPlanIndex)].releasePlan;
+
+    }
+  }
 
 
   combinePopulations(population: any, secondPopulation: any) {

@@ -144,7 +144,12 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             totalEffort += el.feature.effort;
         });
         ResultReleasePlan.totalRequiredEffort = totalEffort;
-        var bestPlan = "";
+        var bestPlan1 = "";
+        var bestPlan2 = "";
+        var bestPlan3 = "";
+        var proceed = true;
+        var a = 0;
+        var bestPlanSet = [];
         var featuresList = this.featureList;
         var fronts = [];
         fronts.push("");
@@ -167,11 +172,37 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             obj[0] = this.updatePopulation(obj[0], obj[1]);
             population = obj[0];
             fronts = obj[1];
-            if (i == (generationNumber - 1)) {
-                bestPlan = population[(fronts[0].split(","))[0]].releasePlan;
+            if (i == (this.generationNumber - 1)) {
+                bestPlan1 = doublePopulation[(fronts[0].split(","))[0]].releasePlan;
+                console.log("bestPlan1 triggered" + bestPlan1);
+                a++;
+                while (proceed == true) {
+                    bestPlan2 = this.getNextBestPlan(doublePopulation, fronts, a);
+                    console.log("bestPlan2 triggered" + bestPlan2);
+                    a++;
+                    if ((bestPlan2 != bestPlan1) || ((a + 1) >= doublePopulation.length)) {
+                        proceed = false;
+                    }
+                }
+                proceed = true;
+                while (proceed == true) {
+                    bestPlan3 = this.getNextBestPlan(doublePopulation, fronts, a);
+                    console.log("bestPlan3 triggered:" + bestPlan3);
+                    a++;
+                    if (((bestPlan3 != bestPlan1) && (bestPlan3 != bestPlan2)) || ((a + 1) >= doublePopulation.length)) {
+                        proceed = false;
+                    }
+                }
             }
             fronts = [];
             fronts.push("");
+        }
+        bestPlanSet.push(bestPlan1);
+        if (bestPlan1 != bestPlan2) {
+            bestPlanSet.push(bestPlan2);
+        }
+        if ((bestPlan1 != bestPlan3) && (bestPlan2 != bestPlan3)) {
+            bestPlanSet.push(bestPlan3);
         }
         var orderFeatures = bestPlan.split(",");
         orderFeatures.map(function (featureNumberId) {
@@ -186,6 +217,41 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             ResultReleasePlan.additional = true;
         }
         return ResultReleasePlan;
+    };
+    NSGA2ReleasePlanningAlgorithm.prototype.getNextBestPlan = function (population, fronts, a) {
+        if (fronts.length == 1) {
+            var nextBestPlanIndex = "";
+            nextBestPlanIndex = fronts[0].split(",")[a];
+            return population[parseInt(nextBestPlanIndex)].releasePlan;
+        }
+        else if (fronts.length == 2) {
+            var lengthOfFirstFront = fronts[0].split(",").length;
+            var lengthOfSecondFront = fronts[1].split(",").length;
+            var nextBestPlanIndex = "";
+            if (lengthOfFirstFront > a) {
+                nextBestPlanIndex = fronts[0].split(",")[a];
+            }
+            else {
+                nextBestPlanIndex = fronts[0].split(",")[a - lengthOfFirstFront];
+            }
+            return population[parseInt(nextBestPlanIndex)].releasePlan;
+        }
+        else {
+            var lengthOfFirstFront = fronts[0].split(",").length;
+            var lengthOfSecondFront = fronts[1].split(",").length;
+            var lengthOfThirdFront = fronts[2].split(",").length;
+            var nextBestPlanIndex = "";
+            if (lengthOfFirstFront > a) {
+                nextBestPlanIndex = fronts[0].split(",")[a];
+            }
+            else if ((lengthOfSecondFront + lengthOfFirstFront) > a) {
+                nextBestPlanIndex = fronts[1].split(",")[a - lengthOfFirstFront];
+            }
+            else {
+                nextBestPlanIndex = fronts[2].split(",")[a - lengthOfFirstFront - lengthOfSecondFront];
+            }
+            return population[parseInt(nextBestPlanIndex)].releasePlan;
+        }
     };
     NSGA2ReleasePlanningAlgorithm.prototype.combinePopulations = function (population, secondPopulation) {
         var doublePopulation = [];
@@ -418,7 +484,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 proceed = 0;
             }
         }
-        fronts.splice(-1); //Remove the last element of the array ?
+        fronts.splice(-1);
         var wrapper = [];
         wrapper.push(population);
         wrapper.push(fronts);
@@ -431,13 +497,9 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var i = 0;
         var b = 0;
         var separatedReleasePlans = [];
-        while ((populationLeft > 0) /*&& (fronts.length<i)*/) {
+        while ((populationLeft > 0)) {
             separatedReleasePlans = fronts[b].split(",");
             b++;
-            /*if(separatedReleasePlans[0] == ""){
-              i++;
-              continue;
-            }*/
             if (separatedReleasePlans.length <= populationLeft) {
                 for (var j = 0; j < separatedReleasePlans.length; j++) {
                     tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];
@@ -674,3 +736,4 @@ NSGA2ReleasePlanningAlgorithm = __decorate([
 ], NSGA2ReleasePlanningAlgorithm);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NSGA2ReleasePlanningAlgorithm;
+//# sourceMappingURL=NSGA2ReleasePlanningAlgorithm.js.map
