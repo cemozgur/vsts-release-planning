@@ -110,31 +110,31 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
   validateConfigAlgorithm(config: any): IValidationMessage {
     if (!config) return {
       success: false,
-      error: "Please fill all the fields on the above section."
+      error: "Please fill in all the fields on the above section."
     };
 
     if (!(config.numberOfSprint && Util.isNumber(config.numberOfSprint))) {
       return {
         success: false,
-        error: "Please, fill a correct Number of Sprint."
+        error: "Please, fill in a correct Number of Sprint. It must be greater than 0."
       }
     }
     if (!(config.sprintDuration && Util.isNumber(config.sprintDuration))) {
       return {
         success: false,
-        error: "Please, fill a correct Sprint Duration."
+        error: "Please, fill in a correct Sprint Duration. It must be greater than 0."
       }
     }
     if (!Util.isValidReleaseTriangularInput(config.teamCapability)) {
       return {
         success: false,
-        error: "Please, fill a correct Team Capability."
+        error: "Please, fill in a correct Team Capability. They must be greater than 0 and conform minimum <= expected <= maximum."
       }
     }
     if (!Util.isValidReleaseTriangularInput(config.discountValue)) {
       return {
         success: false,
-        error: "Please, fill a correct discount value."
+        error: "Please, fill in a correct discount value. They must be greater than 0 and conform minimum <= expected <= maximum."
       }
     }
     return { success: true };

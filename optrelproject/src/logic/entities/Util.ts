@@ -34,7 +34,12 @@ export class Util {
         if (value && isNaN(Number(value))) {
             return false;
         } else {
-            return true;
+            let valueNumber = Number(value);
+            if (valueNumber > 0) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
