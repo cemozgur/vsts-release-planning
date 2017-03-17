@@ -3,7 +3,7 @@ import * as React from 'react';
 import ALGORITHM_TYPE from "../../logic/constants/algorithmType"
 
 import { IFMReleasePlanResult } from "./IFMReleasePlanResult";
-import { GAReleasePlanResult } from "./GAReleasePlanResult";
+import { NSGA2ReleasePlanResult } from "./NSGA2ReleasePlanResult";
 import { Button } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button';
 import { ButtonType } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Button/Button.Props';
 
@@ -23,7 +23,7 @@ export class ReleasePlanResult extends React.Component<ReleasePlanResultProps, u
                 releasePlanResult = <IFMReleasePlanResult result={this.props.result} />
                 break;
             case ALGORITHM_TYPE.GA:
-                releasePlanResult = <GAReleasePlanResult result={this.props.result} />;
+                releasePlanResult = <NSGA2ReleasePlanResult result={this.props.result} />;
                 break;
         }
 

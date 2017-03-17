@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
+import { _minIFMWidths, _maxIFMWidths, columnsIFMReleasePlan } from '../../logic/constants/algorithmViewSection';
 
 export interface IFMReleasePlanHistoryResultProps { result: any; }
 
@@ -52,47 +53,13 @@ export class IFMReleasePlanHistoryResult extends React.Component<IFMReleasePlanH
 
     private _getReleasePlanFeatures(releasePlan: any): JSX.Element {
 
-        let _minWidths = [150, 50, 300, 100, 100, 100, 100];
-        let _maxWidths = [150, 50, 400, 100, 100, 100, 100];
-
-        let columnsReleasePlan = [
-            {
-                name: "Sprint #",
-                referenceName: "sprint"
-            },
-            {
-                name: "Feature ID",
-                referenceName: "workItemId"
-            },
-            {
-                name: "Feature",
-                referenceName: "feature"
-            },
-            {
-                name: "Business Value (£)",
-                referenceName: "businessValue"
-            },
-            {
-                name: "Cost (£)",
-                referenceName: "cost"
-            },
-            {
-                name: "Effort (hours)",
-                referenceName: "effort"
-            },
-            {
-                name: "Depends on (By Feature ID)",
-                referenceName: "dependsOnWorkItemId"
-            }
-        ];
-
-        let columns = columnsReleasePlan.map((c, i) => {
+        let columns = columnsIFMReleasePlan.map((c, i) => {
             return {
                 key: c.referenceName,
                 name: c.name,
                 fieldName: c.referenceName,
-                minWidth: _minWidths[i],
-                maxWidth: _maxWidths[i],
+                minWidth: _minIFMWidths[i],
+                maxWidth: _maxIFMWidths[i],
                 isResizable: false
             }
         });

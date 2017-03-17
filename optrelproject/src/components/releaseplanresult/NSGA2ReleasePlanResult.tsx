@@ -2,17 +2,18 @@ import * as React from 'react';
 
 import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
+import { _minNSGA2Widths, _maxNSGA2Widths, columnsNSGA2ReleasePlan } from '../../logic/constants/algorithmViewSection';
 
 
-export interface GAReleasePlanResultProps { result: any; }
+export interface NSGA2ReleasePlanResultProps { result: any; }
 
 
-export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProps, undefined> {
+export class NSGA2ReleasePlanResult extends React.Component<NSGA2ReleasePlanResultProps, undefined> {
     public render() {
         var releasePlanOption = [];
         let releasePlanData = this.props.result;//i am receiving an array of release plan.
 
-        releasePlanData.map( (releasePlanInformation,index) => {
+        releasePlanData.map((releasePlanInformation, index) => {
             releasePlanOption.push(this._getReleasePlanInformation(releasePlanInformation, index));
         });
 
@@ -33,7 +34,7 @@ export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProp
             <h4>Alternative Solution {index + 1}</h4>
             {releasePlanExplanation}
             {featureOrder}
-            <hr/>
+            <hr />
         </div>;
     }
 
@@ -59,47 +60,13 @@ export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProp
 
     private _getReleasePlanFeatures(releasePlan: any): JSX.Element {
 
-        let _minWidths = [100, 100, 300, 100, 100, 100, 100];
-        let _maxWidths = [100, 100, 400, 100, 100, 100, 100];
-
-        let columnsReleasePlan = [
-            {
-                name: "Sprint #",
-                referenceName: "sprint"
-            },
-            {
-                name: "Feature ID",
-                referenceName: "workItemId"
-            },
-            {
-                name: "Feature",
-                referenceName: "feature"
-            },
-            {
-                name: "Business Value (£)",
-                referenceName: "businessValue"
-            },
-            {
-                name: "Cost (£)",
-                referenceName: "cost"
-            },
-            {
-                name: "Effort (hours)",
-                referenceName: "effort"
-            },
-            {
-                name: "Depends on (By Feature ID)",
-                referenceName: "dependsOnWorkItemId"
-            }
-        ];
-
-        let columns = columnsReleasePlan.map((c, i) => {
+        let columns = columnsNSGA2ReleasePlan.map((c, i) => {
             return {
                 key: c.referenceName,
                 name: c.name,
                 fieldName: c.referenceName,
-                minWidth: _minWidths[i],
-                maxWidth: _maxWidths[i],
+                minWidth: _minNSGA2Widths[i],
+                maxWidth: _maxNSGA2Widths[i],
                 isResizable: false
             }
         });
