@@ -53,43 +53,53 @@ export class Util {
             return info.Max;
         }
     }
+
+
+
     static sprintAssignation(ResultReleasePlan: any): number {
-        let working = 0.0;
-        let sprintStatus = 1;
-        let sprintArray = [];
-        let featureEffortTemp = 0;
-        let workTempAdvance = 0;
-        let sprintDurationCalc = ResultReleasePlan.teamCapability;
+        var workedHours = 0;
+        var sprintIteration = 1;
+        var hoursPerSprint = ResultReleasePlan.teamCapability;
+        let availableHours = 0;
 
-
-        ResultReleasePlan.featureList.map((featureWork) => {
-            if (((sprintStatus * sprintDurationCalc) - working) >= featureWork.effort) {
-                featureWork.sprint = sprintStatus.toString();
-                working += featureWork.effort;
+        ResultReleasePlan.featureList.map((featureTarget) => {
+            availableHours = (sprintIteration * hoursPerSprint) - workedHours;
+            if (availableHours >= featureTarget.effort) {
+                featureTarget.sprint = sprintIteration.toString();//if the available hours is greater or equals to the required effort, we save.
+                workedHours += featureTarget.effort;
+                availableHours = (sprintIteration * hoursPerSprint) - workedHours;
+                if (availableHours == 0) {
+                    sprintIteration++;
+                }
             } else {
-                sprintArray = [];
-                featureEffortTemp = featureWork.effort;
-                workTempAdvance = 0;
+                let requiredSprints = [];
+                let hoursToFinishFeature = featureTarget.effort;
 
-                while (((sprintStatus * sprintDurationCalc) - working) <= featureEffortTemp) {
-                    if (((sprintStatus * sprintDurationCalc) - working) != 0) {
-                        sprintArray.push(sprintStatus);
+                availableHours = (sprintIteration * hoursPerSprint) - workedHours;
+                while (hoursToFinishFeature > 0) {
+                    //available hours will be great than 0, always the first time entering the loop, after that it is not guaranteed
+                    availableHours = (sprintIteration * hoursPerSprint) - workedHours;
+                    if (availableHours < hoursToFinishFeature) {
+                        requiredSprints.push(sprintIteration);
+                        hoursToFinishFeature -= availableHours;
+                        workedHours += availableHours;
+                        sprintIteration++;
+                    } else {
+                        //we kill the loop
+                        requiredSprints.push(sprintIteration);
+                        workedHours += hoursToFinishFeature;
+                        hoursToFinishFeature = 0;
+
+                        if (workedHours == sprintIteration * hoursPerSprint) {
+                            sprintIteration++;
+                        }
                     }
-                    workTempAdvance = ((sprintStatus * sprintDurationCalc) - working);
-                    featureEffortTemp -= workTempAdvance
-                    working += workTempAdvance;
-                    sprintStatus++;
                 }
 
-                if (featureEffortTemp != 0) {
-                    sprintArray.push(sprintStatus);
-                    working += featureEffortTemp;
-                }
-                featureWork.sprint = sprintArray.join(",");
+                featureTarget.sprint = requiredSprints.join(",");
             }
 
         });
-
-        return sprintStatus;
+        return sprintIteration;
     }
 }

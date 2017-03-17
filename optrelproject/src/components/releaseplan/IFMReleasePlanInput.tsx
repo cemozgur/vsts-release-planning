@@ -18,13 +18,13 @@ export class IFMReleasePlanInput extends React.Component<IIFMReleasePlanInputPro
         IFMInput = <div id="inputIFM" className="ms-Grid">
             <div className="ms-Grid-row">
                 <div className="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4">
-                    <Label>Number of Sprint (How many iterations for the project?)</Label>
+                    <Label>Number of Sprints (How many iterations for the project?)</Label>
                     <input className="release-input" type="number" required={true} onChange={this._handleNumberOfSprintChange.bind(this)} />
                 </div>
             </div>
             <div className="ms-Grid-row">
                 <div className="ms-Grid-col ms-u-sm4 ms-u-md4 ms-u-lg4">
-                    <Label>Sprint Duration (How many weeks last each sprint?)</Label>
+                    <Label>Sprint Duration (How many weeks does each sprint take?)</Label>
                     <input type="number" className="release-input" required={true} onChange={this._handleSprintDurationChange.bind(this)} />
                 </div>
             </div>

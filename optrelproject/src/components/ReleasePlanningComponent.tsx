@@ -6,6 +6,7 @@ import IReleasePlanningAlgorithm from "../logic/interfaces/IReleasePlanningAlgor
 import SERVICE_IDENTIFIER from "../logic/constants/identifiers";
 import ALGORITHM_TYPE from "../logic/constants/algorithmType";
 import VSTS_DOCUMENT from "../logic/constants/vstsDocumentID";
+import { Util } from "../logic/entities/Util";
 
 
 import { IWorkItemSearchResult } from "../model/IWorkItemSearchResult";
@@ -81,7 +82,7 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                 algorithmButtonSection = this._getAlgorithmButtonSection();
 
                 releasePlanInputSection = <div id="releaseplaninput">
-                    <h3>Release Plan Configuration</h3>
+                    <h3>Release Plan Optimisation Configuration</h3>
                     {algorithmChoiceSection}
                     {algorithmGenerationSection}
                     &nbsp;
@@ -94,7 +95,7 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
 
                 if (releasePlanGenerationState.result) {
                     releasePlanResultSection = <div id="releaseplanresult">
-                        <ReleasePlanResult result={releasePlanGenerationState.result} />
+                        <ReleasePlanResult result={releasePlanGenerationState.result} algorithmType={releasePlanGenerationState.algorithmType} />
                         <div className="actions">
                             <Button onClick={this._onSaveReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Save Release Plan</Button>
                             <Button onClick={this._onCancelReleasePlanClick.bind(this)} buttonType={ButtonType.primary} className="button-save-release">Cancel Release Plan</Button>
@@ -104,7 +105,7 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                     releasePlanResultSection = <Spinner label='Processing...' />
                 } else if (releasePlanGenerationState.error) {
                     releasePlanResultSection = <MessageBar className="release-input-error" messageBarType={MessageBarType.error}>
-                            {releasePlanGenerationState.error}</MessageBar>;
+                        {releasePlanGenerationState.error}</MessageBar>;
                 }
 
                 workingReleasePlanGeneration = <div>
@@ -215,6 +216,8 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                         let featuresVSTS = this.state.releasePlanGeneration.features.queryResult.workItems;
                         if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
                             let releasePlanResult = algorithmService.getOptimalReleasePlan(config);
+                            console.log("RESULT! on view");
+                            console.log(releasePlanResult);
                             this._setState(false, releasePlanResult);
                             window.location.hash = '#releaseplanresult';
                         } else {
@@ -228,9 +231,21 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
         }
     }
 
-    private _onSaveReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
-        let releasePlan = this.state.releasePlanGeneration.result;
+    private isCorrectAlternative(alternative: any, options: number) {
+        if (Util.isNumber(alternative)) {
+            let optionTarget = parseInt(alternative);
+            if (optionTarget > 0 && optionTarget <= options) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    private storeReleasePlan(releasePlan: any) {
         let messageSuccess = "The optimal ReleasePlan was stored successfully.";
+
         VSS.getService(VSS.ServiceIds.ExtensionData).then((dataService: ExtensionDataService) => {
             Q.all(dataService.getDocument(VSTS_DOCUMENT.RELEASEPLANDOCUMENT, VSTS_DOCUMENT.RESULTID)).
                 then(document => {
@@ -259,6 +274,20 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                     );
                 });
         });
+    }
+    private _onSaveReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
+        let releasePlan = this.state.releasePlanGeneration.result;
+
+        if (Array.isArray(releasePlan)) {
+            let alternative = prompt("Which release plan alternative would you like to apply? Please insert only the number of the alternative.", "1");
+            if(this.isCorrectAlternative(alternative, releasePlan.length)){
+                this.storeReleasePlan(releasePlan[parseInt(alternative) - 1]);
+            } else {
+                alert("You have selected a wrong release plan alternative.");
+            }
+        } else {
+            this.storeReleasePlan(releasePlan);
+        }
     }
     private _onCancelReleasePlanClick(ev: React.MouseEvent<HTMLButtonElement>): void {
         let releasePlanGenerationState = this.state.releasePlanGeneration;

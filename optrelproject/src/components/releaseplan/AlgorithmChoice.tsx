@@ -27,12 +27,12 @@ export class AlgorithmChoice extends React.Component<IAlgorithmChoiceProps, unde
                             [
                                 {
                                     key: ALGORITHM_TYPE.IFM,
-                                    text: 'Release Planning that maximises the Net Present Value of the project.',
+                                    text: 'Maximising Net Present Value of the project.',
                                     checked: true
                                 },
                                 {
                                     key: ALGORITHM_TYPE.GA,
-                                    text: 'Release Planning that maximises Net Present Value and minimises Time Criticality of the Project.'
+                                    text: 'Maximising Net Present Value and building features with high time criticality and low risk beforehand.'
                                 }
                             ]}
                         onChange={this.props.updateAlgorithmState.bind(this)}

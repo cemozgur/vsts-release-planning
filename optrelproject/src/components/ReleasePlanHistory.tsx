@@ -6,12 +6,13 @@ import VSTS_DOCUMENT from "../logic/constants/vstsDocumentID";
 import { ExtensionDataService } from 'VSS/SDK/Services/ExtensionData';
 import { WarningMessage } from "./common/WarningMessage";
 import { Loader } from '../components/common/Loader';
-import { ReleasePlanResult } from "./releaseplanresult/ReleasePlanResult";
+import { ReleasePlanHistoryResult } from "./releaseplanhistory/ReleasePlanHistoryResult";
 
 interface IReleasePlanHistoryState {
     features: any;
     error: string;
     processing: boolean;
+    algorithm: string;
 }
 export class ReleasePlanHistory extends React.Component<undefined, IReleasePlanHistoryState> {
 
@@ -24,7 +25,8 @@ export class ReleasePlanHistory extends React.Component<undefined, IReleasePlanH
         let releasePlanGenerationInitial: IReleasePlanHistoryState = {
             features: null,
             error: null,
-            processing: false
+            processing: false,
+            algorithm: ""
         };
         return releasePlanGenerationInitial;
     }
@@ -39,6 +41,13 @@ export class ReleasePlanHistory extends React.Component<undefined, IReleasePlanH
                     console.log(document);
                     state.features = document["releasePlanResult"];
                     state.processing = false;
+                    
+                    if(Array.isArray(state.features)){
+                        state.algorithm = state.features[0]["algorithmType"];
+                    } else {
+                        state.algorithm = state.features.algorithmType;
+                    }
+
                     this.setState(state);
                 })
                 .catch(error => {
@@ -56,7 +65,7 @@ export class ReleasePlanHistory extends React.Component<undefined, IReleasePlanH
         if (this.state.features) {
             releasePlanHistoryResult = <div>
                 <h2>Release Plan History</h2>
-                <ReleasePlanResult result={this.state.features} />
+                <ReleasePlanHistoryResult result={this.state.features} algorithmType={this.state.algorithm}/>
             </div>;
         } else if (this.state.processing) {
             releasePlanHistoryResult = <Loader message="Collecting your previous optimal Release Plan." />

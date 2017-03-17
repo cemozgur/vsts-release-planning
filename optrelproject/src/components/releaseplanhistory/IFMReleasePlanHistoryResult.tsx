@@ -3,39 +3,31 @@ import * as React from 'react';
 import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
+export interface IFMReleasePlanHistoryResultProps { result: any; }
 
-export interface GAReleasePlanResultProps { result: any; }
 
+export class IFMReleasePlanHistoryResult extends React.Component<IFMReleasePlanHistoryResultProps, undefined> {
 
-export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProps, undefined> {
     public render() {
-        var releasePlanOption = [];
         let releasePlanData = this.props.result;//i am receiving an array of release plan.
 
-        releasePlanData.map( (releasePlanInformation,index) => {
-            releasePlanOption.push(this._getReleasePlanInformation(releasePlanInformation, index));
-        });
-
-
         return <div>
-            {releasePlanOption}
+            {this._getReleasePlanInformation(releasePlanData)}
         </div>;
-
-
     }
 
-    private _getReleasePlanInformation(releasePlan: any, index: number): JSX.Element {
+    private _getReleasePlanInformation(releasePlan: any): JSX.Element {
         let releasePlanExplanation: JSX.Element = null;
         let featureOrder: JSX.Element = null;
         releasePlanExplanation = this._getReleasePlanFeedback(releasePlan);
         featureOrder = this._getReleasePlanFeatures(releasePlan);
         return <div>
-            <h4>Alternative Solution {index + 1}</h4>
             {releasePlanExplanation}
             {featureOrder}
-            <hr/>
+            <hr />
         </div>;
     }
+
 
     private _getReleasePlanFeedback(releasePlan: any): JSX.Element {
         let releasePlanExplanation: JSX.Element = null;
@@ -57,10 +49,11 @@ export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProp
         return releasePlanExplanation;
     }
 
+
     private _getReleasePlanFeatures(releasePlan: any): JSX.Element {
 
-        let _minWidths = [100, 100, 300, 100, 100, 100, 100];
-        let _maxWidths = [100, 100, 400, 100, 100, 100, 100];
+        let _minWidths = [150, 50, 300, 100, 100, 100, 100];
+        let _maxWidths = [150, 50, 400, 100, 100, 100, 100];
 
         let columnsReleasePlan = [
             {
@@ -112,5 +105,6 @@ export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProp
             setKey='set'
         />
     }
+
 
 }

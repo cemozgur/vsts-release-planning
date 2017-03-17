@@ -237,9 +237,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
 
-
-
     let totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
+    
     if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
       ResultReleasePlan.additional = true;
     }

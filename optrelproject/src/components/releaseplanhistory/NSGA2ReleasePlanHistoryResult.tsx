@@ -4,33 +4,27 @@ import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
 
-export interface GAReleasePlanResultProps { result: any; }
+export interface NSGA2ReleasePlanHistoryResultProps { result: any; }
 
 
-export class GAReleasePlanResult extends React.Component<GAReleasePlanResultProps, undefined> {
+export class NSGA2ReleasePlanHistoryResult extends React.Component<NSGA2ReleasePlanHistoryResultProps, undefined> {
     public render() {
-        var releasePlanOption = [];
+
         let releasePlanData = this.props.result;//i am receiving an array of release plan.
 
-        releasePlanData.map( (releasePlanInformation,index) => {
-            releasePlanOption.push(this._getReleasePlanInformation(releasePlanInformation, index));
-        });
-
-
         return <div>
-            {releasePlanOption}
+            {this._getReleasePlanInformation(releasePlanData)}
         </div>;
 
 
     }
 
-    private _getReleasePlanInformation(releasePlan: any, index: number): JSX.Element {
+    private _getReleasePlanInformation(releasePlan: any): JSX.Element {
         let releasePlanExplanation: JSX.Element = null;
         let featureOrder: JSX.Element = null;
         releasePlanExplanation = this._getReleasePlanFeedback(releasePlan);
         featureOrder = this._getReleasePlanFeatures(releasePlan);
         return <div>
-            <h4>Alternative Solution {index + 1}</h4>
             {releasePlanExplanation}
             {featureOrder}
             <hr/>
