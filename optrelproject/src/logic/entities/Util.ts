@@ -54,8 +54,6 @@ export class Util {
         }
     }
 
-
-
     static sprintAssignation(ResultReleasePlan: any): number {
         var workedHours = 0;
         var sprintIteration = 1;

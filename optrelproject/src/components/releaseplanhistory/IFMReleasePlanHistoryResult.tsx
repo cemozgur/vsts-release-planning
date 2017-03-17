@@ -2,7 +2,10 @@ import * as React from 'react';
 
 import { DetailsList, CheckboxVisibility } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/DetailsList';
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
-import { _minIFMWidths, _maxIFMWidths, columnsIFMReleasePlan } from '../../logic/constants/algorithmViewSection';
+import { _minIFMWidths, _maxIFMWidths, columnsIFMReleasePlan, IFM_Approach_message } from '../../logic/constants/algorithmViewSection';
+
+import { WorkItemFormNavigationService } from "TFS/WorkItemTracking/Services";
+
 
 export interface IFMReleasePlanHistoryResultProps { result: any; }
 
@@ -40,6 +43,7 @@ export class IFMReleasePlanHistoryResult extends React.Component<IFMReleasePlanH
             </Label>
         }
         releasePlanExplanation = <div >
+            <Label>Release Planning Approach: {IFM_Approach_message}. </Label>
             <Label>The release plan was generated considering a discount value of {releasePlan.discountValue}%. </Label>
             <Label>All {releasePlan.featureList.length} features are placed in {releasePlan.numberOfSprint} sprints, where
                     each sprint last {releasePlan.sprintDuration} weeks. Additionally, per sprint the whole team can
@@ -70,6 +74,11 @@ export class IFMReleasePlanHistoryResult extends React.Component<IFMReleasePlanH
             items={items}
             checkboxVisibility={CheckboxVisibility.hidden}
             setKey='set'
+            onItemInvoked={(item) => {
+                WorkItemFormNavigationService.getService().then(svc => {
+                    svc.openWorkItem(item["workItemId"]);
+                });
+            }}
         />
     }
 

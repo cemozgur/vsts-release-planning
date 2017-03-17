@@ -4,7 +4,8 @@ import { ChoiceGroup, IChoiceGroupOption } from '../../../node_modules/office-ui
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label';
 
 
-import ALGORITHM_TYPE from "../../logic/constants/algorithmType"
+import ALGORITHM_TYPE from "../../logic/constants/algorithmType";
+import {IFM_Approach_message, NSGA2_Approach_message} from "../../logic/constants/algorithmViewSection";
 
 interface IAlgorithmChoiceProps {
     updateAlgorithmState: any;
@@ -27,12 +28,12 @@ export class AlgorithmChoice extends React.Component<IAlgorithmChoiceProps, unde
                             [
                                 {
                                     key: ALGORITHM_TYPE.IFM,
-                                    text: 'Maximising Net Present Value of the project.',
+                                    text: IFM_Approach_message,
                                     checked: true
                                 },
                                 {
                                     key: ALGORITHM_TYPE.GA,
-                                    text: 'Maximising Net Present Value and building features with high time criticality and low risk beforehand.'
+                                    text: NSGA2_Approach_message
                                 }
                             ]}
                         onChange={this.props.updateAlgorithmState.bind(this)}
