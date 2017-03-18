@@ -239,7 +239,8 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         numberOfSprint: numberOfSprint, sprintDuration: sprintDuration,
         additional: false,
         algorithmType: ALGORITHM_TYPE.GA,
-        totalRequiredEffort: 0
+        totalRequiredEffort: 0,
+        finalNPV: 0.0
       };
 
       var totalEffort = 0;
@@ -258,11 +259,9 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         ResultReleasePlan.featureList.push(target[0]);
       });
 
-      var totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
+      Util.sprintAssignation(ResultReleasePlan);
+      Util.getNetPresentValueReleasePlan(ResultReleasePlan);
 
-      if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
-        ResultReleasePlan.additional = true;
-      }
       ResultReleasePlanAlternatives.push(ResultReleasePlan);
     });
 

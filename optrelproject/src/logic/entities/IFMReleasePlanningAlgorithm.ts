@@ -43,7 +43,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
       if (detailInfo.length > 0) {
 
-        Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.bussinesValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].BusinessValue.Min), mode: Number(detailInfo[0].BusinessValue.Expected), upperBound: Number(detailInfo[0].BusinessValue.Max) } }).getExpectedValue()).toString(), 10) : success = false;
+        Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.businessValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].BusinessValue.Min), mode: Number(detailInfo[0].BusinessValue.Expected), upperBound: Number(detailInfo[0].BusinessValue.Max) } }).getExpectedValue()).toString(), 10) : success = false;
         Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Effort.Min), mode: Number(detailInfo[0].Effort.Expected), upperBound: Number(detailInfo[0].Effort.Max) } }).getExpectedValue()).toString(), 10) : success = false;
         Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Cost.Min), mode: Number(detailInfo[0].Cost.Expected), upperBound: Number(detailInfo[0].Cost.Max) } }).getExpectedValue()).toString(), 10) : success = false;
         Util.isValidReleaseTriangularInput(detailInfo[0].Risk) ? feature.risk = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Risk.Min), mode: Number(detailInfo[0].Risk.Expected), upperBound: Number(detailInfo[0].Risk.Max) } }).getExpectedValue()).toString(), 10) : success = false;
@@ -76,6 +76,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
           });
 
           el.feature.dependency = indexDependency.join(",");
+        } else {
+          el.feature.dependencyWorkItemId = "";
         }
       });
 
@@ -123,42 +125,6 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return { success: true };
   }
 
-
-  testDataGeneration(config: any) {
-    this.ReleasePlan.discountValue = config.discountValue;
-    this.ReleasePlan.teamCapability = config.teamCapability;
-    this.ReleasePlan.totalRequiredEffort = config.totalRequiredEffort;
-    this.ReleasePlan.numberOfSprint = config.numberOfSprint;
-    this.ReleasePlan.sprintDuration = config.sprintDuration;
-
-    /**
-     * featureNumber, vsts feature total.
-     * discountValue is the Discount Rate i created.
-     * teamCapability, can be three, it is going to be the capacity of the team per sprint. (in hours, integer)
-     * totalRequiredEffort, is going to be sum of all feature input effort (the picked value by the random guy)
-     * number of sprint, single value, user input (only one field)
-     * sprint duration, per week (how many week), integer
-     */
-    for (var i = 0; i <= config.featureNumber - 1; i++) {
-      var feature = {
-        id: i + 1,//ok
-        bussinesValue: Math.random() * 100 + 1,//ok
-        effort: Math.random() * 50 + 1,//ok
-        timeCriticality: Math.random() * 5 + 1,//ok
-        cost: Math.random() * 50 + 1,//ok
-        selected: false,//ok
-        dependency: "0",//ok
-        feature: "Feature Name #",//ok
-        order: "1"//ok
-      }
-      this.ReleasePlan.featureList.push({ feature });
-    }
-
-    this.ReleasePlan.featureList[1].feature.dependency = "1";//ok
-    this.ReleasePlan.featureList[4].feature.dependency = "2,3";//ok
-
-  }
-
   getOptimalReleasePlan(config: any): any {
 
     this.ReleasePlan.discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
@@ -178,7 +144,8 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       featureList: [], teamCapability: 0, totalRequiredEffort: 0,
       numberOfSprint: 0, sprintDuration: 0,
       additional: false,
-      algorithmType: ALGORITHM_TYPE.IFM
+      algorithmType: ALGORITHM_TYPE.IFM,
+      finalNPV: 0.0
     };
 
     this.getTotalRequiredEffort();
@@ -237,11 +204,9 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
 
-    let totalSprintRequired = Util.sprintAssignation(ResultReleasePlan);
-    
-    if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
-      ResultReleasePlan.additional = true;
-    }
+    Util.sprintAssignation(ResultReleasePlan);
+    Util.getNetPresentValueReleasePlan(ResultReleasePlan);
+
     return ResultReleasePlan;
   }
 
@@ -269,7 +234,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     var i;
     for (i = 0; i < this.ReleasePlan.featureList.length; i++) {
       e = i;
-      npv += this.ReleasePlan.featureList[index].feature.bussinesValue / Math.pow((1.0 + (this.ReleasePlan.cumulatedDiscountValue / 100.0)), e);
+      npv += this.ReleasePlan.featureList[index].feature.businessValue / Math.pow((1.0 + (this.ReleasePlan.cumulatedDiscountValue / 100.0)), e);
     }
     return npv - this.ReleasePlan.featureList[index].feature.cost;
   }

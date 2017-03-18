@@ -19,7 +19,7 @@ export const columnsIFMReleasePlan = [
     },
     {
         name: "Business Value (£)",
-        referenceName: "bussinesValue"
+        referenceName: "businessValue"
     },
     {
         name: "Cost (£)",

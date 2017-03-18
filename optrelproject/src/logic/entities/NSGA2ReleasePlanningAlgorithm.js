@@ -205,7 +205,8 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 numberOfSprint: numberOfSprint, sprintDuration: sprintDuration,
                 additional: false,
                 algorithmType: algorithmType_1.default.GA,
-                totalRequiredEffort: 0
+                totalRequiredEffort: 0,
+                finalNPV: 0.0
             };
             var totalEffort = 0;
             featuresTargetOrder.map(function (el) {
@@ -220,10 +221,8 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 });
                 ResultReleasePlan.featureList.push(target[0]);
             });
-            var totalSprintRequired = Util_1.Util.sprintAssignation(ResultReleasePlan);
-            if (totalSprintRequired > ResultReleasePlan.numberOfSprint) {
-                ResultReleasePlan.additional = true;
-            }
+            Util_1.Util.sprintAssignation(ResultReleasePlan);
+            Util_1.Util.getNetPresentValueReleasePlan(ResultReleasePlan);
             ResultReleasePlanAlternatives.push(ResultReleasePlan);
         });
         return ResultReleasePlanAlternatives;
