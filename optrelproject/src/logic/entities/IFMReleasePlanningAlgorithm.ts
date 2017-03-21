@@ -98,7 +98,10 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       error: "Please fill in all the fields on the above section."
     };
 
-    if (!(config.numberOfSprint && Util.isNumber(config.numberOfSprint))) {
+
+    var patt = new RegExp("^[1-9][0-9]*$");
+
+    if (!(config.numberOfSprint && patt.test(config.numberOfSprint))) {
       return {
         success: false,
         error: "Please, fill in a correct Number of Sprint. It must be greater than 0."
