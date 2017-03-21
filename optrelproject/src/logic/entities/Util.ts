@@ -60,10 +60,10 @@ export class Util {
 
     static getReleasePlanExplanation(releasePlan: any): string[] {
         let message = [];
-        message.push("The release plan was generated considering a discount value of " + releasePlan.discountValue + "%. And the Net Present Value for the optimal release plan is £ " + parseFloat(releasePlan.finalNPV).toFixed(3) + ".");
+        message.push("The release plan was generated considering a discount value of " + releasePlan.discountValue + "%. And the Net Present Value for the optimal release plan is £ " + parseFloat(releasePlan.finalNPV).toFixed(2) + ".");
         message.push("All " + releasePlan.featureList.length + " features are placed in " + releasePlan.numberOfSprint + " sprints, where each sprint last " + releasePlan.sprintDuration + " weeks. Additionally, per sprint the whole team can work " + releasePlan.teamCapability + " hours.");
-        if (releasePlan.additional) {
-            message.push("Considering the amount of required effort to finish all features, it is required to increase the capacity of the team per sprint, or increment the number of the sprints.");
+        if (releasePlan.additionalTeamCapability > 0) {
+            message.push("Considering the amount of required effort to finish all features, it is required to increase the team capacity per sprint by " + parseFloat(releasePlan.additionalTeamCapability).toFixed(2) + " hours.");
         }
         return message;
     }
@@ -117,12 +117,17 @@ export class Util {
 
 
     static sprintAssignation(ResultReleasePlan: any) {
+        console.log("Sprint Allocation");
+        console.log(ResultReleasePlan);
         var workedHours = 0;
         var sprintIteration = 1;
-        var hoursPerSprint = ResultReleasePlan.teamCapability;
+        var hoursPerSprint = ResultReleasePlan.requiredTeamCapability;
+        
+        console.log(hoursPerSprint);
         let availableHours = 0;
 
         ResultReleasePlan.featureList.map((featureTarget) => {
+            console.log(featureTarget);
             availableHours = (sprintIteration * hoursPerSprint) - workedHours;
             if (availableHours >= featureTarget.effort) {
                 featureTarget.sprint = sprintIteration.toString();//if the available hours is greater or equals to the required effort, we save.
@@ -161,9 +166,5 @@ export class Util {
 
         });
 
-
-        if (sprintIteration > ResultReleasePlan.numberOfSprint) {
-            ResultReleasePlan.additional = true;
-        }
     }
 }

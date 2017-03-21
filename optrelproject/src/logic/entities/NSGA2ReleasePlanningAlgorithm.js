@@ -192,9 +192,9 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         if ((bestPlan1 != bestPlan3) && (bestPlan2 != bestPlan3)) {
             bestPlanSet.push(bestPlan3);
         }
-        return this.getReleasePlanAlternativet(bestPlanSet, discountValue, teamCapability, Number(config.numberOfSprint), Number(config.sprintDuration));
+        return this.getReleasePlanAlternative(bestPlanSet, discountValue, teamCapability, Number(config.numberOfSprint), Number(config.sprintDuration));
     };
-    NSGA2ReleasePlanningAlgorithm.prototype.getReleasePlanAlternativet = function (bestPlanSet, discountValue, teamCapability, numberOfSprint, sprintDuration) {
+    NSGA2ReleasePlanningAlgorithm.prototype.getReleasePlanAlternative = function (bestPlanSet, discountValue, teamCapability, numberOfSprint, sprintDuration) {
         var _this = this;
         var ResultReleasePlanAlternatives = [];
         bestPlanSet.map(function (featureOrderId) {
@@ -203,15 +203,20 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 discountValue: discountValue,
                 featureList: [], teamCapability: teamCapability,
                 numberOfSprint: numberOfSprint, sprintDuration: sprintDuration,
-                additional: false,
+                additionalTeamCapability: 0,
+                requiredTeamCapability: 0,
                 algorithmType: algorithmType_1.default.GA,
                 totalRequiredEffort: 0,
                 finalNPV: 0.0
             };
+            console.log("OJO TOTAL EFFORT");
             var totalEffort = 0;
             featuresTargetOrder.map(function (el) {
-                totalEffort += el.feature.effort;
+                console.log("FEATURE");
+                console.log(el);
+                totalEffort += el.effort;
             });
+            console.log(totalEffort);
             ResultReleasePlan.totalRequiredEffort = totalEffort;
             var featuresTargetOrderId = featureOrderId.split(",");
             featuresTargetOrderId.map(function (featureTargetNumberId) {
@@ -221,6 +226,17 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 });
                 ResultReleasePlan.featureList.push(target[0]);
             });
+            //calculate the real team Capability
+            var realTeamCapability = ResultReleasePlan.totalRequiredEffort / ResultReleasePlan.numberOfSprint;
+            if (realTeamCapability > ResultReleasePlan.teamCapability) {
+                ResultReleasePlan.requiredTeamCapability = realTeamCapability;
+                ResultReleasePlan.additionalTeamCapability = realTeamCapability - ResultReleasePlan.teamCapability;
+            }
+            else {
+                ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability;
+            }
+            console.log("BEFORE CALLING ALLOCATION");
+            console.log(ResultReleasePlan);
             Util_1.Util.sprintAssignation(ResultReleasePlan);
             Util_1.Util.getNetPresentValueReleasePlan(ResultReleasePlan);
             ResultReleasePlanAlternatives.push(ResultReleasePlan);

@@ -141,9 +141,9 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
     let ResultReleasePlan = {
       discountValue: 0, cumulatedDiscountValue: 0,
-      featureList: [], teamCapability: 0, totalRequiredEffort: 0,
+      featureList: [], teamCapability: 0, requiredTeamCapability: 0, totalRequiredEffort: 0,
       numberOfSprint: 0, sprintDuration: 0,
-      additional: false,
+      additionalTeamCapability: 0,
       algorithmType: ALGORITHM_TYPE.IFM,
       finalNPV: 0.0
     };
@@ -204,7 +204,17 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     ResultReleasePlan.numberOfSprint = this.ReleasePlan.numberOfSprint;
     ResultReleasePlan.sprintDuration = this.ReleasePlan.sprintDuration;
 
+    //calculate the real team Capability
+    let realTeamCapability = ResultReleasePlan.totalRequiredEffort / ResultReleasePlan.numberOfSprint;
+
+    if (realTeamCapability > ResultReleasePlan.teamCapability) {
+      ResultReleasePlan.requiredTeamCapability = realTeamCapability;
+      ResultReleasePlan.additionalTeamCapability = realTeamCapability - ResultReleasePlan.teamCapability;
+    } else {
+      ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability;
+    }
     Util.sprintAssignation(ResultReleasePlan);
+
     Util.getNetPresentValueReleasePlan(ResultReleasePlan);
 
     return ResultReleasePlan;

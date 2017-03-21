@@ -9,7 +9,7 @@
     "jenkinspublishoptrel": "./node_modules/.bin/gulp tfxpublish --publisher ytaloborjamori --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq",
     "jenkinspublishoptrelw": "./node_modules/.bin/gulp tfxpublish --publisher ytaloborjamori --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq --windows",
     "devpublishoptrel": "./node_modules/.bin/gulp publishoptrel --extensionvstsid dev-optrel-test --uservst ytachi0026 --publisher optreldev --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq",
-    "devpublishoptrelw": "./node_modules/.bin/gulp publishoptrel --extensionvstsid dev-optrel-test --uservst ytachi0026 --publisher optreldev --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq --windows",
+    "devpublishoptrelw": "./node_modules/.bin/gulp publishoptrel --extensionvstsid dev-optrel-test --uservst gaotingting --publisher optreldev --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq --windows",
     "devinstalloptrel": "./node_modules/.bin/gulp tfxinstall --publisher optreldev --extensionvstsid dev-optrel-test  --uservst ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq",
     "devinstalloptrelw": "./node_modules/.bin/gulp tfxinstall --publisher optreldev --extensionvstsid dev-optrel-test  --uservst ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq --windows"
   },

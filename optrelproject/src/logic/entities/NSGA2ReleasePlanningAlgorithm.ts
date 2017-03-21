@@ -219,12 +219,12 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       bestPlanSet.push(bestPlan3);
     }
 
- 
-    return this.getReleasePlanAlternativet(bestPlanSet, discountValue, teamCapability, Number(config.numberOfSprint), Number(config.sprintDuration));
+
+    return this.getReleasePlanAlternative(bestPlanSet, discountValue, teamCapability, Number(config.numberOfSprint), Number(config.sprintDuration));
 
   }
 
-  private getReleasePlanAlternativet(bestPlanSet: string[], discountValue: number, teamCapability: number,
+  private getReleasePlanAlternative(bestPlanSet: string[], discountValue: number, teamCapability: number,
     numberOfSprint: number, sprintDuration: number) {
 
     var ResultReleasePlanAlternatives = [];
@@ -237,17 +237,25 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         discountValue: discountValue,
         featureList: [], teamCapability: teamCapability,
         numberOfSprint: numberOfSprint, sprintDuration: sprintDuration,
-        additional: false,
+        additionalTeamCapability: 0,
+        requiredTeamCapability: 0,
         algorithmType: ALGORITHM_TYPE.GA,
         totalRequiredEffort: 0,
         finalNPV: 0.0
       };
 
+      console.log("OJO TOTAL EFFORT");
       var totalEffort = 0;
       featuresTargetOrder.map(el => {
-        totalEffort += el.feature.effort;
+        console.log("FEATURE");
+        console.log(el);
+        totalEffort += el.effort;
+        
       });
+      console.log(totalEffort);
+      
       ResultReleasePlan.totalRequiredEffort = totalEffort;
+
 
       var featuresTargetOrderId = featureOrderId.split(",");
 
@@ -259,7 +267,21 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         ResultReleasePlan.featureList.push(target[0]);
       });
 
+
+      //calculate the real team Capability
+      let realTeamCapability = ResultReleasePlan.totalRequiredEffort / ResultReleasePlan.numberOfSprint;
+
+      if (realTeamCapability > ResultReleasePlan.teamCapability) {
+        ResultReleasePlan.requiredTeamCapability = realTeamCapability;
+        ResultReleasePlan.additionalTeamCapability = realTeamCapability - ResultReleasePlan.teamCapability;
+      } else {
+        ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability;
+      }
+      console.log("BEFORE CALLING ALLOCATION");
+      console.log(ResultReleasePlan);
       Util.sprintAssignation(ResultReleasePlan);
+
+
       Util.getNetPresentValueReleasePlan(ResultReleasePlan);
 
       ResultReleasePlanAlternatives.push(ResultReleasePlan);
