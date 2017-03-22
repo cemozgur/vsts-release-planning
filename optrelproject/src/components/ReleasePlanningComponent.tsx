@@ -216,8 +216,6 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
                         let featuresVSTS = this.state.releasePlanGeneration.features.queryResult.workItems;
                         if (algorithmService.getFeatureData(featuresVSTS, featuresDeailtDocument)) {
                             let releasePlanResult = algorithmService.getOptimalReleasePlan(config);
-                            console.log("RESULT! on view");
-                            console.log(releasePlanResult);
                             this._setState(false, releasePlanResult);
                             window.location.hash = '#releaseplanresult';
                         } else {
