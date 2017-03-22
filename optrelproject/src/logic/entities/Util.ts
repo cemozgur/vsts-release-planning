@@ -111,7 +111,10 @@ export class Util {
         });
         return message;
     }
-
+    /**
+     * @function getNetPresentValueReleasePlan
+     * @description This function calculates the NPV of te project after the features are allocated to the sprints.
+     */
     static getNetPresentValueReleasePlan(ResultReleasePlan: any) {
         var finalNPV = 0.0;
         var separatedSprints = [];
@@ -133,6 +136,11 @@ export class Util {
         });
         ResultReleasePlan.finalNPV = finalNPV;
     }
+
+     /**
+     * @function calculateIncome
+     * @description This function calculates the NPV of just a feature in order to use it in the getNetPresentValueReleasePlan function.
+     */
     private static calculateIncome(features: any, j: number, discountValue: number, numberOfSprints: number) {
         var miniNpv = 0;
         var e = 0.0;
@@ -146,12 +154,11 @@ export class Util {
     }
 
 
-
     /**
      * @function sprintAssignation
      * @param ResultReleasePlan contains object that contains a Release Plan object, with an attribute featureList that contains the order of features 
-     * @description it will update the feature attribute sprint
-     * */
+     * @description This function assignes the features, which are sequenced by the algorithm, into sprints.
+     */
     static sprintAssignation(ResultReleasePlan: any) {
         var workedHours = 0;
         var sprintIteration = 1;

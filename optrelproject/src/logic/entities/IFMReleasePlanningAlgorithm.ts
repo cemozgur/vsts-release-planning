@@ -1,12 +1,3 @@
-/**
-* @author Suwichak Fungprasertkul <suwichak@outlook.com>
-* @author Cem Ozgur <cem.ozgur@live.com>
-* @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
-* @version 1.0
-* @license MIT License Copyright (c) 2017 OptRel team
-* @description Incremental Funding Method for obtaining Optimal Release Plan with Grredy Method
-*/
-
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
@@ -21,6 +12,15 @@ const monteCarloConfig = {
   populationSize: 10000,
   debug: false
 };
+
+/**
+* @author Suwichak Fungprasertkul <suwichak@outlook.com>
+* @author Cem Ozgur <cem.ozgur@live.com>
+* @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+* @version 1.0
+* @license MIT License Copyright (c) 2017 OptRel team
+* @description Incremental Funding Method for obtaining Optimal Release Plan with Grredy Method
+*/
 
 @injectable()
 class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
