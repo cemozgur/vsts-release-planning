@@ -140,27 +140,33 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return { success: true };
   }
 
-
-
+ /**
+   * @function render
+   * @description This function assigns bestPlan1, bestPlan2, bestPlan3 as the best results of the NSGA-2 algorithm.
+   */
   getOptimalReleasePlan(config: any): any {
-    this.populationSize = algorithmConfig.population_size;
+    this.populationSize = algorithmConfig.population_size; //The desired population size to be used in NSGA-2
 
-    let generationNumber = algorithmConfig.generation_number;
+    let generationNumber = algorithmConfig.generation_number; //The number of generations used in NSGA-2
+    
+    //The discount value to be used for NPV calculation. It is simulated with Monte Carlo Simulation
     let discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+    
+    //The team capability inputted by the user. It is simulated with Monte Carlo Simulation
     let teamCapability = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.teamCapability.Min), mode: Number(config.teamCapability.Expected), upperBound: Number(config.teamCapability.Max) } }).getExpectedValue()).toString(), 10);
 
-    var bestPlan1 = "";
-    var bestPlan2 = "";
-    var bestPlan3 = "";
-    var proceed = true;
+    var bestPlan1 = ""; //The first best release plan
+    var bestPlan2 = ""; //The second best release plan
+    var bestPlan3 = ""; //The third best release plan
+    var proceed = true; //The variable for proceeding the NSGA-2 or not
     var a = 0;
 
     var bestPlanSet = [];
 
-    var featuresList = this.featureList;
-    var fronts = [];
+    var featuresList = this.featureList; //The featureList inputted by the user from VSTS platform
+    var fronts = []; //The fronts that will be calculated during NSGA-2
     fronts.push("");
-    var population = [];
+    var population = []; //The population of the project
     var doublePopulation = [];
 
     population = this.initialiseParameters(population);
