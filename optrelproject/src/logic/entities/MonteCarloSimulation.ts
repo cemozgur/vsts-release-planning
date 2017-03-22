@@ -30,24 +30,4 @@ class MonteCarloSimulation implements IDataSimulator {
   }
 }
 
-//Testing Field
-
-/*var config = {
-    populationSize : 30000,
-    debug : false
-};
-
-var distribution = {
-    name : "triangular",
-    value : {
-      lowerBound : 10,
-      upperBound : 100,
-      mode : 12
-    }
-};
-
-
-var test = new MonteCarloSimulation(config, distribution);
-console.log("Expected Value: "+test.getExpectedValue());*/
-
 export default MonteCarloSimulation;

@@ -185,11 +185,11 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
       if (i == (generationNumber - 1)) {
         bestPlan1 = doublePopulation[(fronts[0].split(","))[0]].releasePlan;
-        //console.log("bestPlan1 triggered" + bestPlan1);
+
         a++;
         while (proceed == true) {
           bestPlan2 = this.getNextBestPlan(doublePopulation, fronts, a);
-          // console.log("bestPlan2 triggered" + bestPlan2);
+
           a++;
           if ((bestPlan2 != bestPlan1) || ((a + 1) >= doublePopulation.length)) {
             proceed = false;
@@ -198,7 +198,7 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         proceed = true;
         while (proceed == true) {
           bestPlan3 = this.getNextBestPlan(doublePopulation, fronts, a);
-          // console.log("bestPlan3 triggered:" + bestPlan3);
+
           a++;
           if (((bestPlan3 != bestPlan1) && (bestPlan3 != bestPlan2)) || ((a + 1) >= doublePopulation.length)) {
             proceed = false;
@@ -244,21 +244,15 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         finalNPV: 0.0
       };
 
-      console.log("OJO TOTAL EFFORT");
       var totalEffort = 0;
       featuresTargetOrder.map(el => {
-        console.log("FEATURE");
-        console.log(el);
         totalEffort += el.effort;
-        
       });
-      console.log(totalEffort);
-      
+
       ResultReleasePlan.totalRequiredEffort = totalEffort;
 
 
       var featuresTargetOrderId = featureOrderId.split(",");
-
       featuresTargetOrderId.map(featureTargetNumberId => {
         var target = featuresTargetOrder.filter(el => {
           if (el.featureNumber == featureTargetNumberId)
@@ -277,8 +271,6 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       } else {
         ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability;
       }
-      console.log("BEFORE CALLING ALLOCATION");
-      console.log(ResultReleasePlan);
       Util.sprintAssignation(ResultReleasePlan);
 
 
@@ -291,15 +283,14 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
   }
 
   getNextBestPlan(population: any, fronts: any, a: number) {
-    //console.log("a: "+a);
 
-    //console.log("length "+fronts.length);
+
+
 
     if (fronts.length == 1) {
       var nextBestPlanIndex = "";
       nextBestPlanIndex = fronts[0].split(",")[a];
-      /*console.log(fronts[0].split(","));
-      console.log(nextBestPlanIndex);*/
+
       return population[parseInt(nextBestPlanIndex)].releasePlan;
     } else if (fronts.length == 2) {
       var lengthOfFirstFront = fronts[0].split(",").length;
@@ -312,8 +303,7 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       else {
         nextBestPlanIndex = fronts[0].split(",")[a - lengthOfFirstFront];
       }
-      /*console.log(fronts[0].split(","));
-      console.log(nextBestPlanIndex);*/
+
       return population[parseInt(nextBestPlanIndex)].releasePlan;
 
     } else {
@@ -329,11 +319,11 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       else if ((lengthOfSecondFront + lengthOfFirstFront) > a) {
         nextBestPlanIndex = fronts[1].split(",")[a - lengthOfFirstFront];
       } else {
-        /*console.log(fronts);
-        console.log(a+"-"+lengthOfFirstFront+"-"+lengthOfSecondFront+"-"+2);*/
+
+
         nextBestPlanIndex = fronts[2].split(",")[a - lengthOfFirstFront - lengthOfSecondFront];
       }
-      //console.log(nextBestPlanIndex);
+
       return population[parseInt(nextBestPlanIndex)].releasePlan;
 
     }
@@ -557,7 +547,6 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
           population[parseInt(eachQ[j])].n = String(parseInt(population[parseInt(eachQ[j])].n) - 1);
           if (population[parseInt(eachQ[j])].n == "0") {
             population[parseInt(eachQ[j])].rank = String(frontCounter + 1);
-
             if (tempSetQ == "") {
               tempSetQ = "" + eachQ[j];
             } else {
@@ -617,13 +606,9 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     var b = 0;
     var separatedReleasePlans = [];
 
-    while ((populationLeft > 0)/*&& (fronts.length<i)*/) {
+    while ((populationLeft > 0)) {
       separatedReleasePlans = fronts[b].split(",");
       b++;
-      /*if(separatedReleasePlans[0] == ""){
-        i++;
-        continue;
-      }*/
       if (separatedReleasePlans.length <= populationLeft) {
         for (var j = 0; j < separatedReleasePlans.length; j++) {
           tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];

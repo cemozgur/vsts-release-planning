@@ -162,11 +162,9 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             fronts = obj[1];
             if (i == (generationNumber - 1)) {
                 bestPlan1 = doublePopulation[(fronts[0].split(","))[0]].releasePlan;
-                //console.log("bestPlan1 triggered" + bestPlan1);
                 a++;
                 while (proceed == true) {
                     bestPlan2 = this.getNextBestPlan(doublePopulation, fronts, a);
-                    // console.log("bestPlan2 triggered" + bestPlan2);
                     a++;
                     if ((bestPlan2 != bestPlan1) || ((a + 1) >= doublePopulation.length)) {
                         proceed = false;
@@ -175,7 +173,6 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 proceed = true;
                 while (proceed == true) {
                     bestPlan3 = this.getNextBestPlan(doublePopulation, fronts, a);
-                    // console.log("bestPlan3 triggered:" + bestPlan3);
                     a++;
                     if (((bestPlan3 != bestPlan1) && (bestPlan3 != bestPlan2)) || ((a + 1) >= doublePopulation.length)) {
                         proceed = false;
@@ -198,7 +195,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var _this = this;
         var ResultReleasePlanAlternatives = [];
         bestPlanSet.map(function (featureOrderId) {
-            var featuresTargetOrder = _this.featureList.map(function (a) { return Object.assign({}, a); }); //clonning!
+            var featuresTargetOrder = _this.featureList.map(function (a) { return Object.assign({}, a); });
             var ResultReleasePlan = {
                 discountValue: discountValue,
                 featureList: [], teamCapability: teamCapability,
@@ -209,14 +206,10 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 totalRequiredEffort: 0,
                 finalNPV: 0.0
             };
-            console.log("OJO TOTAL EFFORT");
             var totalEffort = 0;
             featuresTargetOrder.map(function (el) {
-                console.log("FEATURE");
-                console.log(el);
                 totalEffort += el.effort;
             });
-            console.log(totalEffort);
             ResultReleasePlan.totalRequiredEffort = totalEffort;
             var featuresTargetOrderId = featureOrderId.split(",");
             featuresTargetOrderId.map(function (featureTargetNumberId) {
@@ -226,7 +219,6 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 });
                 ResultReleasePlan.featureList.push(target[0]);
             });
-            //calculate the real team Capability
             var realTeamCapability = ResultReleasePlan.totalRequiredEffort / ResultReleasePlan.numberOfSprint;
             if (realTeamCapability > ResultReleasePlan.teamCapability) {
                 ResultReleasePlan.requiredTeamCapability = realTeamCapability;
@@ -235,8 +227,6 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             else {
                 ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability;
             }
-            console.log("BEFORE CALLING ALLOCATION");
-            console.log(ResultReleasePlan);
             Util_1.Util.sprintAssignation(ResultReleasePlan);
             Util_1.Util.getNetPresentValueReleasePlan(ResultReleasePlan);
             ResultReleasePlanAlternatives.push(ResultReleasePlan);
@@ -244,13 +234,9 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         return ResultReleasePlanAlternatives;
     };
     NSGA2ReleasePlanningAlgorithm.prototype.getNextBestPlan = function (population, fronts, a) {
-        //console.log("a: "+a);
-        //console.log("length "+fronts.length);
         if (fronts.length == 1) {
             var nextBestPlanIndex = "";
             nextBestPlanIndex = fronts[0].split(",")[a];
-            /*console.log(fronts[0].split(","));
-            console.log(nextBestPlanIndex);*/
             return population[parseInt(nextBestPlanIndex)].releasePlan;
         }
         else if (fronts.length == 2) {
@@ -263,8 +249,6 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
             else {
                 nextBestPlanIndex = fronts[0].split(",")[a - lengthOfFirstFront];
             }
-            /*console.log(fronts[0].split(","));
-            console.log(nextBestPlanIndex);*/
             return population[parseInt(nextBestPlanIndex)].releasePlan;
         }
         else {
@@ -279,11 +263,8 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 nextBestPlanIndex = fronts[1].split(",")[a - lengthOfFirstFront];
             }
             else {
-                /*console.log(fronts);
-                console.log(a+"-"+lengthOfFirstFront+"-"+lengthOfSecondFront+"-"+2);*/
                 nextBestPlanIndex = fronts[2].split(",")[a - lengthOfFirstFront - lengthOfSecondFront];
             }
-            //console.log(nextBestPlanIndex);
             return population[parseInt(nextBestPlanIndex)].releasePlan;
         }
     };
@@ -518,7 +499,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 proceed = 0;
             }
         }
-        fronts.splice(-1); //Remove the last element of the array ?
+        fronts.splice(-1);
         var wrapper = [];
         wrapper.push(population);
         wrapper.push(fronts);
@@ -531,13 +512,9 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var i = 0;
         var b = 0;
         var separatedReleasePlans = [];
-        while ((populationLeft > 0) /*&& (fronts.length<i)*/) {
+        while ((populationLeft > 0)) {
             separatedReleasePlans = fronts[b].split(",");
             b++;
-            /*if(separatedReleasePlans[0] == ""){
-              i++;
-              continue;
-            }*/
             if (separatedReleasePlans.length <= populationLeft) {
                 for (var j = 0; j < separatedReleasePlans.length; j++) {
                     tempPopulation[i] = oldPopulation[parseInt(separatedReleasePlans[j])];
@@ -774,3 +751,4 @@ NSGA2ReleasePlanningAlgorithm = __decorate([
 ], NSGA2ReleasePlanningAlgorithm);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NSGA2ReleasePlanningAlgorithm;
+//# sourceMappingURL=NSGA2ReleasePlanningAlgorithm.js.map

@@ -164,28 +164,28 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         if (this.ReleasePlan.featureList[j].feature.selected == false) {
           if (this.ReleasePlan.featureList[j].feature.dependency == "0") {
             tempNPV = this.calculateNPV(j);
-            //console.log("tempNPV is : " + tempNPV);
+
             if (tempNPV > maxNPV) {
               maxNPV = tempNPV;
               maxFeature = j + 1;
-              //console.log("maxFeature is: " + (maxFeature-1));
+
             } else if ((tempNPV == maxNPV) && (this.ReleasePlan.featureList[j].feature.timeCriticality > this.ReleasePlan.featureList[maxFeature - 1].feature.timeCriticality)) {
               maxNPV = tempNPV;
               maxFeature = j + 1;
-              //console.log("maxFeature is: " + (maxFeature-1));
+
             }
           } else {
             if (this.checkDependence(j) == true) {
               tempNPV = this.calculateNPV(j);
-              //console.log("tempNPV is : " + tempNPV);
+
               if (tempNPV > maxNPV) {
                 maxNPV = tempNPV;
                 maxFeature = j + 1;
-                //console.log("maxFeature is: " + (maxFeature-1));
+
               } else if ((tempNPV == maxNPV) && (this.ReleasePlan.featureList[j].feature.timeCriticality > this.ReleasePlan.featureList[maxFeature - 1].feature.timeCriticality)) {
                 maxNPV = tempNPV;
                 maxFeature = j + 1;
-                //console.log("maxFeature is: " + (maxFeature-1));
+
               }
             }
           }
@@ -193,7 +193,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       }
 
       ResultReleasePlan.featureList.push(this.ReleasePlan.featureList[maxFeature - 1].feature);
-      //console.log("Feature added to the releasePlan!!!");
+
       this.ReleasePlan.featureList[maxFeature - 1].feature.selected = true;
 
       maxFeature = -1;
