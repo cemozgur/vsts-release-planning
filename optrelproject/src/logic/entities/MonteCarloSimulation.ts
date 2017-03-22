@@ -33,6 +33,10 @@ class MonteCarloSimulation implements IDataSimulator {
     }
   }
 
+  /**
+    * @function getExpectedValue
+    * @description Obtaining the output expected value after the simulation.
+    */
   getExpectedValue(){
     return this.sum / this.config.populationSize;
   }
