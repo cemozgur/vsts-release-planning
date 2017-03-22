@@ -1,3 +1,11 @@
+/**
+* @author Suwichak Fungprasertkul <suwichak@outlook.com>
+* @author Cem Ozgur <cem.ozgur@live.com>
+* @version 1.0
+* @license MIT License Copyright (c) 2017 OptRel team
+* @description Feature Template extension is for initalizaing the User action within in feature-template-extension.html
+*/
+
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
@@ -128,7 +136,11 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return { success: true };
   }
 
-  //This is the method to get the optimal release plan sequence by IFM
+  /**
+  * @function getOptimalReleasePlan(config: any)
+  * @param config : Literal object for Optimal Release Plan configuration
+  * @description This is the method to get the optimal release plan sequence by IFM
+  */
   getOptimalReleasePlan(config: any): any {
 
     this.ReleasePlan.discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
@@ -183,7 +195,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
               if (tempNPV > maxNPV) { //If the current NPV is greater than the feature with maximum NPV
                 maxNPV = tempNPV;
                 maxFeature = j + 1;
-              
+
               //If the NPV's are euqal but the time criticality of them are different; get the one with high time criticality
               } else if ((tempNPV == maxNPV) && (this.ReleasePlan.featureList[j].feature.timeCriticality > this.ReleasePlan.featureList[maxFeature - 1].feature.timeCriticality)) {
                 maxNPV = tempNPV;
@@ -227,7 +239,10 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return ResultReleasePlan;
   }
 
-  //This function returns the total required effort to build all of the features
+  /**
+  * @function getTotalRequiredEffort
+  * @description This function returns the total required effort to build all of the features
+  */
   getTotalRequiredEffort() {
     var i;
     var totalEffort = 0;
@@ -237,17 +252,26 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     this.ReleasePlan.totalRequiredEffort = totalEffort;
   }
 
-  //This function returns the cumulated discount value in order to convert the number to the suitable percentage in terms of weekly/monthly or etc.
+  /**
+  * @function calculateCumulatedDiscountValue
+  * @description This function returns the cumulated discount value in order to convert the number to the suitable percentage in terms of weekly/monthly or etc.
+  */
   calculateCumulatedDiscountValue() {
     this.ReleasePlan.cumulatedDiscountValue = (Math.pow(((this.ReleasePlan.discountValue / 100.00) + 1.0), (this.ReleasePlan.sprintDuration / 52.0)) - 1.0) * 100.0;
   }
 
-  //This is for calculating total number of sprints needed.
+  /**
+  * @function calculateNumberOfRequiredSprint
+  * @description This is for calculating total number of sprints needed.
+  */
   calculateNumberOfRequiredSprint() {
     return Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
   }
 
-  //This function returns the NPV of a feature for a given starting sprint number (Since it is a greedy search; only 1 feature is considered)
+  /**
+  * @function calculateNPV
+  * @description This function returns the NPV of a feature for a given starting sprint number (Since it is a greedy search; only 1 feature is considered)
+  */
   calculateNPV(index: number) {
     var npv = 0;
     var e = 0.0; //The variable for using in the decrementation calculation
@@ -259,7 +283,10 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return npv - this.ReleasePlan.featureList[index].feature.cost; //NPV is calculated by substracting the cost
   }
 
-  //This function returns true if the input feature does NOT depend on any features
+  /**
+  * @function checkDependence
+  * @description This function returns true if the input feature does NOT depend on any features
+  */
   checkDependence(index: number) {
     var dependency = this.ReleasePlan.featureList[index].feature.dependency;
     var dependencies = dependency.split(",");

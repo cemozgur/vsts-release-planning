@@ -1,7 +1,7 @@
 /**
 * @author Suwichak Fungprasertkul <suwichak@outlook.com>
 * @version 1.0
-* @license MIT License Copyright (c) 2016 OptRel team
+* @license MIT License Copyright (c) 2017 OptRel team
 * @description Feature Template extension is for initalizaing the User action within in feature-template-extension.html
 */
 
