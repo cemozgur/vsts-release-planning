@@ -10,7 +10,6 @@
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
-import { ReleasePlan } from "../../model/ReleasePlan";
 import MonteCarloSimulation from "./MonteCarloSimulation";
 import { WorkItem } from 'TFS/WorkItemTracking/Contracts';
 import { IValidationMessage } from "../../model/IValidationMessage";

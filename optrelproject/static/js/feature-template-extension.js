@@ -365,13 +365,9 @@ VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
       dataService.deleteDocument(RPDSDocsName, workItemID).then(function () { });
       RPDSDocsExist = false;
     });
-<<<<<<< HEAD
     document.getElementById('saveSetting').reset();
     alert("VSTS Release Planning Extenion: The feature configuration has been cleared.");
   });
   VSS.resize();
 
-=======
-    VSS.resize();
->>>>>>> be9a3746bde59497c8e1612f17dbbad8aaa775c1
 });
