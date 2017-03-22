@@ -13,6 +13,13 @@ import IDataSimulator from "../interfaces/IDataSimulator";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
 import {IFeatureService} from "../interfaces/IFeatureService";
 
+/**
+*
+* @author Suwichak Fungprasertkul <suwichak@outlook.com>
+* @version 1.0
+* @license MIT License Copyright (c) 2017 OptRel team
+* @description The place for dependency injecting the entities and interfaces for dependency injection design pattern
+*/
 
 /**
  * This is the only place in which there is some coupling.
