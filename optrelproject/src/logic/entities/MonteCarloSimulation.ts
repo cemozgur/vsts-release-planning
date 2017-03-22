@@ -1,3 +1,6 @@
+import Random from "./Random";
+import IDataSimulator from "../interfaces/IDataSimulator";
+
 /**
 * @author Suwichak Fungprasertkul <suwichak@outlook.com>
 * @author Binghao Chai <cbhindex@gmail.com>
@@ -5,9 +8,6 @@
 * @license MIT License Copyright (c) 2017 OptRel team
 * @description Monte Carolo Simluation for dealing the uncertainty of the given input with Triangular distribution
 */
-
-import Random from "./Random";
-import IDataSimulator from "../interfaces/IDataSimulator";
 
 class MonteCarloSimulation implements IDataSimulator {
 

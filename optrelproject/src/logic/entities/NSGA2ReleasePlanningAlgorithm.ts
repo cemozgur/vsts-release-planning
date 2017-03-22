@@ -1,12 +1,3 @@
-/**
-* @author Suwichak Fungprasertkul <suwichak@outlook.com>
-* @author Cem Ozgur <cem.ozgur@live.com>
-* @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
-* @version 1.0
-* @license MIT License Copyright (c) 2017 OptRel team
-* @description NSGA-2 as a multi-objective tool for obtaining Net Present Value from Incremental Funding Method with High Time Criticality and Low Risk
-*/
-
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
@@ -41,6 +32,15 @@ const mutationConfig = {
     enable: false
   }
 };
+
+/**
+* @author Suwichak Fungprasertkul <suwichak@outlook.com>
+* @author Cem Ozgur <cem.ozgur@live.com>
+* @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+* @version 1.0
+* @license MIT License Copyright (c) 2017 OptRel team
+* @description NSGA-2 as a multi-objective tool for obtaining Net Present Value from Incremental Funding Method with High Time Criticality and Low Risk
+*/
 
 @injectable()
 class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
