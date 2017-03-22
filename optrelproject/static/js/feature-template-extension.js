@@ -1,7 +1,7 @@
 /**
 * @author Suwichak Fungprasertkul <suwichak@outlook.com>
 * @version 1.0
-* @license MIT License Copyright (c) 2016 OptRel team
+* @license MIT License Copyright (c) 2017 OptRel team
 * @description Feature Template extension is for initalizaing the User action within in feature-template-extension.html
 */
 
@@ -9,10 +9,20 @@ var workItemID;
 var RPDSDocsExist = false;
 var RPDSDocsName = "RPDS";
 
+/**
+* @function init
+* @description initialize the additional properties before using VSTS extension library
+*/
+
 VSS.init({
   explicitNotifyLoaded: true,
   usePlatformScripts: true
 });
+
+/**
+* @function require
+* @description Invoking VSTS extension library and specifying the responsible for each element and actions in feature-template-extension.html
+*/
 
 VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
 
@@ -66,10 +76,8 @@ VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
               }
             });
           });
-
         })
       },
-
       // Called when the active work item is being unloaded in the UI
       onUnloaded: function (args) {
         $(".events").empty();
@@ -357,9 +365,13 @@ VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
       dataService.deleteDocument(RPDSDocsName, workItemID).then(function () { });
       RPDSDocsExist = false;
     });
+<<<<<<< HEAD
     document.getElementById('saveSetting').reset();
     alert("VSTS Release Planning Extenion: The feature configuration has been cleared.");
   });
   VSS.resize();
 
+=======
+    VSS.resize();
+>>>>>>> be9a3746bde59497c8e1612f17dbbad8aaa775c1
 });
