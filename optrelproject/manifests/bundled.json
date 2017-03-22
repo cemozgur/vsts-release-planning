@@ -17,8 +17,8 @@
             "addressable": true
         },
         {
-            "path": "../dist/images",
+            "path": "../dist/images/logo.png",
             "addressable": true
-        }      
+        }        
     ]
 }

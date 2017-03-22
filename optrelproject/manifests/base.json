@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "vsts-extensions-optrel",
-    "version": "1.0.566",
+    "version": "1.0.574",
     "publisher": "ytaloborjamori",
     "name": "OptRel Release Planning",
     "public": false,
@@ -10,6 +10,9 @@
         "vso.work_write",
         "vso.profile"
     ],
+    "icons": {
+        "default": "../dist/images/logo.png"
+    },
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
