@@ -1,38 +1,40 @@
 #VSTS - Release Planning plug-in
 
-Testing branch
+#Team Members
+- Yijia Bei / yijiabei94@gmail.com
+- Binghao Chai / cbhindex@gmail.com
+- Ytalo Borja / ytalo.mori.16@ucl.ac.uk
+- Suwichak Fungprasertkul / suwichak.fungprasertkul@gmail.com
+- Tingting Gao / Tingting19931227@gmail.com
+- Cem Ozgur / cem.ozgur.16@ucl.ac.uk
+- Yunan Wang / wangyunan941113@gmail.com
 
 #Introduction
-This project will extend VSTS platform in order to generate a Release Plan.
+This project will extend VSTS platform in order to generate optimal Release Plans.
 
-#Getting Started
+#Getting Started with Development Environment
 1.	Pre-requisites
 Please download Node.js v.6.9.4 and install it on your local machine.
 
-Once installed, open console/terminal and run this command:
+Once installed, open console or terminal and run this command: it will update the package manager to the latest
 npm install npm@latest -g
 
-2.	Setting-up the local environment
-Open console/terminal on the folder you have git clone the repository and run this command: 
+2.	Getting the project dependencies
+Open console or terminal on the folder you have git clone the repository and run this command: 
 npm install
 
 3.	Build the package to publich on the VSTS platfom.
-Open console/terminal on the folder you have git clone the repository and run this command: 
-npm run vsts
+Open console or terminal on the folder you have git clone the repository and run this command: 
+- For Windows Environment:
+npm run devinstalloptrelw
+- For Unix environment:
+npm run devinstalloptrel
 
-tfx extension publish --publisher ytaloborjamori --vsix ytaloborjamori.vsts-extensions-optrel-1.0.36.vsix --share-with ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq
+4. To run the unit test cases:
+Open console or terminal on the folder you have git clone the repository and run this command: 
+npm run test
 
-tfx extension install --publisher ytaloborjamori --extension-id vsts-extensions-optrel --accounts ytachi0026 --token n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq
-
-
-#Testing
-1. First, git clone the repository, and change to the branch optreltesting
-2. On the root folder (optrel), run: npm install
-3. The folder that contains the demo test are on folder: /test 
-4. To run the test on our beloved Microsoft project, on the terminal, run: npm run test
-
-Highlights: 
-Karma wont open any browser (Chrome, Mozilla), as it will work with a headless browser called Phantom.
+Highlights: Karma wont open any browser (Chrome, Mozilla), as it will work with a headless browser called Phantom.
 
 #Learning
 1. Webpack
@@ -42,7 +44,3 @@ https://www.youtube.com/watch?v=9kJVYpOqcVU
 https://www.youtube.com/watch?v=MhkGQAoc7bc
 
 3. TypeScript
-
-
---Working on branch
-showreleaseplanstore

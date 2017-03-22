@@ -129,6 +129,12 @@ export class ReleasePlanningComponent extends React.Component<undefined, IReleas
         return !state.releasePlanGeneration.processing;
     }
 
+    /**
+     * @function _setState
+     * @param processing indicates if it is processing the release plan
+     * @param releasePlanResult contains the release plan result
+     * @description Update the React Component State according to the above parameters
+     */
     private _setState(processing: boolean, releasePlanResult: any) {
         let releasePlanGenerationState = this.state.releasePlanGeneration;
 

@@ -127,21 +127,27 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         }
         return { success: true };
     };
+    /**
+      * @function render
+      * @description This function assigns bestPlan1, bestPlan2, bestPlan3 as the best results of the NSGA-2 algorithm.
+      */
     NSGA2ReleasePlanningAlgorithm.prototype.getOptimalReleasePlan = function (config) {
-        this.populationSize = algorithmConfig.population_size;
-        var generationNumber = algorithmConfig.generation_number;
+        this.populationSize = algorithmConfig.population_size; //The desired population size to be used in NSGA-2
+        var generationNumber = algorithmConfig.generation_number; //The number of generations used in NSGA-2
+        //The discount value to be used for NPV calculation. It is simulated with Monte Carlo Simulation
         var discountValue = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
+        //The team capability inputted by the user. It is simulated with Monte Carlo Simulation
         var teamCapability = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.teamCapability.Min), mode: Number(config.teamCapability.Expected), upperBound: Number(config.teamCapability.Max) } }).getExpectedValue()).toString(), 10);
-        var bestPlan1 = "";
-        var bestPlan2 = "";
-        var bestPlan3 = "";
-        var proceed = true;
+        var bestPlan1 = ""; //The first best release plan
+        var bestPlan2 = ""; //The second best release plan
+        var bestPlan3 = ""; //The third best release plan
+        var proceed = true; //The variable for proceeding the NSGA-2 or not
         var a = 0;
         var bestPlanSet = [];
-        var featuresList = this.featureList;
-        var fronts = [];
+        var featuresList = this.featureList; //The featureList inputted by the user from VSTS platform
+        var fronts = []; //The fronts that will be calculated during NSGA-2
         fronts.push("");
-        var population = [];
+        var population = []; //The population of the project
         var doublePopulation = [];
         population = this.initialiseParameters(population);
         population = this.initialisePopulation(featuresList, this.populationSize, population);
@@ -195,7 +201,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
         var _this = this;
         var ResultReleasePlanAlternatives = [];
         bestPlanSet.map(function (featureOrderId) {
-            var featuresTargetOrder = _this.featureList.map(function (a) { return Object.assign({}, a); });
+            var featuresTargetOrder = _this.featureList.map(function (a) { return Object.assign({}, a); }); //clonning!
             var ResultReleasePlan = {
                 discountValue: discountValue,
                 featureList: [], teamCapability: teamCapability,
@@ -219,6 +225,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 });
                 ResultReleasePlan.featureList.push(target[0]);
             });
+            //calculate the real team Capability
             var realTeamCapability = ResultReleasePlan.totalRequiredEffort / ResultReleasePlan.numberOfSprint;
             if (realTeamCapability > ResultReleasePlan.teamCapability) {
                 ResultReleasePlan.requiredTeamCapability = realTeamCapability;
@@ -499,7 +506,7 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 proceed = 0;
             }
         }
-        fronts.splice(-1);
+        fronts.splice(-1); //Remove the last element of the array ?
         var wrapper = [];
         wrapper.push(population);
         wrapper.push(fronts);
@@ -751,4 +758,3 @@ NSGA2ReleasePlanningAlgorithm = __decorate([
 ], NSGA2ReleasePlanningAlgorithm);
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = NSGA2ReleasePlanningAlgorithm;
-//# sourceMappingURL=NSGA2ReleasePlanningAlgorithm.js.map

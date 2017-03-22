@@ -1,34 +1,31 @@
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2016 OptRel team
+ * 
+ * @description Gulp Task Configuration, it compiles the whole project into just one file (bundle.js)
+ */
 const path = require("path");
 const gulp = require('gulp');
 const template = require('gulp-template');
 const webpack = require('gulp-webpack');
 const rename = require('gulp-rename');
-//https://www.npmjs.com/package/gulp-typescript
-const ts = require("gulp-typescript");
+const ts = require("gulp-typescript"); //https://www.npmjs.com/package/gulp-typescript
 const yargs = require("yargs");
 
 var exec = require('child_process').exec;
-
-/**
- * VSTS values for configuration
- */
-//const vstsPersonalToken = "n5hzm74vlbdf5sql6qoe5xoj65kc76e7fp7fkkan6hjmg4eamzuq";
-//const vstsUser = "ytachi0026";
-//const vstsPublisher = "ytaloborjamori";
-//const optRelId = "vsts-extensions-optrel";
-
 
 const tsProject = ts.createProject('tsconfig.json', {
     typescript: require('typescript')
 });
 
-//var argv = yargs.string("publisher").argv;
 let argv = yargs.argv;
 console.log(argv);
 
 
 const isBundled = argv.local ? false : true;
-const windowsEnv = argv.windows ? true : false;
+const windowsEnvironment = argv.windows ? true : false;
 
 const vstsPersonalToken = argv.token;
 const publisherIdOverride = argv.publisher || "";
@@ -36,14 +33,14 @@ const vstsUser = argv.uservst;
 const extension_vsts_id = argv.extensionvstsid;//DEV wants to change the extension id
 
 let tfxCommand;
-if (windowsEnv) {
+if (windowsEnvironment) {
     tfxCommand = path.join(__dirname, "node_modules", ".bin", "tfx.cmd");
 } else {
+    //For Unix environment
     tfxCommand = path.join(__dirname, "node_modules", ".bin", "tfx");
 }
 
-
-const distFolder = 'dist';
+const distFolder = 'dist';//Folder name for Production
 const contentFolder = isBundled ? distFolder : '.';
 
 var templateValues = {};
@@ -92,6 +89,9 @@ else {
     `;
 }
 
+/**
+ * @description Task name: teamplate. It will generate the final index.html for production.
+ */
 gulp.task('template', () => {
     return gulp.src('index.html.template')
         .pipe(template(templateValues))
@@ -102,6 +102,9 @@ gulp.task('template', () => {
         .pipe(gulp.dest(contentFolder));
 });
 
+/**
+ * @description Task name: build. It will compile typescript into javascript.
+ */
 gulp.task('build', () => {
     var tsResult = gulp.src(['src/**/*.tsx', 'src/**/*.ts'])
         .pipe(tsProject());
@@ -109,6 +112,9 @@ gulp.task('build', () => {
     return tsResult.js.pipe(gulp.dest('src'));
 });
 
+/**
+ * @description Task name: copy. Copy the required java scripts files, images, styles into production distribution
+ */
 gulp.task('copy', ['build'], () => {
     if (isBundled) {
         gulp.src('node_modules/vss-web-extension-sdk/lib/VSS.SDK.min.js')
@@ -132,6 +138,9 @@ gulp.task('copy', ['build'], () => {
         gulp.src('static/images/*.png')
             .pipe(gulp.dest(contentFolder + '/images'));
 
+        gulp.src('static/js/feature-template-extension.js')
+            .pipe(gulp.dest(contentFolder + '/scripts'));
+
         gulp.dest(contentFolder + '/vsts_extension');
 
         return gulp.src(['node_modules/office-ui-fabric-react/dist/*css/*.min.css'])
@@ -141,6 +150,9 @@ gulp.task('copy', ['build'], () => {
     }
 });
 
+/**
+ * @description Task name: webpack. bundle all business layer and front-end layer into one javascript file.
+ */
 gulp.task('webpack', ['copy'], () => {
     if (isBundled) {
         return gulp.src('./src/index.js')
@@ -153,7 +165,7 @@ gulp.task('webpack', ['copy'], () => {
 });
 
 /**
- * Creating the vsix file only
+ * @description Task name: tfxpack. Generate vsix file to be deployed into the VSTS Market Place
  */
 gulp.task('tfxpack', () => {
     const rootArg = `--root ${contentFolder}`;
@@ -175,7 +187,7 @@ gulp.task('tfxpack', () => {
 });
 
 /**
- * Publishing the vsix file on the Publisher!, before it creates it
+ * @description Task name: tfxpublish. It Publish the vsix file on the Publisher
  */
 gulp.task('tfxpublish', () => {
     const rootArg = `--root ${contentFolder}`;
@@ -198,6 +210,9 @@ gulp.task('tfxpublish', () => {
         });
 });
 
+/**
+ * @description Task name: tfxinstall. It install OptRel plug-in into the specified VSTS accounts
+ */
 gulp.task('tfxinstall', () => {
     exec(`${tfxCommand} extension install --publisher ${publisherIdOverride}  --extension-id ${extension_vsts_id} --accounts ${vstsUser} --token ${vstsPersonalToken}`,
         (err, stdout, stderr) => {
@@ -211,6 +226,9 @@ gulp.task('tfxinstall', () => {
 
 gulp.task('buildoptrel', ['template', 'webpack']);
 
+/**
+ * @description Task name: publishoptrel. It invokes the task buildoptrel, then it publish the plug-in into the VSTS accounts
+ */
 gulp.task('publishoptrel', ['buildoptrel'], () => {
     const rootArg = `--root ${contentFolder}`;
     const vsix_folder = distFolder + "/vsts_extension";
@@ -233,4 +251,4 @@ gulp.task('publishoptrel', ['buildoptrel'], () => {
 });
 
 
-gulp.task('default', ['build', 'tfxpack']);//it build and pack the project
+gulp.task('default', ['build', 'tfxpack']);

@@ -1,3 +1,11 @@
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2016 OptRel team
+ * 
+ * @description Karma configuration file, it runs with PhantomJS
+ */
 const path = require("path");
 
 const webpackConfig = require(__dirname+"/test.webpack.config");
@@ -7,7 +15,7 @@ module.exports = function (config) {
         basePath: '',
         // add the installed frameworks here
         frameworks: ["jasmine"],
-
+        //passing the folder path for OptRel test
         files: [
             'test/**/*.ts'
         ],

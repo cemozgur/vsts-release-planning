@@ -9,12 +9,24 @@ import { ButtonType } from '../../../node_modules/office-ui-fabric-react/lib-amd
 
 import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/components/Label/Label';
 
+export interface ReleasePlanResultProps { result: any; algorithmType: string; }
 
-export interface ReleasePlanResultProps { result: any; algorithmType: string;}
-
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @author Suwichak Fungprasertkul <suwichak@outlook.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2016 OptRel team
+ * 
+ * @description React Component for drawing the Release Plan Result
+ */
 export class ReleasePlanResult extends React.Component<ReleasePlanResultProps, undefined> {
 
+    /**
+     * @function render
+     * @description It read the props parameters, according to the algorithmType attribute it will invoke the React component
+     * to draw the result of the optimal release plan.
+     */
     public render() {
         let releasePlanResult: JSX.Element = null;
 

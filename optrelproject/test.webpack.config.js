@@ -1,3 +1,11 @@
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2016 OptRel team
+ * 
+ * @description WebPack configuration file for testing environment
+ */
 const webpack = require('webpack');
 const path = require("path");
 
