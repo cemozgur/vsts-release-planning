@@ -9,10 +9,20 @@ var workItemID;
 var RPDSDocsExist = false;
 var RPDSDocsName = "RPDS";
 
+/**
+* @function init
+* @description initialize the additional properties before using VSTS extension library
+*/
+
 VSS.init({
     explicitNotifyLoaded: true,
     usePlatformScripts: true
 });
+
+/**
+* @function require
+* @description Invoking VSTS extension library and specifying the responsible for each element and actions in feature-template-extension.html
+*/
 
 VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
 
@@ -66,8 +76,7 @@ VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
                                 document.getElementById('featureDependency').value = doc.Dependency;
                               }
                             });
-                        });
-
+                       });
                 })
             },
 
@@ -361,5 +370,4 @@ VSS.require(["TFS/WorkItemTracking/Services"], function (_WorkItemServices) {
        alert("VSTS Release Planning Extenion: The feature configuration has been cleared.");
     });
     VSS.resize();
-
 });
