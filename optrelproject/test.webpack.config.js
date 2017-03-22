@@ -2,7 +2,7 @@
  * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
  * @version 1.0
  * @license 
- * MIT License Copyright (c) 2016 OptRel team
+ * MIT License Copyright (c) 2017 OptRel team
  * 
  * @description WebPack configuration file for testing environment
  */

@@ -17,12 +17,24 @@ import { IWorkItemSearchResult } from "../../model/IWorkItemSearchResult";
 import { IWiqlQueryResult } from "../../model/IWiqlQueryResult";
 
 
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description FeatureServiceImpl will implement the interface IFeatureService, the methods will consume VSTS rest webservice 
+ * these web services will provide us the VSTS feature information
+ */
 @injectable()
 class FeatureServiceImpl implements IFeatureService {
 
     private _httpClient: WorkItemTrackingHttpClient;
 
+    /**
+     * @function httpClient
+     * @description It obtain the instantiation of the WorkItemTrackingHttpClient VSTS service
+     * */
     public get httpClient(): WorkItemTrackingHttpClient {
         if (!this._httpClient) {
             this._httpClient = getClient();
@@ -30,7 +42,10 @@ class FeatureServiceImpl implements IFeatureService {
         return this._httpClient;
     }
 
-
+    /**
+     * @function getQueryAllFeature
+     * @description It will return the query needed to consult VSTS features with New and Activate states
+     * */
     getQueryAllFeature(): IWiqlResult {
         return {
             wiql: `SELECT [System.Id],
@@ -50,6 +65,11 @@ class FeatureServiceImpl implements IFeatureService {
         };
     }
 
+    /**
+     * @function getAllFeatureByProjectResult
+     * @param vstsProjectId contains the VSTS project ID
+     * @description It will return the workItems ID that conforms the query obtained on the method getQueryAllFeature
+     * */
     public getAllFeatureByProjectResult(vstsProjectId: string): IPromise<IWorkItemSearchResult> {
         let wiqlResult = this.getQueryAllFeature();
 

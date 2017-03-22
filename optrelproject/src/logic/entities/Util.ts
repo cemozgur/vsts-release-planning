@@ -1,13 +1,24 @@
 import { IFM_Approach_message, NSGA2_Approach_message } from '../../logic/constants/algorithmViewSection';
 import ALGORITHM_TYPE from "../../logic/constants/algorithmType"
 
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @author Cem Ozgur <cem.ozgur@live.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description Util contains common functions
+ */
 export class Util {
 
-    static printHello(): void {
-    }
-
-    static isValidReleaseTriangularInput(infoObject: Object): boolean {
+    /**
+     * @function isValidReleaseTriangularInput
+     * @param infoObject contains the object with the attributes for triangular distribution
+     * @description It validates if the object contains the attribute Min,Expected and Max, also if the values are correct number, and
+     * min value <= expected value <= max value
+     * */
+     static isValidReleaseTriangularInput(infoObject: Object): boolean {
         if (!infoObject) {
             return false;
         }
@@ -33,6 +44,11 @@ export class Util {
         }
     }
 
+    /**
+     * @function isNumber
+     * @param value
+     * @description it validate if value is a number, if yes returns true, otherwise returns false
+     * */
     static isNumber(value): boolean {
         if (value && isNaN(Number(value))) {
             return false;
@@ -46,6 +62,11 @@ export class Util {
         }
     }
 
+    /**
+     * @function getRandomValue
+     * @param info contains object with a triangular distribution (Min, Expected and Max)
+     * @description it returns randomly the value of any attribute Min, Expected and Max from an object with a triangular distribution
+     * */
     static getRandomValue(info: any): string {
         let order = Math.floor(Math.random() * 3) + 1;
         if (order == 1) {
@@ -57,16 +78,27 @@ export class Util {
         }
     }
 
+    /**
+     * @function getReleasePlanExplanation
+     * @param releasePlan contains object that contains a Release Plan object 
+     * @description it returns a message indicating a recommendation for a user according to the Release Plan object
+     * */
     static getReleasePlanExplanation(releasePlan: any): string[] {
         let message = [];
         message.push("The release plan was generated considering a discount value of " + releasePlan.discountValue + "%. And the Net Present Value for the optimal release plan is £ " + parseFloat(releasePlan.finalNPV).toFixed(2) + ".");
         message.push("All " + releasePlan.featureList.length + " features are placed in " + releasePlan.numberOfSprint + " sprints, where each sprint last " + releasePlan.sprintDuration + " weeks. Additionally, per sprint the whole team can work " + releasePlan.teamCapability + " hours.");
+        //if the release plan requires to add more hours to the team capability to conform the number of sprints
         if (releasePlan.additionalTeamCapability > 0) {
             message.push("Considering the amount of required effort to finish all features, it is required to increase the team capacity per sprint by " + parseFloat(releasePlan.additionalTeamCapability).toFixed(2) + " hours.");
         }
         return message;
     }
 
+    /**
+     * @function getReleasePlanExplanationHistory
+     * @param releasePlan contains object that contains a Release Plan object 
+     * @description it returns a message indicating a recommendation for a user according to the Release Plan object for revision
+     * */
     static getReleasePlanExplanationHistory(releasePlan: any): string[] {
         let message = [];
         if (ALGORITHM_TYPE.IFM == releasePlan.algorithmType) {
@@ -115,6 +147,11 @@ export class Util {
 
 
 
+    /**
+     * @function sprintAssignation
+     * @param ResultReleasePlan contains object that contains a Release Plan object, with an attribute featureList that contains the order of features 
+     * @description it will update the feature attribute sprint
+     * */
     static sprintAssignation(ResultReleasePlan: any) {
         var workedHours = 0;
         var sprintIteration = 1;
@@ -122,6 +159,7 @@ export class Util {
         
         let availableHours = 0;
 
+        //iteration of all features for the release plans
         ResultReleasePlan.featureList.map((featureTarget) => {
   
             availableHours = (sprintIteration * hoursPerSprint) - workedHours;
@@ -146,7 +184,7 @@ export class Util {
                         workedHours += availableHours;
                         sprintIteration++;
                     } else {
-                        //we kill the loop
+                        //we kill the loop, because the feature has been allocated successfully
                         requiredSprints.push(sprintIteration);
                         workedHours += hoursToFinishFeature;
                         hoursToFinishFeature = 0;

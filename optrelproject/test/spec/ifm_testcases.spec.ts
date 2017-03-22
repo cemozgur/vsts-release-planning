@@ -3,7 +3,7 @@
  * @author Tingting Gao <uczltg1@ucl.ac.uk>
  * @author Yunan Wang <wangyunan941113@gmail.com>
  * @version 1.0
- * @license MIT License Copyright (c) 2016 OptRel team
+ * @license MIT License Copyright (c) 2017 OptRel team
  * 
  * @description Test Cases for IFM Algorithm
  */
