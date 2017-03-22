@@ -8,8 +8,21 @@ import { Util } from '../../logic/entities/Util';
 
 export interface NSGA2ReleasePlanResultProps { result: any; }
 
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description React Component for drawing the Release Plan Result for only NSGA2 Approach 
+ */
 export class NSGA2ReleasePlanResult extends React.Component<NSGA2ReleasePlanResultProps, undefined> {
+
+    /**
+     * @function render
+     * @description It read the props parameters, according to the algorithmType attribute it will invoke the React component
+     * to draw the result of the NSGA2 optimal alternatives release plan. Keep it mind that NSGA2 will generate from 1 to 3 alternatives
+     */
     public render() {
         var releasePlanOption = [];
         let releasePlanData = this.props.result;//i am receiving an array of release plan.
@@ -26,6 +39,11 @@ export class NSGA2ReleasePlanResult extends React.Component<NSGA2ReleasePlanResu
 
     }
 
+    /** _getReleasePlanInformation
+     * @param releasePlan
+     * @param index
+     * @description it will obtain the release plan information for a release plan result
+     */
     private _getReleasePlanInformation(releasePlan: any, index: number): JSX.Element {
         let featureOrder: JSX.Element = null;
 
@@ -45,6 +63,10 @@ export class NSGA2ReleasePlanResult extends React.Component<NSGA2ReleasePlanResu
         </div>;
     }
 
+    /** _getReleasePlanFeatures
+     * @param releasePlan
+     * @description It will return a Fabric React Component: DeatilList with the features information for the release plan
+     */
     private _getReleasePlanFeatures(releasePlan: any): JSX.Element {
 
         let columns = columnsNSGA2ReleasePlan.map((c, i) => {

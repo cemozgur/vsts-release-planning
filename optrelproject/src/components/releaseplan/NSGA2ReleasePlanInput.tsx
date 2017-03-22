@@ -6,13 +6,25 @@ import INPUT_CONFIG_KEY from '../../logic/constants/releasePlanInputConfigKey';
 interface INSGA2ReleasePlanInputProps {
     updateStateConfig: any;
 }
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description React Component that draws the inputs required for NSGA2 release planning approach, this component will update the 
+ * ReleasePlanningComponent State, the attribute for configuration object
+ */
 export class NSGA2ReleasePlanInput extends React.Component<INSGA2ReleasePlanInputProps, undefined> {
 
     constructor(props?: INSGA2ReleasePlanInputProps) {
         super(props);
     }
-
+    /** 
+     * @function render
+     * @description It renders the following inputs: number of sprints, sprint duration, team capability (triangular distribution), 
+     * discount value (triangular distribution)
+     */
     public render() {
         let NSGA2Input: JSX.Element = null;
         NSGA2Input = <div id="inputNSGA2" className="ms-Grid">
@@ -70,25 +82,44 @@ export class NSGA2ReleasePlanInput extends React.Component<INSGA2ReleasePlanInpu
         </div>;
         return NSGA2Input;
     }
-
+     /** 
+     * @function _handleNumberOfSprintChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute number of sprint with the user input
+     */
     private _handleNumberOfSprintChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         this.props.updateStateConfig(INPUT_CONFIG_KEY.numberOfSprint, null, value);
     }
+    /** 
+     * @function _handleSprintDurationChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute sprint duration with the user input
+     */
     private _handleSprintDurationChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         this.props.updateStateConfig(INPUT_CONFIG_KEY.sprintDuration, null, value);
     }
+    /** 
+     * @function _handleTeamCapabilityChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute team capability with the user input
+     */
     private _handleTeamCapabilityChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         this.props.updateStateConfig(INPUT_CONFIG_KEY.teamCapability, name, value);
     }
+    /** 
+     * @function _handleDiscountValueChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute discount value with the user input
+     */
     private _handleDiscountValueChange(event) {
         const target = event.target;
         const value = target.value;

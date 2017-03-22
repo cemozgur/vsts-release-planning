@@ -17,10 +17,22 @@ import { WorkItemFormNavigationService } from "TFS/WorkItemTracking/Services";
 
 export interface FeatureListProps { features: IWiqlQueryResult; }
 
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description React Component for VSTS Features to be considered on the release planning 
+ */
 export class FeatureList extends React.Component<FeatureListProps, undefined> {
     private description = "Only features with New or Active state will be considered in the generation of a release plan.";
 
+    /** 
+     * @function render
+     * @description This method belongs to React.Component class
+     * this draw the features list that is received through the props
+     */
     public render() {
         let featureSection: JSX.Element = null;
 
@@ -31,6 +43,11 @@ export class FeatureList extends React.Component<FeatureListProps, undefined> {
         </div>;
     }
 
+    /** 
+     * @function _getProjectFeaturesList
+     * @param queryResult
+     * @description it return a Office UI Frabric React Component: DeatilsList with the features information, only the title, feature name and state is shown
+     */
     private _getProjectFeaturesList(queryResult: IWiqlQueryResult): JSX.Element {
         let _minWidths = [50, 400, 100];
         let _maxWidths = [50, 500, 120];

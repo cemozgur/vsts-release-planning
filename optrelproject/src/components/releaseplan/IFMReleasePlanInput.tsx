@@ -6,12 +6,24 @@ import INPUT_CONFIG_KEY from '../../logic/constants/releasePlanInputConfigKey';
 interface IIFMReleasePlanInputProps {
     updateStateConfig: any;
 }
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description React Component that draws the inputs required for IFM release planning approach, this component will update the 
+ * ReleasePlanningComponent State, the attribute for configuration object
+ */
 export class IFMReleasePlanInput extends React.Component<IIFMReleasePlanInputProps, undefined> {
     constructor(props?: IIFMReleasePlanInputProps) {
         super(props);
     }
-
+    /** 
+     * @function render
+     * @description It renders the following inputs: number of sprints, sprint duration, team capability (triangular distribution), 
+     * discount value (triangular distribution)
+     */
     public render() {
         let IFMInput: JSX.Element = null;
 
@@ -71,25 +83,44 @@ export class IFMReleasePlanInput extends React.Component<IIFMReleasePlanInputPro
 
         return IFMInput;
     }
-
+     /** 
+     * @function _handleNumberOfSprintChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute number of sprint with the user input
+     */
     private _handleNumberOfSprintChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         this.props.updateStateConfig(INPUT_CONFIG_KEY.numberOfSprint, null, value);
     }
+    /** 
+     * @function _handleSprintDurationChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute sprint duration with the user input
+     */
     private _handleSprintDurationChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         this.props.updateStateConfig(INPUT_CONFIG_KEY.sprintDuration, null, value);
     }
+    /** 
+     * @function _handleTeamCapabilityChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute team capability with the user input
+     */
     private _handleTeamCapabilityChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         this.props.updateStateConfig(INPUT_CONFIG_KEY.teamCapability, name, value);
     }
+    /** 
+     * @function _handleDiscountValueChange
+     * @param event
+     * @description It update the ReleasePlanningComponent State, config object, the attribute discount value with the user input
+     */
     private _handleDiscountValueChange(event) {
         const target = event.target;
         const value = target.value;

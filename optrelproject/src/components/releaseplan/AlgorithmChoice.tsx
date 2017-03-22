@@ -11,13 +11,23 @@ interface IAlgorithmChoiceProps {
     updateAlgorithmState: any;
     disabled: boolean;
 }
-
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description React Component for algorithm choice buttons, it display the approach of the release planning to the user
+ */
 export class AlgorithmChoice extends React.Component<IAlgorithmChoiceProps, undefined> {
 
     constructor(props?: IAlgorithmChoiceProps) {
         super(props);
     }
-
+    /** 
+     * @function render
+     * @description It renders two release plannning approach: IFM and NSGA2, it can be expanded to many optains.
+     */
     public render() {
         return <div className="ms-Grid">
             <div className="ms-Grid-row">

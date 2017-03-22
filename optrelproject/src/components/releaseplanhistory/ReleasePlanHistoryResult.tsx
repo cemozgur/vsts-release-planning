@@ -13,8 +13,20 @@ import { Label } from '../../../node_modules/office-ui-fabric-react/lib-amd/comp
 export interface ReleasePlanHistoryResultProps { result: any; algorithmType: string;}
 
 
+/**
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+ * @version 1.0
+ * @license 
+ * MIT License Copyright (c) 2017 OptRel team
+ * 
+ * @description React Component for drawing the Release Plan Result that is obtained from VSTS JSON storage
+ */
 export class ReleasePlanHistoryResult extends React.Component<ReleasePlanHistoryResultProps, undefined> {
-
+    /**
+     * @function render
+     * @description It read the props parameters, according to the algorithmType attribute it will invoke the React component
+     * to draw the result of the optimal release plan according to the algorithm type.
+     */
     public render() {
         let releasePlanResult: JSX.Element = null;
 
