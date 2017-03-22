@@ -1,9 +1,10 @@
 /**
 * @author Suwichak Fungprasertkul <suwichak@outlook.com>
 * @author Cem Ozgur <cem.ozgur@live.com>
+* @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
 * @version 1.0
 * @license MIT License Copyright (c) 2017 OptRel team
-* @description Feature Template extension is for initalizaing the User action within in feature-template-extension.html
+* @description Incremental Funding Method for obtaining Optimal Release Plan with Grredy Method
 */
 
 import { injectable, inject } from "inversify";

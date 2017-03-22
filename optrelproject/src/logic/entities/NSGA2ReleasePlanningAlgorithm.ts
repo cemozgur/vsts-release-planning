@@ -1,3 +1,12 @@
+/**
+* @author Suwichak Fungprasertkul <suwichak@outlook.com>
+* @author Cem Ozgur <cem.ozgur@live.com>
+* @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
+* @version 1.0
+* @license MIT License Copyright (c) 2017 OptRel team
+* @description NSGA-2 as a multi-objective tool for obtaining Net Present Value from Incremental Funding Method with High Time Criticality and Low Risk
+*/
+
 import { injectable, inject } from "inversify";
 import "reflect-metadata";
 import IReleasePlanningAlgorithm from "../interfaces/IReleasePlanningAlgorithm";
@@ -148,10 +157,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     this.populationSize = algorithmConfig.population_size; //The desired population size to be used in NSGA-2
 
     let generationNumber = algorithmConfig.generation_number; //The number of generations used in NSGA-2
-    
+
     //The discount value to be used for NPV calculation. It is simulated with Monte Carlo Simulation
     let discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
-    
+
     //The team capability inputted by the user. It is simulated with Monte Carlo Simulation
     let teamCapability = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.teamCapability.Min), mode: Number(config.teamCapability.Expected), upperBound: Number(config.teamCapability.Max) } }).getExpectedValue()).toString(), 10);
 
