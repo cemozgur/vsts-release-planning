@@ -128,6 +128,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return { success: true };
   }
 
+  //This is the method to get the optimal release plan sequence by IFM
   getOptimalReleasePlan(config: any): any {
 
     this.ReleasePlan.discountValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(config.discountValue.Min), mode: Number(config.discountValue.Expected), upperBound: Number(config.discountValue.Max) } }).getExpectedValue()).toString(), 10);
@@ -156,32 +157,34 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     this.calculateNumberOfRequiredSprint();
 
     var maxNPV = -Number.MAX_VALUE;
-    var maxFeature = -1;
+    var maxFeature = -1; //The attribute for indicating the array index of the maximum feature
     var tempNPV = -Number.MAX_VALUE;
 
-    for (var i = 0; i <= this.ReleasePlan.featureList.length - 1; i++) {
-      for (var j = 0; j <= this.ReleasePlan.featureList.length - 1; j++) {
-        if (this.ReleasePlan.featureList[j].feature.selected == false) {
-          if (this.ReleasePlan.featureList[j].feature.dependency == "0") {
+    for (var i = 0; i <= this.ReleasePlan.featureList.length - 1; i++) { //For all features in the featureList array
+      for (var j = 0; j <= this.ReleasePlan.featureList.length - 1; j++) { //Compare them with each other
+        if (this.ReleasePlan.featureList[j].feature.selected == false) { //If the feature is not yet checked(implemented)
+          if (this.ReleasePlan.featureList[j].feature.dependency == "0") { //If feature i does not depend on any feature
             tempNPV = this.calculateNPV(j);
 
-            if (tempNPV > maxNPV) {
+            if (tempNPV > maxNPV) { //If the current NPV is greater than the feature with maximum NPV
               maxNPV = tempNPV;
               maxFeature = j + 1;
 
+            //If the NPV's are euqal but the time criticality of them are different; get the one with high time criticality
             } else if ((tempNPV == maxNPV) && (this.ReleasePlan.featureList[j].feature.timeCriticality > this.ReleasePlan.featureList[maxFeature - 1].feature.timeCriticality)) {
               maxNPV = tempNPV;
               maxFeature = j + 1;
 
             }
-          } else {
+          } else { //If the feature i depends on one or more feature(s)
             if (this.checkDependence(j) == true) {
               tempNPV = this.calculateNPV(j);
 
-              if (tempNPV > maxNPV) {
+              if (tempNPV > maxNPV) { //If the current NPV is greater than the feature with maximum NPV
                 maxNPV = tempNPV;
                 maxFeature = j + 1;
-
+              
+              //If the NPV's are euqal but the time criticality of them are different; get the one with high time criticality
               } else if ((tempNPV == maxNPV) && (this.ReleasePlan.featureList[j].feature.timeCriticality > this.ReleasePlan.featureList[maxFeature - 1].feature.timeCriticality)) {
                 maxNPV = tempNPV;
                 maxFeature = j + 1;
@@ -210,11 +213,12 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     //calculate the real team Capability
     let realTeamCapability = ResultReleasePlan.totalRequiredEffort / ResultReleasePlan.numberOfSprint;
 
+    //This conditiion is to check if the input workforce is suitable to finish the features in the desired sprint number
     if (realTeamCapability > ResultReleasePlan.teamCapability) {
       ResultReleasePlan.requiredTeamCapability = realTeamCapability;
-      ResultReleasePlan.additionalTeamCapability = realTeamCapability - ResultReleasePlan.teamCapability;
+      ResultReleasePlan.additionalTeamCapability = realTeamCapability - ResultReleasePlan.teamCapability; //More team capability is needed for building it on time
     } else {
-      ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability;
+      ResultReleasePlan.requiredTeamCapability = ResultReleasePlan.teamCapability; //The teamCapability is the required team capability
     }
     Util.sprintAssignation(ResultReleasePlan);
 
@@ -223,15 +227,17 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return ResultReleasePlan;
   }
 
+  //This function returns the total required effort to build all of the features
   getTotalRequiredEffort() {
     var i;
     var totalEffort = 0;
-    for (i = 0; i < this.ReleasePlan.featureList.length; i++) {
+    for (i = 0; i < this.ReleasePlan.featureList.length; i++) { //For all features in the featureList array
       totalEffort = totalEffort + this.ReleasePlan.featureList[i].feature.effort;
     }
     this.ReleasePlan.totalRequiredEffort = totalEffort;
   }
 
+  //This function returns the cumulated discount value in order to convert the number to the suitable percentage in terms of weekly/monthly or etc.
   calculateCumulatedDiscountValue() {
     this.ReleasePlan.cumulatedDiscountValue = (Math.pow(((this.ReleasePlan.discountValue / 100.00) + 1.0), (this.ReleasePlan.sprintDuration / 52.0)) - 1.0) * 100.0;
   }
@@ -241,17 +247,19 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return Math.ceil(this.ReleasePlan.totalRequiredEffort / (this.ReleasePlan.sprintDuration * this.ReleasePlan.teamCapability));
   }
 
+  //This function returns the NPV of a feature for a given starting sprint number (Since it is a greedy search; only 1 feature is considered)
   calculateNPV(index: number) {
     var npv = 0;
-    var e = 0.0;
+    var e = 0.0; //The variable for using in the decrementation calculation
     var i;
     for (i = 0; i < this.ReleasePlan.featureList.length; i++) {
       e = i;
       npv += this.ReleasePlan.featureList[index].feature.businessValue / Math.pow((1.0 + (this.ReleasePlan.cumulatedDiscountValue / 100.0)), e);
     }
-    return npv - this.ReleasePlan.featureList[index].feature.cost;
+    return npv - this.ReleasePlan.featureList[index].feature.cost; //NPV is calculated by substracting the cost
   }
 
+  //This function returns true if the input feature does NOT depend on any features
   checkDependence(index: number) {
     var dependency = this.ReleasePlan.featureList[index].feature.dependency;
     var dependencies = dependency.split(",");
@@ -259,7 +267,7 @@ class IFMReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     var answer = true;
     for (var i = 0; i <= dependencies.length - 1; i++) {
       if (this.ReleasePlan.featureList[(dependencies[i]) - 1].feature.selected == false) {
-        answer = false;
+        answer = false; //If the function depends on any feature, change the answer to false
       }
     }
     return answer;
