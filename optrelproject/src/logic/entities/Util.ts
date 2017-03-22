@@ -5,7 +5,6 @@ import ALGORITHM_TYPE from "../../logic/constants/algorithmType"
 export class Util {
 
     static printHello(): void {
-        console.log("Hello");
     }
 
     static isValidReleaseTriangularInput(infoObject: Object): boolean {
@@ -117,17 +116,14 @@ export class Util {
 
 
     static sprintAssignation(ResultReleasePlan: any) {
-        console.log("Sprint Allocation");
-        console.log(ResultReleasePlan);
         var workedHours = 0;
         var sprintIteration = 1;
         var hoursPerSprint = ResultReleasePlan.requiredTeamCapability;
         
-        console.log(hoursPerSprint);
         let availableHours = 0;
 
         ResultReleasePlan.featureList.map((featureTarget) => {
-            console.log(featureTarget);
+  
             availableHours = (sprintIteration * hoursPerSprint) - workedHours;
             if (availableHours >= featureTarget.effort) {
                 featureTarget.sprint = sprintIteration.toString();//if the available hours is greater or equals to the required effort, we save.
