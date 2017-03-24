@@ -61,6 +61,14 @@ var NSGA2ReleasePlanningAlgorithm = (function () {
                 return (el.id == feature.workItemId);
             });
             if (detailInfo.length > 0) {
+                console.log("FEATURE TRIANGULAR");
+                console.log(feature);
+                console.log("BusinessValue");
+                console.log(detailInfo[0].BusinessValue.Min + "-" + detailInfo[0].BusinessValue.Expected + "-" + detailInfo[0].BusinessValue.Max);
+                console.log("Effort");
+                console.log(detailInfo[0].Effort.Min + "-" + detailInfo[0].Effort.Expected + "-" + detailInfo[0].Effort.Max);
+                console.log("Cost");
+                console.log(detailInfo[0].Cost.Min + "-" + detailInfo[0].Cost.Expected + "-" + detailInfo[0].Cost.Max);
                 Util_1.Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.businessValue = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].BusinessValue.Min), mode: Number(detailInfo[0].BusinessValue.Expected), upperBound: Number(detailInfo[0].BusinessValue.Max) } }).getExpectedValue()).toString(), 10) : success = false;
                 Util_1.Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Effort.Min), mode: Number(detailInfo[0].Effort.Expected), upperBound: Number(detailInfo[0].Effort.Max) } }).getExpectedValue()).toString(), 10) : success = false;
                 Util_1.Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = parseInt((new MonteCarloSimulation_1.default(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Cost.Min), mode: Number(detailInfo[0].Cost.Expected), upperBound: Number(detailInfo[0].Cost.Max) } }).getExpectedValue()).toString(), 10) : success = false;

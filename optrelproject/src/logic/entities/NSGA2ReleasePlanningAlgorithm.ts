@@ -65,7 +65,19 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
         return (el.id == feature.workItemId);
       });
 
+
+
       if (detailInfo.length > 0) {
+        console.log("FEATURE TRIANGULAR");
+        console.log(feature);
+        console.log("BusinessValue");
+        console.log(detailInfo[0].BusinessValue.Min + "-" + detailInfo[0].BusinessValue.Expected + "-" + detailInfo[0].BusinessValue.Max);
+        console.log("Effort");
+        console.log(detailInfo[0].Effort.Min + "-" + detailInfo[0].Effort.Expected + "-" + detailInfo[0].Effort.Max);
+        console.log("Cost");
+        console.log(detailInfo[0].Cost.Min + "-" + detailInfo[0].Cost.Expected + "-" + detailInfo[0].Cost.Max);
+
+
         Util.isValidReleaseTriangularInput(detailInfo[0].BusinessValue) ? feature.businessValue = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].BusinessValue.Min), mode: Number(detailInfo[0].BusinessValue.Expected), upperBound: Number(detailInfo[0].BusinessValue.Max) } }).getExpectedValue()).toString(), 10) : success = false;
         Util.isValidReleaseTriangularInput(detailInfo[0].Effort) ? feature.effort = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Effort.Min), mode: Number(detailInfo[0].Effort.Expected), upperBound: Number(detailInfo[0].Effort.Max) } }).getExpectedValue()).toString(), 10) : success = false;
         Util.isValidReleaseTriangularInput(detailInfo[0].Cost) ? feature.cost = parseInt((new MonteCarloSimulation(monteCarloConfig, { name: "triangular", value: { lowerBound: Number(detailInfo[0].Cost.Min), mode: Number(detailInfo[0].Cost.Expected), upperBound: Number(detailInfo[0].Cost.Max) } }).getExpectedValue()).toString(), 10) : success = false;
@@ -148,10 +160,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return { success: true };
   }
 
- /**
-   * @function getOptimalReleasePlan
-   * @description This function assigns bestPlan1, bestPlan2, bestPlan3 as the best results of the NSGA-2 algorithm.
-   */
+  /**
+    * @function getOptimalReleasePlan
+    * @description This function assigns bestPlan1, bestPlan2, bestPlan3 as the best results of the NSGA-2 algorithm.
+    */
   getOptimalReleasePlan(config: any): any {
     this.populationSize = algorithmConfig.population_size; //The desired population size to be used in NSGA-2
 
@@ -238,10 +250,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
- /**
-   * @function getReleasePlanAlternative
-   * @description This function is getting the alternative for the release plan generation
-   */
+  /**
+    * @function getReleasePlanAlternative
+    * @description This function is getting the alternative for the release plan generation
+    */
   private getReleasePlanAlternative(bestPlanSet: string[], discountValue: number, teamCapability: number,
     numberOfSprint: number, sprintDuration: number) {
 
@@ -300,10 +312,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return ResultReleasePlanAlternatives;
   }
 
- /**
-   * @function getNextBestPlan
-   * @description This function assigns bestPlan1, bestPlan2, bestPlan3 as the best results of the NSGA-2 algorithm.
-   */
+  /**
+    * @function getNextBestPlan
+    * @description This function assigns bestPlan1, bestPlan2, bestPlan3 as the best results of the NSGA-2 algorithm.
+    */
   getNextBestPlan(population: any, fronts: any, a: number) {
 
 
@@ -351,10 +363,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
   }
 
- /**
-   * @function combinePopulations
-   * @description This function combines the current population with the generated population from crossover and mutation.
-   */
+  /**
+    * @function combinePopulations
+    * @description This function combines the current population with the generated population from crossover and mutation.
+    */
   combinePopulations(population: any, secondPopulation: any) {
     var doublePopulation = [];
     for (var i = 0; i < population.length; i++) {
@@ -366,10 +378,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return doublePopulation;
   }
 
- /**
-   * @function initialisePopulation
-   * @description This function randomly initialises the population according to the population size
-   */
+  /**
+    * @function initialisePopulation
+    * @description This function randomly initialises the population according to the population size
+    */
   initialisePopulation(features: any, populationSize: any, population: any) {
 
     var usedFeatures = "";
@@ -390,18 +402,18 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return population;
   }
 
- /**
-   * @function getRandomNumber
-   * @description This function returns random number according to the input range
-   */
+  /**
+    * @function getRandomNumber
+    * @description This function returns random number according to the input range
+    */
   getRandomNumber(number: number) {
     return Math.floor(Math.random() * number);
   }
 
- /**
-   * @function generateRandomFeature
-   * @description This function generates random features for the population initialisation function
-   */
+  /**
+    * @function generateRandomFeature
+    * @description This function generates random features for the population initialisation function
+    */
   generateRandomFeature(usedFeatures: string, numberOfUsedFeatures: number, features: any) {
 
     var options = "";
@@ -422,10 +434,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
- /**
-   * @function checkDependency
-   * @description This function checks if a feature depends on a feature or not. It returns true if it does not depend on anything.
-   */
+  /**
+    * @function checkDependency
+    * @description This function checks if a feature depends on a feature or not. It returns true if it does not depend on anything.
+    */
   checkDependency(featureNumber: string, usedFeatures: string, features: any) {
     if (this.checkIfUsed(featureNumber, usedFeatures) == false) {
       if (this.checkIfDepends(featureNumber, features) == false) {
@@ -442,10 +454,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
   }
 
- /**
-   * @function checkIfUsed
-   * @description This function checks if the feature is used in the release plan.
-   */
+  /**
+    * @function checkIfUsed
+    * @description This function checks if the feature is used in the release plan.
+    */
   checkIfUsed(featureNumber: string, usedFeatures: string) {
 
     var usedFeaturesSeparated = usedFeatures.split(",");
@@ -458,10 +470,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return false;
   }
 
- /**
-   * @function checkIfDepends
-   * @description This function checks if the feature depends on a feature or not. It is used in checkDependency function.
-   */
+  /**
+    * @function checkIfDepends
+    * @description This function checks if the feature depends on a feature or not. It is used in checkDependency function.
+    */
   checkIfDepends(featureNumber: string, features: any) {
     if (features[parseInt(featureNumber) - 1].dependsOn == "") {
       return false;
@@ -469,10 +481,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return true;
   }
 
- /**
-   * @function checkIfDependsOnUsed
-   * @description This function checks if the feature that is dependent by the other is used or not.
-   */
+  /**
+    * @function checkIfDependsOnUsed
+    * @description This function checks if the feature that is dependent by the other is used or not.
+    */
   checkIfDependsOnUsed(featureNumber: string, usedFeatures: string, features: any) {
     var usedFeaturesSeparated = usedFeatures.split(",");
     var dependentFeaturesSeparated = features[parseInt(featureNumber) - 1].dependsOn.split(",");
@@ -493,10 +505,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return true;
   }
 
- /**
-   * @function performNonDominatedSort
-   * @description This function performs non dominated sorting for NSGA-2 algorithm.
-   */
+  /**
+    * @function performNonDominatedSort
+    * @description This function performs non dominated sorting for NSGA-2 algorithm.
+    */
   performNonDominatedSort(population: any, fronts: any, featuresList: any, discountValue: number) {
 
     for (var i = 0; i < population.length; i++) {
@@ -524,10 +536,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return wrapper;
   }
 
- /**
-   * @function checkIfFirstDomatesSecond
-   * @description This function checks if the first input plan dominates the second input plan according to the rule of NSGA-2.
-   */
+  /**
+    * @function checkIfFirstDomatesSecond
+    * @description This function checks if the first input plan dominates the second input plan according to the rule of NSGA-2.
+    */
   checkIfFirstDominatesSecond(plan1: string, plan2: string, features: any, discountValue: number) {
     if ((this.calculateObjective1(plan1, features, discountValue) == this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features) > this.calculateObjective2(plan2, features)) ||
       (this.calculateObjective1(plan1, features, discountValue) > this.calculateObjective1(plan2, features, discountValue)) && (this.calculateObjective2(plan1, features) == this.calculateObjective2(plan2, features)) ||
@@ -537,10 +549,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return false;
   }
 
- /**
-   * @function calculateObjective1
-   * @description This function calculates the first objective, which is Net Present Value calculation.
-   */
+  /**
+    * @function calculateObjective1
+    * @description This function calculates the first objective, which is Net Present Value calculation.
+    */
   calculateObjective1(plan: any, features: any, discountValue: any) {
     var npv = 0;
     var e = 0.0;
@@ -560,10 +572,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return npv;
   }
 
- /**
-   * @function calculateObjective2
-   * @description This function calculates the second objective which is considering features with high time criticality and low risk prior to the others.
-   */
+  /**
+    * @function calculateObjective2
+    * @description This function calculates the second objective which is considering features with high time criticality and low risk prior to the others.
+    */
   calculateObjective2(plan: string, features: any) {
     var totalWeight = 0.0;
     var separatedPlan = plan.split(",");
@@ -576,10 +588,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return totalWeight;
   }
 
- /**
-   * @function updateFronts
-   * @description This function updates the fronts according to the input population.
-   */
+  /**
+    * @function updateFronts
+    * @description This function updates the fronts according to the input population.
+    */
   updateFronts(population: any, fronts: any) {
 
     for (var i = 0; i < population.length; i++) {
@@ -671,10 +683,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return wrapper;
   }
 
- /**
-   * @function updatePopulation
-   * @description This function updates the population according to the fronts.
-   */
+  /**
+    * @function updatePopulation
+    * @description This function updates the population according to the fronts.
+    */
   updatePopulation(oldPopulation: any, fronts: any) {
     var tempPopulation = [];
     var populationLeft = oldPopulation.length / 2;
@@ -704,10 +716,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return tempPopulation;
   }
 
- /**
-   * @function initialiseParameters
-   * @description This function initialises parameters for popuation array in order not to get a null pointer exception.
-   */
+  /**
+    * @function initialiseParameters
+    * @description This function initialises parameters for popuation array in order not to get a null pointer exception.
+    */
   initialiseParameters(population: any) {
     population = [];
     for (var i = 0; i < this.populationSize; i++) {
@@ -722,10 +734,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return population;
   }
 
- /**
-   * @function resetParameters
-   * @description This function this function resets parameters of population in order to easily update it.
-   */
+  /**
+    * @function resetParameters
+    * @description This function this function resets parameters of population in order to easily update it.
+    */
   resetParameters(population: any) {
     for (var i = 0; i < this.populationSize; i++) {
       population[i].setS = "";
@@ -736,10 +748,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return population;
   }
 
- /**
-   * @function calculateCrowdingDistances
-   * @description This function calculates crowding distances.
-   */
+  /**
+    * @function calculateCrowdingDistances
+    * @description This function calculates crowding distances.
+    */
   calculateCrowdingDistances(population: any, fronts: any, features: any, discountValue: number) {
     var sorted = "";
     var separatedFrontElement;
@@ -762,10 +774,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return wrapper;
   }
 
- /**
-   * @function getObjectiveValueRange
-   * @description This function is for the crowding distance calculation to get the ranges of the objective values.
-   */
+  /**
+    * @function getObjectiveValueRange
+    * @description This function is for the crowding distance calculation to get the ranges of the objective values.
+    */
   getObjectiveValueRange(j: number) {
     if (j == 0) { //For the first objective function
       return 99999999.0;
@@ -774,10 +786,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     }
   }
 
- /**
-   * @function sort
-   * @description This function sorts the fronts according to their crowding distances.
-   */
+  /**
+    * @function sort
+    * @description This function sorts the fronts according to their crowding distances.
+    */
   sort(frontElement: string, j: number, population: any, features: any, discountValue: number) {
     var separatedFrontElement = frontElement.split(",");
 
@@ -808,10 +820,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
- /**
-   * @function calculateObjectiveForCrowding
-   * @description This function calculates the input objective function for the crowding distance calculation method.
-   */
+  /**
+    * @function calculateObjectiveForCrowding
+    * @description This function calculates the input objective function for the crowding distance calculation method.
+    */
   calculateObjectiveForCrowding(plan: string, a: number, features: any, discountValue: number) {
     var result = 0.0;
     if (a == 0) {
@@ -822,10 +834,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return result;
   }
 
- /**
-   * @function applyGeneticOperations
-   * @description This function is for applying genetic operations in order to get a new population.
-   */
+  /**
+    * @function applyGeneticOperations
+    * @description This function is for applying genetic operations in order to get a new population.
+    */
   applyGeneticOperations(population: any, features: any) {
     var father = 0;
     var mother = 0;
@@ -856,10 +868,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return newPopulation;
   }
 
- /**
-   * @function checkIfSuitable
-   * @description This function checks if the new child created from applyGeneticOperations is suitalbe according to the dependencies.
-   */
+  /**
+    * @function checkIfSuitable
+    * @description This function checks if the new child created from applyGeneticOperations is suitalbe according to the dependencies.
+    */
   checkIfSuitable(childsElement: string, features: any) {
     var separatedElement = childsElement.split(",");
     var separatedDependents;
@@ -882,10 +894,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
- /**
-   * @function checkDependsOnUsedBefore
-   * @description This function checks if the feature that depends on the other feature is used before.
-   */
+  /**
+    * @function checkDependsOnUsedBefore
+    * @description This function checks if the feature that depends on the other feature is used before.
+    */
   checkDependsOnUsedBefore(i: number, separatedElement: any, separatedDependentElement: any) {
     for (var a = 0; a < i; a++) {
       if (separatedElement[a] == separatedDependentElement) {
@@ -895,10 +907,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return false;
   }
 
- /**
-   * @function selection
-   * @description This function applies selection for creating new generation.
-   */
+  /**
+    * @function selection
+    * @description This function applies selection for creating new generation.
+    */
   selection(population: any) {
     var parentIndex = parseInt((Math.random() * population.length).toString(), 10);
     var tempParentIndex = 0;
@@ -913,10 +925,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return parentIndex;
   }
 
- /**
-   * @function makeCrossover
-   * @description This function applies crossover to get new childs.
-   */
+  /**
+    * @function makeCrossover
+    * @description This function applies crossover to get new childs.
+    */
   makeCrossover(father: string, mother: string) {
     var result = [];
 
@@ -962,10 +974,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
 
   }
 
- /**
-   * @function contains
-   * @description This function checks if the input contains the other input value.
-   */
+  /**
+    * @function contains
+    * @description This function checks if the input contains the other input value.
+    */
   contains(target: string[], key: string) {
     var result = false;
     for (var i = 0; i < target.length; i++) {
@@ -976,10 +988,10 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
     return result;
   }
 
- /**
-   * @function makeMutation
-   * @description This function applies mutation for getting a new population.
-   */
+  /**
+    * @function makeMutation
+    * @description This function applies mutation for getting a new population.
+    */
   makeMutation(solution: string) {
     var solutionSet = solution.split(",");
     var probability = mutationConfig.probability;
