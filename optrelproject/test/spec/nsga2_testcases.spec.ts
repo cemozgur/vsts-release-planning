@@ -2025,7 +2025,7 @@ describe("Test GA to check the dependency of the algorithm", () => {
     const result = algorithmService.getOptimalReleasePlan(configFile);
 
     it("test the dependency", () => {
-      expect(result.featureList[0].featureNumber.toEqual(16);
+      expect(result.featureList[0].featureNumber.toEqual(16));
     });
   });
 });
