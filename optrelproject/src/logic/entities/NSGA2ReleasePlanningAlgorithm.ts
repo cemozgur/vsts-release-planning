@@ -245,7 +245,7 @@ class NSGA2ReleasePlanningAlgorithm implements IReleasePlanningAlgorithm {
       bestPlanSet.push(bestPlan3);
     }
 
-
+    //return bestPlanSet;
     return this.getReleasePlanAlternative(bestPlanSet, discountValue, teamCapability, Number(config.numberOfSprint), Number(config.sprintDuration));
 
   }

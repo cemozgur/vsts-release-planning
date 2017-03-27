@@ -17,7 +17,8 @@ module.exports = function (config) {
         frameworks: ["jasmine"],
         //passing the folder path for OptRel test
         files: [
-            'test/**/*.ts'
+            'test/**/*.ts',
+         './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
         ],
         exclude: [
         ],
@@ -41,7 +42,6 @@ module.exports = function (config) {
         plugins: [
             require("karma-jasmine"),
             require("karma-phantomjs-launcher"),
-            require("karma-webpack")
-        ]
+            require("karma-webpack")        ]
     });
 };
