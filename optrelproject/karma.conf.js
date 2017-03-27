@@ -39,6 +39,10 @@ module.exports = function (config) {
         singleRun: false,
         concurrency: Infinity,
 
+        browserDisconnectTimeout:300000,
+        browserDisconnectTolerance: 2,
+        browserNoActivityTimeout: 30000,
+
         plugins: [
             require("karma-jasmine"),
             require("karma-phantomjs-launcher"),

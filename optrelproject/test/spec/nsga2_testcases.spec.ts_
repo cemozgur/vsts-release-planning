@@ -10,7 +10,7 @@
 import NSGA2ReleasePlanningAlgorithm from "../../src/logic/entities/NSGA2ReleasePlanningAlgorithm";
 
 //1
-describe("Test combinePopulations", () => {
+xdescribe("Test combinePopulations", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
   let population = [1, 2, 3, 4];
@@ -27,7 +27,7 @@ describe("Test combinePopulations", () => {
 });
 
 //2
-describe("Test combinePopulations", () => {
+xdescribe("Test combinePopulations", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
   let population = [2, 4, 5, 6];
@@ -45,7 +45,7 @@ describe("Test combinePopulations", () => {
 });
 
 //3
-describe("Test GA to make sure every feature is selected and defined", () => {
+xdescribe("Test GA to make sure every feature is selected and defined", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -279,7 +279,7 @@ describe("Test GA to make sure every feature is selected and defined", () => {
 });
 
 //4
-describe("Test GA to make sure every feature is selected and defined", () => {
+xdescribe("Test GA to make sure every feature is selected and defined", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -499,7 +499,7 @@ describe("Test GA to make sure every feature is selected and defined", () => {
 });
 
 //5
-describe("Test GA dependency", () => {
+xdescribe("Test GA dependency", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -599,7 +599,7 @@ describe("Test GA dependency", () => {
   });
 });
 //6
-describe("Test GA dependency and every feature denpends on f1 ", () => {
+xdescribe("Test GA dependency and every feature denpends on f1 ", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -699,7 +699,7 @@ describe("Test GA dependency and every feature denpends on f1 ", () => {
 
 
 //7
-describe("Test GA dependency and every feature denpends on f3 ", () => {
+xdescribe("Test GA dependency and every feature denpends on f3 ", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -799,7 +799,7 @@ describe("Test GA dependency and every feature denpends on f3 ", () => {
 });
 
 //8
-describe("Test GA to check the dependency of the algorithm", () => {
+xdescribe("Test GA to check the dependency of the algorithm", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -965,7 +965,7 @@ describe("Test GA to check the dependency of the algorithm", () => {
 });
 
 //9
-describe("Test GA to check the dependency of the algorithm", () => {
+xdescribe("Test GA to check the dependency of the algorithm", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -1262,7 +1262,7 @@ describe("Test GA to check the dependency of the algorithm", () => {
 });
 
 //10
-describe("Test GA dependency when two features depend on each other, it will throw error ", () => {
+xdescribe("Test GA dependency when two features depend on each other, it will throw error ", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -1359,7 +1359,7 @@ describe("Test GA dependency when two features depend on each other, it will thr
 });
 
 //11
-describe("Test features'cost", () => {
+xdescribe("Test features'cost", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -1460,7 +1460,7 @@ describe("Test features'cost", () => {
 });
 
 //12
-describe("Test features'selected ", () => {
+xdescribe("Test features'selected ", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -1561,7 +1561,7 @@ describe("Test features'selected ", () => {
 });
 
 //13
-describe("Test GA dependency", () => {
+xdescribe("Test GA dependency", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
@@ -1663,7 +1663,7 @@ describe("Test GA dependency", () => {
 
 
 //14
-describe("Test checkIfUsed", () => {
+xdescribe("Test checkIfUsed", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
   let featureNumber = "11";
@@ -1682,7 +1682,7 @@ describe("Test checkIfUsed", () => {
 
 //15
 
-describe("Test checkIfUsed", () => {
+xdescribe("Test checkIfUsed", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
   let featureNumber = "11";
@@ -1701,7 +1701,7 @@ describe("Test checkIfUsed", () => {
 
 //16
 
-describe("Test checkIfUsed", () => {
+xdescribe("Test checkIfUsed", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
   let featureNumber = "1";
@@ -1719,7 +1719,7 @@ describe("Test checkIfUsed", () => {
 });
 
 //17
-describe("Test getObjectiveValueRange", () => {
+xdescribe("Test getObjectiveValueRange", () => {
 
   let j = 0;
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
@@ -1735,7 +1735,7 @@ describe("Test getObjectiveValueRange", () => {
 });
 
 //18
-describe("Test getObjectiveValueRange", () => {
+xdescribe("Test getObjectiveValueRange", () => {
 
   let j = 1;
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
@@ -1751,7 +1751,7 @@ describe("Test getObjectiveValueRange", () => {
 });
 
 //19
-describe("Test GA to check the dependency of the algorithm", () => {
+xdescribe("Test GA to check the dependency of the algorithm", () => {
 
   let algorithmService = new NSGA2ReleasePlanningAlgorithm();
 
