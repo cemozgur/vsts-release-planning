@@ -262,6 +262,16 @@ describe("Evaluation for the final report Optimus Music Project", () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
+  it("Verify the release plans has a list of featurelist greater than 0 ", () => {
+    var valid = true;
+    result.map((releasePlan) => {
+      if (releasePlan.featureList.length <= 0) {
+        valid = false;
+      }
+    });
+    expect(valid).toBeTruthy();
+  });
+
   it("Validate the generation time is less than a minute (60 000 milliseconds) for 14 features ", () => {
     expect(end - start).toBeLessThan(60000);
   });

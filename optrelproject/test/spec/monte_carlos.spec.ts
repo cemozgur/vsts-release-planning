@@ -2,6 +2,7 @@
  * @author Yijia Bei <yijiabei94@gmail.com>
  * @author Tingting Gao <uczltg1@ucl.ac.uk>
  * @author Yunan Wang <wangyunan941113@gmail.com>
+ * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
  * @version 1.0
  * @license MIT License Copyright (c) 2017 OptRel team
  * 
