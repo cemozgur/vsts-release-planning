@@ -5,7 +5,7 @@
  * @author Ytalo Elias Borja Mori <ytaloborjam@gmail.com>
  * @version 1.0
  * @license MIT License Copyright (c) 2017 OptRel team
- * 
+ *
  * @description Test Cases for NSGA Algorithm
  */
 import NSGA2ReleasePlanningAlgorithm from "../../src/logic/entities/NSGA2ReleasePlanningAlgorithm";
@@ -42,13 +42,13 @@ describe("Evaluation for the final report Optimus Music Project", () => {
       {
         featureNumber: 1,
         workItemId: 1,
-        feature: "Hili",
+        feature: "register",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 10,
-        effort: 20,
-        cost: 10,
+        businessValue: 1700,
+        effort: 500,
+        cost: 170,
         risk: 1,
         timeCriticality: 4,
         dependsOn: "",
@@ -57,44 +57,44 @@ describe("Evaluation for the final report Optimus Music Project", () => {
       {
         featureNumber: 2,
         workItemId: 2,
-        feature: "Hili",
+        feature: "login",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 20,
-        effort: 20,
-        cost: 10,
+        businessValue: 140,
+        effort: 105,
+        cost: 170,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "1",
+        dependsOnWorkItemId: "1"
       },
       {
         featureNumber: 3,
         workItemId: 3,
-        feature: "Hili",
+        feature: "password",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 30,
-        effort: 20,
-        cost: 10,
+        businessValue: 16500,
+        effort: 6500,
+        cost: 200,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "1",
+        dependsOnWorkItemId: "1"
       },
 
       {
         featureNumber: 4,
         workItemId: 4,
-        feature: "Hili 2",
+        feature: "searchsong",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 40,
-        effort: 20,
-        cost: 10,
+        businessValue: 21000,
+        effort: 12500,
+        cost: 150,
         risk: 1,
         timeCriticality: 4,
         dependsOn: "",
@@ -104,88 +104,88 @@ describe("Evaluation for the final report Optimus Music Project", () => {
       {
         featureNumber: 5,
         workItemId: 5,
-        feature: "Hili 2",
+        feature: "collect",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 50,
-        effort: 20,
-        cost: 10,
+        businessValue: 14000,
+        effort: 4000,
+        cost: 88,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "4",
+        dependsOnWorkItemId: "4"
       },
       {
         featureNumber: 6,
         workItemId: 6,
-        feature: "Hili 2",
+        feature: "recentsong",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 60,
-        effort: 20,
-        cost: 10,
+        businessValue: 1650,
+        effort: 950,
+        cost: 90,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "2",
+        dependsOnWorkItemId: "2"
       },
       {
         featureNumber: 7,
         workItemId: 7,
-        feature: "Hili 2",
+        feature: "download",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 70,
-        effort: 20,
-        cost: 10,
+        businessValue: 8600,
+        effort: 4200,
+        cost: 180,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "4",
+        dependsOnWorkItemId: "4"
       },
       {
         featureNumber: 8,
         workItemId: 8,
-        feature: "Hili 2",
+        feature: "listen",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 80,
-        effort: 20,
-        cost: 10,
+        businessValue: 1500,
+        effort: 1000,
+        cost: 80,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "4",
+        dependsOnWorkItemId: "4"
       },
       {
         featureNumber: 9,
         workItemId: 9,
-        feature: "Hili 2",
+        feature: "share",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 90,
-        effort: 20,
-        cost: 10,
+        businessValue: 3000,
+        effort: 1200,
+        cost: 80,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "4",
+        dependsOnWorkItemId: "4"
       },
       {
         featureNumber: 10,
         workItemId: 10,
-        feature: "Hili 2",
+        feature: "adjust",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 100,
-        effort: 20,
-        cost: 10,
+        businessValue: 6000,
+        effort: 1500,
+        cost: 85,
         risk: 1,
         timeCriticality: 4,
         dependsOn: "",
@@ -194,32 +194,62 @@ describe("Evaluation for the final report Optimus Music Project", () => {
       {
         featureNumber: 11,
         workItemId: 11,
-        feature: "Hili 2",
+        feature: "match",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 110,
-        effort: 20,
-        cost: 10,
+        businessValue: 659,
+        effort: 460,
+        cost: 90,
+        risk: 1,
+        timeCriticality: 4,
+        dependsOn: "4",
+        dependsOnWorkItemId: "4"
+      },
+      {
+        featureNumber: 12,
+        workItemId: 12,
+        feature: "recommand",
+        state: "Active",
+        sprint: "0",
+        selected: false,
+        businessValue: 5000,
+        effort: 2500,
+        cost: 80,
         risk: 1,
         timeCriticality: 4,
         dependsOn: "",
         dependsOnWorkItemId: ""
       },
       {
-        featureNumber: 12,
-        workItemId: 12,
-        feature: "Hili 2",
+        featureNumber: 13,
+        workItemId: 13,
+        feature: "classification",
         state: "Active",
         sprint: "0",
         selected: false,
-        businessValue: 120,
-        effort: 20,
-        cost: 10,
+        businessValue: 545,
+        effort: 353,
+        cost: 85,
         risk: 1,
         timeCriticality: 4,
-        dependsOn: "",
-        dependsOnWorkItemId: ""
+        dependsOn: "5",
+        dependsOnWorkItemId: "5"
+      },
+      {
+        featureNumber: 14,
+        workItemId: 14,
+        feature: "remove",
+        state: "Active",
+        sprint: "0",
+        selected: false,
+        businessValue: 660,
+        effort: 440,
+        cost: 85,
+        risk: 1,
+        timeCriticality: 4,
+        dependsOn: "2",
+        dependsOnWorkItemId: "2"
       }
     ];
 
@@ -253,9 +283,8 @@ describe("Evaluation for the final report Optimus Music Project", () => {
               valid = false;
             }
           });
-        } else {
-          featureDependency.push(feature.featureNumber);
         }
+        featureDependency.push(feature.featureNumber);
       });
     });
     expect(valid).toBeTruthy();
