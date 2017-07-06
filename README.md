@@ -1,6 +1,7 @@
-#Introduction
-
-This project is about a plug-in, that add release planning to Visual Studio Team Services. 
+Project Name: OptRel
+University: University College London
+Brief: Project for MSc Software Systems Engineering and MSc Financial Systems Engineering.
+Aim: This project create a plug-in that adds release planning functionality to Visual Studio Team Services. 
 
 Team Development: 
 - Yijia Bei / yijiabei94@gmail.com 
